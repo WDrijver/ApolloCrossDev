@@ -9,5 +9,8 @@
 		{
 			"path": "GNU-GCC"
 		}
-	]
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true
+	}
 }
