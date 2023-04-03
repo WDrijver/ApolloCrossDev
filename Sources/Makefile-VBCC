@@ -20,11 +20,11 @@ C_FLAGS= +aos68k -I$(C_INCLUDE_VBCC) -I$(C_INCLUDE_NDK39) -c -o
 O_FLAGS= -bamigahunk -x -Bstatic -Cvbcc -nostdlib -mrel $(C_LIBS_VBCC)/startup.o -L$(C_LIBS_VBCC) -L$(C_LIBS_NDK39) -lvc -o 
 S_FLAGS= -quiet -m68080 -Fhunk -linedebug -o
 
-C_SOURCEDIR=$(PWD)/C-Source
-S_SOURCEDIR=$(PWD)/S-Source
+C_SOURCEDIR=HelloApollo
+S_SOURCEDIR=
 
-C_OBJECTDIR=$(PWD)/C-Build
-S_OBJECTDIR=$(PWD)/S-Build
+C_OBJECTDIR=$(C_SOURCEDIR)
+S_OBJECTDIR=$(S_SOURCEDIR)
 
 C_FILES=$(wildcard $(C_SOURCEDIR)/*.c)
 S_FILES=$(wildcard $(S_SOURCEDIR)/*.s)

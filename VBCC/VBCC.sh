@@ -14,7 +14,7 @@ PREFIX="`pwd`/bin"
 LOGFILES="`pwd`/logs"
 SOURCEFILES="`pwd`/sources"
 NDKFILES="`pwd`/ndk"
-SETTINGS="`pwd`/.vscode"
+SETTINGS="`pwd`/../Sources/.vscode"
 
 # INIT Terminal
 clear
