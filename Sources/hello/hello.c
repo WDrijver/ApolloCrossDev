@@ -9,7 +9,7 @@
     int main(int argc, char *argv[])
     {
       
-        struct EasyStruct es = {      sizeof(struct EasyStruct), 0UL,      "Requester", "Hello World!", "Ok"    };
+        struct EasyStruct es = {      sizeof(struct EasyStruct), 0UL,      "Requester", "Hello Apollo", "Ok"    };
       
         IntuitionBase = (struct IntuitionBase *)OpenLibrary("intuition.library", 36);
     

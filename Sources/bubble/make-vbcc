@@ -1,7 +1,8 @@
 
 PWD=$(shell pwd)
-BIN=$(PWD)/bin
-NDK=$(PWD)/ndk
+DIR=$(notdir $(shell pwd))
+BIN=$(PWD)/../../VBCC/bin
+NDK=$(PWD)/../../VBCC/ndk
 
 C_COMPILER=$(BIN)/vc
 S_COMPILER=$(BIN)/vasmm68k_mot
@@ -20,8 +21,8 @@ C_FLAGS= +aos68k -I$(C_INCLUDE_VBCC) -I$(C_INCLUDE_NDK39) -c -o
 O_FLAGS= -bamigahunk -x -Bstatic -Cvbcc -nostdlib -mrel $(C_LIBS_VBCC)/startup.o -L$(C_LIBS_VBCC) -L$(C_LIBS_NDK39) -lvc -o 
 S_FLAGS= -quiet -m68080 -Fhunk -linedebug -o
 
-C_SOURCEDIR=HelloApollo
-S_SOURCEDIR=
+C_SOURCEDIR=.
+S_SOURCEDIR=.
 
 C_OBJECTDIR=$(C_SOURCEDIR)
 S_OBJECTDIR=$(S_SOURCEDIR)
@@ -30,9 +31,9 @@ C_FILES=$(wildcard $(C_SOURCEDIR)/*.c)
 S_FILES=$(wildcard $(S_SOURCEDIR)/*.s)
 O_FILES=$(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES))
 
-EXE=Output
+EXE=$(DIR)-vbcc
 
-all: init clean build
+all: init build clean
 
 build: $(EXE)
 
@@ -46,21 +47,18 @@ $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
 	$(S_COMPILER) $(S_FLAGS) $@ $<
 
 clean:
-	rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(EXE)
-	mkdir -p $(C_OBJECTDIR) $(S_OBJECTDIR)
+	rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o
 
 .phony: init
 
 init:
 	clear
-	########################################
-	#  ApolloCrossDev VBCC Edition v0.2    #
-	########################################
-	# C-Sources: $(C_FILES)
-	# S-Sources: $(S_FILES)
-	########################################
-	# Directory: $(PWD)
-	# Compiler : $(BIN)
-	# NDK-Files: $(NDK)
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mVBCC Edition v0.2\e[0m"    
+	@echo "\e[36mC-Sources: \e[30m$(C_FILES)\e[0m"
+	@echo "\e[36mS-Sources: \e[1;30m$(S_FILES)\e[0m"
+	@echo "$(DIR)"
+
+    
+
 
 
