@@ -1,0 +1,7 @@
+
+; Make LHA archive to backup disk
+
+CD DATA:Sources/ApolloWHDSet/
+C:Delete #?.o #?.lnk >NIL:
+C:Delete SD0:SOURCES/ApolloWHDSet.lha
+C:Lha -ar a SD0:SOURCES/ApolloWHDSet.lha

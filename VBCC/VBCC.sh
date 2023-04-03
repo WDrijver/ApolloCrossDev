@@ -115,6 +115,14 @@ mv $NDKFILES/NDK_3.9 $NDKFILES/NDK3.9
 rm -r $NDKFILES/ndk_3.9
 rm $NDKFILES/NDK_3.9.info
 cd ..
+mkdir NDKMUI
+cd NDKMUI
+echo "   * Download MUI 5.0 SDK from GitHub" 
+wget -nc https://github.com/amiga-mui/muidev/releases/download/MUI-5.0-20210831/MUI-5.0-20210831-os3.lha -a $LOGFILES/part10.log
+echo "   * Extracting Archive" 
+lha -xw=$NDKFILES MUI-5.0-20210831-os3.lha >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
+mv $NDKFILES/MUI-5.0-20210831-os3/SDK/MUI $NDKFILES/NDKMUI
+cd ..
 cd $NDKFILES
 echo "   * Cloning ApolloDevPac" 
 git clone --progress https://github.com/WDrijver/ApolloDevPac 2>>$LOGFILES/part10_err.log

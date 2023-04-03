@@ -1,0 +1,24 @@
+#################################################
+#
+# SAS/C Makefile
+# AmigaOS M68K SAS/C 6.59 Compiler
+# 
+#################################################
+
+OUTFILE=ApolloWHDSet
+
+OBJECTS=ApolloWHDSet.o
+
+all: $(OUTFILE)
+
+clean:
+	@delete $(OBJECTS)
+
+copy:
+	c:delete #?.o #?.lnk
+	c:delete SD0:SOURCES/ApolloWHDSet.lha
+	c:lha -ar a SD0:SOURCES/ApolloWHDSet.lha
+
+$(OUTFILE): $(OBJECTS)
+	sc math=standard NOICONS link $(OBJECTS)
+#	sc debug=symbol math=standard NOICONS link $(OBJECTS)

@@ -1,3 +1,4 @@
+
 PWD=$(shell pwd)
 DIR=$(notdir $(shell pwd))
 BIN=$(PWD)/../../VBCC/bin
@@ -10,6 +11,7 @@ O_LINKER=$(BIN)/vlink
 C_INCLUDE_VBCC=$(BIN)/targets/m68k-amigaos/include
 C_INCLUDE_NDK32=$(NDK)/NDK3.2/Include_H
 C_INCLUDE_NDK39=$(NDK)/NDK3.9/Include/include_h
+#C_INCLUDE_MUI=$(NDK)/MUI/include
 S_INCLUDE_DEVPAC=$(NDK)/DevPac
 
 C_LIBS_VBCC=$(BIN)/targets/m68k-amigaos/lib
@@ -46,7 +48,7 @@ $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
 	$(S_COMPILER) $(S_FLAGS) $@ $<
 
 clean:
-	rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(C_OBJECTDIR)/*.asm $(S_OBJECTDIR)/*.asm
+	rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o
 
 .phony: init
 
