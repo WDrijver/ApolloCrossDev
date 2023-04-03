@@ -1,16 +1,26 @@
 {
 	"folders": [
 		{
-			"path": "VBCC"
+			"path": "_Settings"
 		},
 		{
 			"path": "Amiga-GCC"
 		},
 		{
 			"path": "GNU-GCC"
-		}
+		},
+		{
+			"path": "VBCC"
+		},
+		{
+			"path": "Snippets"
+		},
 	],
 	"settings": {
 		"git.ignoreLimitWarning": true
-	}
+	},
+	"terminal.integrated.env.osx": {
+    "VBCC": "${workspaceFolder}/bin"
+},
+
 }
