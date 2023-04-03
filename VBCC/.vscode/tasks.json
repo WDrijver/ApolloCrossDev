@@ -6,7 +6,7 @@
     {
       "label": "ApolloCrossDev",
       "type": "shell",
-      "command": "bash --rcfile ${workspaceFolder}/.bashrc",
+      "command": "bash --rcfile ${workspaceFolder}/.vscode/.bashrc",
       "isBackground": true,
       "runOptions": {
         "runOn": "folderOpen"
