@@ -14,7 +14,7 @@ PREFIX="`pwd`/bin"
 LOGFILES="`pwd`/logs"
 SOURCEFILES="`pwd`/sources"
 NDKFILES="`pwd`/ndk"
-SETTINGS="`pwd`/../_Settings"
+SETTINGS="`pwd`/.vscode"
 
 # INIT Terminal
 clear
@@ -24,7 +24,7 @@ echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
 
 # PART 1: Clean the House
 sudo echo -e "\e[1m\e[37m1. Clean the House\e[0m\e[36m"
-rm -f -r $PREFIX $LOGFILES $SOURCEFILES $NDKFILES
+rm -f -r $PREFIX $LOGFILES $SOURCEFILES $NDKFILES $SETTINGS/.bashrc
 mkdir -p $PREFIX $LOGFILES $SOURCEFILES $NDKFILES
 
 # PART 2: Update Linux Packages 
@@ -122,12 +122,16 @@ cd ..
 
 # Part 11: Create ApolloCrossDev Terminal for VSC
 echo -e "\e[1m\e[37m11. Create Terminal for VSC\e[0m\e[36m"
-echo "   * Adding VBCC=$PREFIX to $SETTINGS Archive" 
+echo "   * Copy local .bashrc to $SETTINGS" 
+cp $HOME/.bashrc $SETTINGS
+echo "   * Adding VBCC=$PREFIX to $SETTINGS" 
 echo "export VBCC=$PREFIX" >>$SETTINGS/.bashrc
 echo "export PATH=\$VBCC:\$PATH" >>$SETTINGS/.bashrc
 
 # FINISH
 echo " "
 echo -e "\e[1m\e[31mFINISHED\e[0m"
+echo " "
+echo -e "\e[1m\e[37mPlease restart VSC and enjoy \e[31mApollo\e[1;30mCrossDev\e[0m\e[36m"
 echo " "
 exit

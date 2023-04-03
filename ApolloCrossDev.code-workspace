@@ -1,9 +1,6 @@
 {
 	"folders": [
 		{
-			"path": "_Settings"
-		},
-		{
 			"path": "Amiga-GCC"
 		},
 		{
@@ -14,7 +11,7 @@
 		},
 		{
 			"path": "Snippets"
-		},
+		}
 	],
 	"settings": {
 		"git.ignoreLimitWarning": true

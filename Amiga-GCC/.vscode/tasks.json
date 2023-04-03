@@ -4,7 +4,7 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "ApolloCrossDev Terminal",
+      "label": "ApolloCrossDev",
       "type": "shell",
       "command": "bash --rcfile ${workspaceFolder}/.bashrc",
       "isBackground": true,
