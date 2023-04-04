@@ -120,8 +120,8 @@ cd NDKMUI
 echo "   * Download MUI 5.0 SDK from GitHub" 
 wget -nc https://github.com/amiga-mui/muidev/releases/download/MUI-5.0-20210831/MUI-5.0-20210831-os3.lha -a $LOGFILES/part10.log
 echo "   * Extracting Archive" 
-lha -xw=$NDKFILES MUI-5.0-20210831-os3.lha >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
-mv $NDKFILES/MUI-5.0-20210831-os3/SDK/MUI $NDKFILES/NDKMUI
+lha -x MUI-5.0-20210831-os3.lha >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
+mv SDK/MUI $NDKFILES/NDKMUI
 cd ..
 cd $NDKFILES
 echo "   * Cloning ApolloDevPac" 
