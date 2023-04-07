@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "Sources"
+		},
+		{
+			"path": "../Dev/SVN-Apollo/RIVA"
 		}
 	],
 	"settings": {
