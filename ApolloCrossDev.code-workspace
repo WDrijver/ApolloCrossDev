@@ -1,23 +1,32 @@
 {
 	"folders": [
 		{
-			"path": "Amiga-GCC"
+			"name": "GCC-12.2",
+			"path": "GCC-12.2"
 		},
 		{
-			"path": "GNU-GCC"
+			"name": "GCC-6.50",
+			"path": "GCC-6.50"
 		},
 		{
+			"name": "GCC-2.95",
+			"path": "GCC-2.95"
+		},
+		{
+			"name": "VBCC",
 			"path": "VBCC"
 		},
 		{
+			"name": "Sources",
 			"path": "Sources"
-		},
-		{
-			"path": "../Dev/SVN-Apollo/RIVA"
 		}
 	],
 	"settings": {
-		"git.ignoreLimitWarning": true
+		"git.ignoreLimitWarning": true,
+		"svn.delete.ignoredRulesForDeletedFiles": [
+			"0.59/RiVA-0.59"
+		],
+		"svn.ignoreWorkingCopyIsTooOld": true
 	},
 	"terminal.integrated.env.osx": {
     "VBCC": "${workspaceFolder}/bin"

@@ -6,6 +6,7 @@ CPU=-j16
 SOURCES=_sources
 LOGS=_logs
 APOLLOCROSSDEV=ApolloCrossDev
+TARGET=m68k-amiga-elf
 
 BINUTILS_VERSION=binutils-2.40
 GCC_VERSION=gcc-12.2.0
@@ -17,6 +18,7 @@ ISL_VERSION=isl-0.24
 CLOOG_VERSION=cloog-0.18.1
 
 export PREFIX="`pwd`/$APOLLOCROSSDEV"
+export PATH=$PREFIX/bin:$PATH
 export LOGFILES="`pwd`/$LOGS"
 
 # INIT Terminal
@@ -38,7 +40,7 @@ cd $SOURCES
 # PART 2: Update Linux Packages 
 echo "2. Update Linux Packages"
 apt -y update >>$LOGFILES/part2.log 2>/dev/null
-apt -y install build-essential flex bison expect dejagnu texinfo >>$LOGFILES/part2.log 2>/dev/null
+apt -y install build-essential gawk flex bison expect dejagnu texinfo >>$LOGFILES/part2.log 2>/dev/null
 
 # PART 3: Download GNU-Sources
 echo "3. Download GNU-Sources"
@@ -79,7 +81,7 @@ cd build-binutils
     --without-lzma \
     --enable-static \
     --prefix="$PREFIX" \
-    --target=m68k-amiga-elf >>$LOGFILES/part5.log 2>/dev/null
+    --target=$TARGET >>$LOGFILES/part5.log 2>/dev/null
 echo "   * Build ($CPU)"
 make $CPU >>$LOGFILES/part5.log 2>/dev/null
 echo "   * Install ($CPU)"
@@ -114,13 +116,31 @@ echo "   * Configure"
     --enable-lto \
     --enable-static \
     --prefix="$PREFIX" \
-    --target=m68k-amiga-elf \
+    --target=$TARGET \
     --with-cpu=68000 >>$LOGFILES/part6.log 2>/dev/null
 echo "   * Build ($CPU)"
 make $CPU all-gcc >>$LOGFILES/part6.log 2>/dev/null
 echo "   * Install ($CPU)"
 make $CPU install-strip-gcc >>$LOGFILES/part6.log 2>/dev/null
 cd ..
+
+# PART X: Compile GLibC
+#echo "X. Compile GLibC"
+#mkdir -p build-glibc
+#cd build-glibc
+#../$GLIBC_VERSION/configure \
+#    --prefix="$PREFIX/$TARGET" \
+#    --build=$MACHTYPE \
+#    --host=$TARGET \
+#    --target=$TARGET \
+#    --disable-multilib \
+#    libc_cv_forced_unwind=yes
+#make install-bootstrap-headers=yes install-headers
+#make $CPU csu/subdir_lib
+#install csu/crt1.o csu/crti.o csu/crtn.o $PREFIX/$TARGET/lib
+#$PREFIX/$TARGET-gcc -nostdlib -nostartfiles -shared -x c /dev/null -o $PREFIX/$TARGET/lib/libc.so
+#touch $PREFIX/$TARGET/include/gnu/stubs.h
+#cd ..     
 
 # PART 7: Compile ELF2Hunk
 echo "7. Compile ELF2Hunk"
@@ -143,7 +163,7 @@ wget -nc http://aminet.net/dev/misc/NDK3.2.lha -a $LOGFILES/part8.log
 echo "   * Extracting Archive" 
 lha -xw=$PREFIX/include/NDK3.2 NDK3.2.lha >>$LOGFILES/part8.log
 echo "   * Adding default GCC Includes"
-cp $PREFIX/lib/gcc/m68k-amiga-elf/12.2.0/include/*.* $PREFIX/include/NDK3.2/Include_H >>$LOGFILES/part8.log
+cp $PREFIX/lib/gcc/$TARGET/12.2.0/include/*.* $PREFIX/include/NDK3.2/Include_H >>$LOGFILES/part8.log
 rm $PREFIX/include/NDK3.2/Include_H/stdint.h
 mv $PREFIX/include/NDK3.2/Include_H/stdint-gcc.h $PREFIX/include/NDK3.2/Include_H/stdint.h
 cd ..
@@ -158,7 +178,7 @@ mv $PREFIX/include/NDK_3.9 $PREFIX/include/NDK3.9
 rm -r $PREFIX/include/ndk_3.9
 rm $PREFIX/include/NDK_3.9.info
 #echo "   * Adding default GCC Includes"
-#cp $PREFIX/lib/gcc/m68k-amiga-elf/12.2.0/include/*.* $PREFIX/include/NDK3.9/Include >>$LOGFILES/part8.log
+#cp $PREFIX/lib/gcc/$TARGET/12.2.0/include/*.* $PREFIX/include/NDK3.9/Include >>$LOGFILES/part8.log
 #rm $PREFIX/include/NDK3.9/Include/stdint.h
 #mv $PREFIX/include/NDK3.9/Include/stdint-gcc.h $PREFIX/include/NDK3.9/Include/stdint.h
 cd ..

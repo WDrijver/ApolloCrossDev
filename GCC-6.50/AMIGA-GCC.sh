@@ -40,7 +40,7 @@ git clone --progress https://github.com/bebbo/amiga-gcc 2>>$LOGFILES/part3.log
 echo "4. Compile Amiga-GCC"
 cd amiga-gcc
 make clean
-make $CPU all PREFIX=/home/willem/Dev/ApolloCrossDev/Amiga-GCC/ApolloCrossDev
+make $CPU all PREFIX=/home/willem/ApolloCrossDev/Amiga-GCC/ApolloCrossDev
 cd ..
 
 exit
