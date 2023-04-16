@@ -1,12 +1,15 @@
-# ApolloCrossDev Build Script v0.1
+# ApolloCrossDev Build Script v0.2
 
-EDITION=GNU-GCC
-VERSION=0.1
+EDITION=GCC-12.2
+VERSION=0.2
 CPU=-j16
-SOURCES=_sources
-LOGS=_logs
-APOLLOCROSSDEV=ApolloCrossDev
+
+WORKSPACE="`pwd`"
+SOURCES=$WORKSPACE/_sources
+LOGFILES=$WORKSPACE/_logs
+PREFIX=$WORKSPACE/ApolloCrossDev
 TARGET=m68k-amiga-elf
+export PATH=$PREFIX/bin:$PATH
 
 BINUTILS_VERSION=binutils-2.40
 GCC_VERSION=gcc-12.2.0

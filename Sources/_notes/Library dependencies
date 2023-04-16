@@ -1,0 +1,28 @@
+Library Dependencies
+
+GCC can be compiled using different run-time and/or static libraries:
+
+0. base
+    bin/ar|as|gcc|ld|nm|ranlib|strip
+    lib/ldscripts/amiga*.*
+
+1. ixemul (no arguments)
+    lib/crt0
+    lib/libc
+    lib/libamiga
+    lib/libstubs
+
+2. libnix (-noixemul|-mcrt=nix13|-mcrt=nix20)
+    lib/libamiga
+    lib/libstubs
+    libnix/lib/ncrt0
+    libnix/lib/libnix20
+    libnix/lib/libnixmain
+    libnix/lib/libnix
+
+3. clib2 (-mcrt=clib2)
+    clib2/ncrt0
+    clib2/libc
+    clib2/libamiga
+    clib2/libdebug
+
