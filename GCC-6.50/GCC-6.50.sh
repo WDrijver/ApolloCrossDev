@@ -39,15 +39,14 @@ git clone --progress https://github.com/bebbo/amiga-gcc 2>>$LOGFILES/part3.log
 # Part 4: Compile Amiga-GCC
 echo "4. Compile Amiga-GCC"
 cd amiga-gcc
-make clean
-make $CPU all PREFIX=$PREFIX
-cd ..
-
-# Part 4: Compile Amiga-GCC
-echo "4. Compile Amiga-GCC"
-cd amiga-gcc
-make $CPU all PREFIX=$PREFIX
-make $CPU all PREFIX=$PREFIX
+echo "   * Clean"
+make clean >>$LOGFILES/part4.log 2>/dev/null
+echo "   * First Run"
+make $CPU all PREFIX=$PREFIX >>$LOGFILES/part4.log 2>/dev/null
+echo "   * Second Run"
+make $CPU all PREFIX=$PREFIX >>$LOGFILES/part4.log 2>/dev/null
+echo "   * Third Run"
+make $CPU all PREFIX=$PREFIX >>$LOGFILES/part4.log 2>/dev/null
 cd ..
 
 # FINISH

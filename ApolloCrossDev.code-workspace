@@ -1,6 +1,10 @@
 {
 	"folders": [
 		{
+			"name": "Sources",
+			"path": "Sources"
+		},
+		{
 			"name": "GCC-12.2",
 			"path": "GCC-12.2"
 		},
@@ -15,10 +19,6 @@
 		{
 			"name": "VBCC",
 			"path": "VBCC"
-		},
-		{
-			"name": "Sources",
-			"path": "Sources"
 		}
 	],
 	"settings": {
