@@ -1,6 +1,6 @@
 # ApolloCrossDev Build Script v0.2
 
-EDITION=GNU-2.95
+EDITION=GNU-3.4.6
 VERSION=0.2
 CPU=-j16
 
@@ -13,8 +13,8 @@ export PATH=$PREFIX/bin:$PATH
 
 BINUTILS_VERSION=amigaos-binutils-2.14
 BINUTILS_DOWNLOAD=https://github.com/adtools/$BINUTILS_VERSION
-GCC_VERSION=amigaos-gcc-2.95.3
-GCC_DOWNLOAD=https://github.com/adtools/$GCC_VERSION
+GCC_VERSION=gcc-3.4.6
+GCC_DOWNLOAD=https://ftp.gnu.org/gnu/gcc/$GCC_VERSION/$GCC_VERSION.tar.gz
 NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
 NDK39_DOWNLOAD=https://os.amigaworld.de/download.php?id=3
 
@@ -44,7 +44,12 @@ echo "3. Download GNU-Sources"
 echo "   * $BINUTILS_VERSION" 
 git clone --progress $BINUTILS_DOWNLOAD 2>>$LOGFILES/part3_err.log
 echo "   * $GCC_VERSION" 
-git clone --progress $GCC_DOWNLOAD 2>>$LOGFILES/part3_err.log
+#wget -nc https://ftp.gnu.org/gnu/gcc/$GCC_VERSION/$GCC_VERSION.tar.gz -a $LOGFILES/part3.log
+cp ../gcc-3.4.6.tar.* .
+
+# PART 4: Unpack GNU-Sources
+echo "4. Unpack GNU-Sources"
+for f in *.tar*; do tar xfk $f >>$LOGFILES/part4.log; done 
 
 # Part 4: Compile BinUtils
 echo "4. Compile BinUtils"
@@ -54,7 +59,11 @@ cd build-binutils
 ../$BINUTILS_VERSION/configure \
     --disable-nls \
     --prefix="$PREFIX" \
+    --with-gnu-as \
+    --with-gnu-ld \
+    --with-headers=$PREFIX/m68k-amigaos/include \
     --host=i686-linux-gnu \
+    --build=i686-linux-gnu \
     --target=$TARGET >>$LOGFILES/part4.log 2>/dev/null
 echo "   * Build ($CPU)"
 make $CPU >>$LOGFILES/part4.log 2>/dev/null
@@ -63,7 +72,7 @@ make $CPU install-binutils >>$LOGFILES/part4.log 2>/dev/null
 make $CPU install-gas >>$LOGFILES/part4.log 2>/dev/null
 make $CPU install-ld >>$LOGFILES/part4.log 2>/dev/null
 cd ..
-
+exit
 # Part 6: Compile GCC
 echo "6. Compile GCC"
 mkdir -p build-gcc
@@ -72,8 +81,6 @@ echo "   * Configure"
 ../$GCC_VERSION/configure \
     --prefix="$PREFIX" \
     --enable-languages=c,c++ \
-    --host=i686-linux-gnu \
-    --build=i686-linux-gnu \
     --target=$TARGET  \
     >>$LOGFILES/part6.log 2>/dev/null  
 echo "   * Build (single CPU only)"

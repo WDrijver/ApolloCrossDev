@@ -19,6 +19,9 @@
 		{
 			"name": "VBCC",
 			"path": "VBCC"
+		},
+		{
+			"path": "GCC-3.4.6"
 		}
 	],
 	"settings": {

@@ -85,9 +85,9 @@ cd ..
 # PART 7: Amiga Libs/Includes
 echo "7. Amiga Libs"
 echo "   * libnix"
-cp -r $WORKSPACE/../Sources/_amigalibs/libnix $PREFIX/$TARGET
+cp -r $WORKSPACE/_install/libnix $PREFIX/$TARGET
 echo "   * clib2"
-cp -r $WORKSPACE/../Sources/_amigalibs/clib2 $PREFIX/$TARGET
+cp -r $WORKSPACE/_install/clib2 $PREFIX/$TARGET
 
 # PART 8: Download Amiga OS NDK's
 echo "8. Download AmigaOS NDK's"
