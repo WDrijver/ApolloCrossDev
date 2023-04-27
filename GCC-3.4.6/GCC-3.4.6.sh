@@ -1,7 +1,7 @@
-# ApolloCrossDev Build Script v0.2
+# ApolloCrossDev Build Script v0.3
 
 EDITION=GNU-3.4.6
-VERSION=0.2
+VERSION=0.3
 CPU=-j16
 
 WORKSPACE="`pwd`"
@@ -88,22 +88,22 @@ wget -nc $BISON_DOWNLOAD -a $LOGFILES/part3.log
 echo "   * clib2-$CLIB2_VERSION"
 wget -nc $CLIB2_DOWNLOAD -a $LOGFILES/part3.log 
 
-# PART 4: Unpack GNU-Sources
-echo "4. Unpack GNU-Sources"
+# PART 4: Unpack Sources
+echo "4. Unpack Sources"
 for f in *.tar*; do tar xfk $f >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log; done 
 
 # Part 5: Compile Bison
 echo "5. Compile Bison"
 echo "   * Patch Bison files"
 for p in `ls $WORKSPACE/_install/recipes/patches/bison/*.p`; do patch -d $WORKSPACE/_sources/$BISON_VERSION <$p -p0 >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log; done 
-echo "   * Configure"
+echo "   * Configure Bison"
 mkdir -p build-bison
 cd build-bison
 ../$BISON_VERSION/configure \
     --prefix="$PREFIX" >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-echo "   * Build ($CPU)"
+echo "   * Build Bison ($CPU)"
 make $CPU >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-echo "   * Install ($CPU)"
+echo "   * Install Bison ($CPU)"
 make $CPU install >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cd $SOURCES
 
@@ -111,7 +111,7 @@ cd $SOURCES
 echo "6. Compile BinUtils"
 echo "   * Patch Binutils files"
 for p in `ls $WORKSPACE/_install/recipes/patches/binutils/*.p`; do patch -d $WORKSPACE/_sources/$BINUTILS_VERSION <$p -p0 >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log; done 
-echo "   * Configure"
+echo "   * Configure Binutils"
 mkdir -p build-binutils
 cd build-binutils
 CFLAGS="-m32" LDFLAGS="-m32" ../$BINUTILS_VERSION/configure \
@@ -120,14 +120,14 @@ CFLAGS="-m32" LDFLAGS="-m32" ../$BINUTILS_VERSION/configure \
     --disable-nls \
     --disable-werror \
     >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-echo "   * Build ($CPU)"
+echo "   * Build Binutils ($CPU)"
 make $CPU >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-echo "   * Install ($CPU)"
+echo "   * Install Binutils ($CPU)"
 make $CPU install >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cd $SOURCES
 
-# Part 7 Prepare GCC Sources
-echo "7. Prepare GCC Sources"
+# Part 7 Prepare GCC
+echo "7. Prepare GCC"
 echo "   * Move $GMP_VERSION to $GCC_VERSION/gmp"
 mv $GMP_VERSION $GCC_VERSION/gmp >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 echo "   * Move $MPFR_VERSION to $GCC_VERSION/mpfr"
@@ -137,14 +137,14 @@ mv $MPC_VERSION $GCC_VERSION/mpc >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.lo
 echo "   * Patch GCC files"
 for p in `ls $WORKSPACE/_install/recipes/patches/gcc/*.p`; do patch -d $WORKSPACE/_sources/$GCC_VERSION <$p -p0 >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log; done 
 patch $WORKSPACE/_sources/$GCC_VERSION/gcc/collect2.c $WORKSPACE/_install/recipes/patches.wd/collect2.c.p >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
-echo "   * Add m68k-amigaos files"
+echo "   * Add GCC custom files"
 cp -r $WORKSPACE/_install/recipes/files/gcc/* $GCC_VERSION >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 
 # Part 8: Compile GCC (Phase #1)
 echo "8. Compile GCC (Phase #1)"
 mkdir -p build-gcc
 cd build-gcc
-echo "   * Configure"
+echo "   * Configure GCC"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" ../$GCC_VERSION/configure \
 	--disable-threads \
 	--disable-nls --disable-c-mbchar \
@@ -156,9 +156,9 @@ AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$
     --prefix="$PREFIX" \
     --target=$TARGET \
     >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log 
-echo "   * Build (single CPU only)"
+echo "   * Build GCC (1 CPU only)"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 all-gcc >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
-echo "   * Install (single CPU only)"
+echo "   * Install GCC (1 CPU only)"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 install-gcc >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 
 cd $SOURCES
@@ -167,65 +167,53 @@ cd $SOURCES
 echo "9. Download AmigaOS NDK's"
 mkdir NDK3.2
 cd NDK3.2
-echo "   * Download NDK3.2.lha from AmiNet" 
+echo "   * NDK 3.2" 
 wget -nc $NDK32_DOWNLOAD -a $LOGFILES/part9.log
-echo "   * Extracting Archive" 
-lha -xw=$PREFIX/include/NDK3.2 NDK3.2.lha >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log; done
-cd $SOURCES
-mkdir NDK3.9
-cd NDK3.9
-echo "   * Download NDK3.9 from os.amigaworld.de" 
-wget -nc $NDK39_DOWNLOAD -a $LOGFILES/part9.log
-mv download.php?id=3 NDK39.lha
-echo "   * Extracting Archive" 
-lha -xw=$PREFIX/include NDK39.lha >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log; done
-mv $PREFIX/include/NDK_3.9 $PREFIX/include/NDK3.9
-rm -r $PREFIX/include/ndk_3.9
-rm $PREFIX/include/NDK_3.9.info
+lha -xw=$PREFIX/include/NDK3.2 NDK3.2.lha >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
 cd $SOURCES
 mkdir -p $PREFIX/$TARGET
-echo "   * $NDK_ARCHIVE" 
+echo "   * NDK 3.9" 
 wget -nc $NDK_DOWNLOAD -a $LOGFILES/part9.log 
 tar -C $PREFIX/$TARGET --strip-components=2 -xjf $NDK_ARCHIVE
-echo "   * Patch $NDK_ARCHIVE"
+echo "   * Patch NDK 3.9 files"
 for p in `ls $WORKSPACE/_install/recipes/patches/ndk/*.p`; do patch -d $PREFIX/$TARGET <$p -p0 >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log; done 
-echo "   * Add custom NDK files"
+echo "   * Add NDK 3.9 custom files"
 cp -r $WORKSPACE/_install/recipes/files/ndk/* $PREFIX/$TARGET >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
 echo "   * $OPENURL_ARCHIVE"
 wget -nc $OPENURL_DOWNLOAD -a $LOGFILES/part9.log 
-lha -xw=OpenURL $OPENURL_ARCHIVE >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log; done
-cp -r OpenURL/libopenurl-$OPENURL_VERSION/include/* $PREFIX/$TARGET/sys-include/
+lha -xw=OpenURL $OPENURL_ARCHIVE >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
+cp -r OpenURL/OpenURL/Developer/C/include/* $PREFIX/$TARGET/sys-include/
 echo "   * $AMISSL_ARCHIVE"
 wget -nc $AMISSL_DOWNLOAD -a $LOGFILES/part9.log 
-lha xw=AmiSSL $AMISSL_ARCHIVE >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log; done
+lha xw=AmiSSL $AMISSL_ARCHIVE >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
 cp -r AmiSSL/AmiSSL/Developer/include/* $PREFIX/$TARGET/sys-include/
 cp -r AmiSSL/AmiSSL/Developer/lib/AmigaOS3/* $PREFIX/$TARGET/lib/
 echo "   * $GUIGFX_ARCHIVE"
 wget -nc $GUIGFX_DOWNLOAD -a $LOGFILES/part9.log 
-lha xw=guigfxlib $GUIGFX_ARCHIVE >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log; done
+lha xw=guigfxlib $GUIGFX_ARCHIVE >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
 cp -r guigfxlib/include/* $PREFIX/$TARGET/sys-include/
 echo "   * $RENDER_ARCHIVE"
 wget -nc $RENDER_DOWNLOAD -a $LOGFILES/part9.log 
-lha xw=renderlib $RENDER_ARCHIVE >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log; done
+lha xw=renderlib $RENDER_ARCHIVE >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
 cp -r renderlib/renderlib/include/* $PREFIX/$TARGET/sys-include/
 echo "   * $CODESETS_ARCHIVE"
 wget -nc $CODESETS_DOWNLOAD -a $LOGFILES/part9.log 
-lha xw=codesets $CODESETS_ARCHIVE >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log; done
+lha xw=codesets $CODESETS_ARCHIVE >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
 cp -r codesets/codesets/Developer/include/* $PREFIX/$TARGET/sys-include/
 cd $SOURCES
 
 # PART 10: Amiga Libs/Includes
 echo "10. Amiga Libs"
-echo "   * Configure"
+echo "   * Configure clib2"
 cd build-gcc
 mkdir -p clib2
 cp -r $WORKSPACE/_sources/clib2-1_214/library/* $WORKSPACE/_sources/build-gcc/clib2
-echo "   * Patch clib2 files"
+echo "   * Patch clib2"
 for p in `ls $WORKSPACE/_install/recipes/patches/clib2/*.p`; do patch -d $WORKSPACE/_sources/build-gcc/clib2 <$p -p0 >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log; done 
 echo "   * Add clib2 custom files"
 cp -r $WORKSPACE/_install/recipes/files/clib2/* $WORKSPACE/_sources/build-gcc/clib2 >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 cd clib2
-echo "   * Build ($CPU)"
+echo "   * Build clib2 ($CPU)"
 PATH="$PREFIX/bin:$PATH" make -f GNUmakefile.68k >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 cp -r $WORKSPACE/_sources/build-gcc/clib2/include $PREFIX/$TARGET >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 cp -r $WORKSPACE/_sources/build-gcc/clib2/lib $PREFIX/$TARGET >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
@@ -235,9 +223,9 @@ cd $SOURCES
 # Part 11: Compile GCC (Phase #2)
 echo "11. Compile GCC (Phase #2)"
 cd build-gcc
-echo "   * Build (single CPU only)"
+echo "   * Build GCC (1 CPU only)"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 all-gcc >>$LOGFILES/part8.log 2>$LOGFILES/part8_err.log
-echo "   * Install (single CPU only)"
+echo "   * Install GCC (1 CPU only)"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 install-gcc >>$LOGFILES/part8.log 2>$LOGFILES/part8_err.log
 cd $SOURCES
 
