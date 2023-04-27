@@ -28,6 +28,8 @@ MPC_VERSION=mpc-0.8.2
 MPC_DOWNLOAD=http://www.multiprecision.org/downloads/$MPC_VERSION.tar.gz
 BISON_VERSION=bison-2.7.1
 BISON_DOWNLOAD=https://ftp.gnu.org/gnu/bison/$BISON_VERSION.tar.gz
+CLIB2_VERSION=V1_24.
+CLIB2_DOWNLOAD=https://github.com/adtools/clib2/archive/
 NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
 NDK39_DOWNLOAD=https://os.amigaworld.de/download.php?id=3
 
@@ -140,35 +142,34 @@ AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$
 echo "   * Install (single CPU only)"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 install-gcc >>$LOGFILES/part8.log 2>$LOGFILES/part8_err.log
 cd ..
-exit
 
-# PART 7: Amiga Libs/Includes
+# PART 9: Download Amiga OS NDK's
+echo "9. Download AmigaOS NDK's"
+mkdir NDK3.2
+cd NDK3.2
+echo "   * Download NDK3.2.lha from AmiNet" 
+wget -nc $NDK32_DOWNLOAD -a $LOGFILES/part9.log
+echo "   * Extracting Archive" 
+lha -xw=$PREFIX/include/NDK3.2 NDK3.2.lha >>$LOGFILES/part9.log
+cd ..
+mkdir NDK3.9
+cd NDK3.9
+echo "   * Download NDK3.9 from os.amigaworld.de" 
+wget -nc $NDK39_DOWNLOAD -a $LOGFILES/part9.log
+mv download.php?id=3 NDK39.lha
+echo "   * Extracting Archive" 
+lha -xw=$PREFIX/include NDK39.lha >>$LOGFILES/part9.log
+mv $PREFIX/include/NDK_3.9 $PREFIX/include/NDK3.9
+rm -r $PREFIX/include/ndk_3.9
+rm $PREFIX/include/NDK_3.9.info
+cd ..
+exit
+# PART 10: Amiga Libs/Includes
 echo "7. Amiga Libs"
 echo "   * libnix"
 cp -r $WORKSPACE/_install/libnix $PREFIX/$TARGET
 echo "   * clib2"
 cp -r $WORKSPACE/_install/clib2 $PREFIX/$TARGET
-
-# PART 8: Download Amiga OS NDK's
-echo "8. Download AmigaOS NDK's"
-mkdir NDK3.2
-cd NDK3.2
-echo "   * Download NDK3.2.lha from AmiNet" 
-wget -nc $NDK32_DOWNLOAD -a $LOGFILES/part8.log
-echo "   * Extracting Archive" 
-lha -xw=$PREFIX/include/NDK3.2 NDK3.2.lha >>$LOGFILES/part8.log
-cd ..
-mkdir NDK3.9
-cd NDK3.9
-echo "   * Download NDK3.9 from os.amigaworld.de" 
-wget -nc $NDK39_DOWNLOAD -a $LOGFILES/part8.log
-mv download.php?id=3 NDK39.lha
-echo "   * Extracting Archive" 
-lha -xw=$PREFIX/include NDK39.lha >>$LOGFILES/part8.log
-mv $PREFIX/include/NDK_3.9 $PREFIX/include/NDK3.9
-rm -r $PREFIX/include/ndk_3.9
-rm $PREFIX/include/NDK_3.9.info
-cd ..
 
 # PART 9: Cleanup
 echo "9. Cleanup"
