@@ -1,7 +1,7 @@
-# ApolloCrossDev Build Script v0.2
+# ApolloCrossDev VBCC Install Script v0.3
 
 EDITION=VBCC
-VERSION=0.2
+VERSION=0.3
 CPU=-j16
 
 VBCC_VC=http://www.ibaug.de/vbcc/vbcc.tar.gz
@@ -140,6 +140,6 @@ echo "export PATH=\$VBCC:\$PATH" >>$SETTINGS/.bashrc
 echo " "
 echo -e "\e[1m\e[31mFINISHED\e[0m"
 echo " "
-echo -e "\e[1m\e[37mPlease restart VSC and enjoy \e[31mApollo\e[1;30mCrossDev\e[0m\e[36m"
-echo " "
+#echo -e "\e[1m\e[37mPlease restart VSC and enjoy \e[31mApollo\e[1;30mCrossDev\e[0m\e[36m"
+#echo " "
 exit

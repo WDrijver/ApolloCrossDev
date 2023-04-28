@@ -116,6 +116,5 @@ if ! shopt -oq posix; then
   fi
 fi
 
+clear
 
-export VBCC=/home/willem/ApolloCrossDev/GCC-3.4.6/bin
-export PATH=$VBCC:$PATH
