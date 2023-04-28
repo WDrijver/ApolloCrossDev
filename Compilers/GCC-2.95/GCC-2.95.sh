@@ -1,7 +1,7 @@
-# ApolloCrossDev Build Script v0.2
+# ApolloCrossDev GCC-2.95 Install Script v0.5
 
 EDITION=GNU-2.95
-VERSION=0.2
+VERSION=0.5
 CPU=-j16
 
 WORKSPACE="`pwd`"
@@ -20,12 +20,12 @@ NDK39_DOWNLOAD=https://os.amigaworld.de/download.php?id=3
 
 # INIT Terminal
 clear
-echo "########## ApolloCrossDev $EDITION v$VERSION ##########"
+echo -e "\e[1m\e[37m########## \e[31mApollo\e[1;30mCrossDev $EDITION Edition v$VERSION \e[37m ##########\e[0m\e[36m"
 echo " "
-echo "0. Sudo Password"
+echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
 
 # PART 1: Clean the House
-sudo echo "1. Clean the House"
+sudo echo -e "\e[1m\e[37m1. Clean the House\e[0m\e[36m"
 rm -f -r $PREFIX
 mkdir $PREFIX
 rm -f -r $LOGFILES
@@ -35,9 +35,9 @@ mkdir $SOURCES
 cd $SOURCES
 
 # PART 2: Update Linux Packages 
-echo "2. Update Essential Linux Packages"
-apt -y update >>$LOGFILES/part2.log 2>/dev/null
-apt -y install build-essential gawk flex bison expect dejagnu texinfo lhasa >>$LOGFILES/part2.log 2>/dev/null
+echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
+sudo apt -y update >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
+sudo apt -y install build-essential gawk flex bison expect dejagnu texinfo lhasa git subversion >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 
 # PART 3: Download GNU-Sources
 echo "3. Download GNU-Sources"

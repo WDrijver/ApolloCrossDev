@@ -12,5 +12,61 @@
         "runOn": "folderOpen"
       }
     },
+    {
+      "label": "Build",
+      "type": "shell",
+      "linux": {
+          "options": {
+              "env": {
+                  "VBCC": "${workspaceFolder}/../Compilers/VBCC/ApolloCrossDev/bin"
+              }
+          },
+          "command": "cd ${workspaceFolder}/hello; export PATH=$VBCC:$PATH; make -f make-vbcc"
+      },
+      "problemMatcher": {
+          "owner": "cpp",
+          "fileLocation": ["relative", "${workspaceFolder}"],
+          "pattern": {
+              "regexp": "^(warning|error) ([0-9]*) in line ([0-9]*) of \"(.*)\": (.*)$",
+              "severity": 1,
+              "line": 3,
+              "file": 4,
+              "message": 5
+          }
+      },
+      "group": {
+          "kind": "build",
+          "isDefault": true
+      }
+  },
+  {
+      "label": "Clean",
+      "type": "shell",
+      "windows": {
+          "options": {
+              "env": {
+                  "VBCC": "bin",
+                  "PATH": "bin"
+              }
+          },
+          "command": "bin\\make clean"
+      },
+      "osx": {
+          "options": {
+              "env": {
+                  "VBCC": "bin"
+              }
+          },
+          "command": "export PATH=$VBCC:$PATH; make clean"
+      },
+      "linux": {
+          "options": {
+              "env": {
+                  "VBCC": "bin"
+              }
+          },
+          "command": "export PATH=$VBCC:$PATH; make clean"
+      }
+    }
   ]
 }

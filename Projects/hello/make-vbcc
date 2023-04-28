@@ -1,8 +1,8 @@
 
 PWD=$(shell pwd)
 DIR=$(notdir $(shell pwd))
-BIN=$(PWD)/../../VBCC/bin
-NDK=$(PWD)/../../VBCC/ndk
+BIN=$(PWD)/../../Compilers/VBCC/ApolloCrossDev/bin
+NDK=$(PWD)/../../Compilers/VBCC/ApolloCrossDev/ndk
 
 C_COMPILER=$(BIN)/vc
 S_COMPILER=$(BIN)/vasmm68k_mot
@@ -19,7 +19,7 @@ C_LIBS_NDK39=$(NDK)/NDK3.9/Include/linker_libs
 
 C_FLAGS= +aos68k -I$(C_INCLUDE_VBCC) -I$(C_INCLUDE_NDK39) -c -o
 O_FLAGS= -bamigahunk -x -Bstatic -Cvbcc -nostdlib -mrel $(C_LIBS_VBCC)/startup.o -L$(C_LIBS_VBCC) -L$(C_LIBS_NDK39) -lvc -o 
-S_FLAGS= -quiet -m68080 -Fhunk -linedebug -o
+S_FLAGS= -quiet -m68080 -Fhunkexe -linedebug -o
 
 C_SOURCEDIR=.
 S_SOURCEDIR=.
@@ -53,12 +53,12 @@ clean:
 
 init:
 	clear
-	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mVBCC Edition v0.2\e[0m"    
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mVBCC Edition v0.5\e[0m"    
 	@echo "\e[36mC-Sources: \e[30m$(C_FILES)\e[0m"
 	@echo "\e[36mS-Sources: \e[1;30m$(S_FILES)\e[0m"
-	@echo "$(DIR)"
+	@echo "\e[37m-------------------------------------------------------------\e[0m"
 
     
 
 
-
+ 
