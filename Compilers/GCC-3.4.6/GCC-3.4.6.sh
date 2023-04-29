@@ -126,7 +126,7 @@ make $CPU install >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cd $SOURCES
 
 # Part 7 Prepare GCC
-echo -e "\e[1m\e[37m7. Prepare $GCC_VERSION"
+echo -e "\e[1m\e[37m7. Prepare $GCC_VERSION\e[0m\e[36m"
 echo "   * Move $GMP_VERSION to $GCC_VERSION/gmp"
 mv $GMP_VERSION $GCC_VERSION/gmp >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 echo "   * Move $MPFR_VERSION to $GCC_VERSION/mpfr"
@@ -208,7 +208,7 @@ mkdir -p clib2
 cp -r $WORKSPACE/_sources/clib2-1_214/library/* $WORKSPACE/_sources/build-gcc/clib2
 echo -e "\e[0m\e[36m   * Patch clib2\e[0m"
 for p in `ls $WORKSPACE/_install/recipes/patches/clib2/*.p`; do patch -d $WORKSPACE/_sources/build-gcc/clib2 <$p -p0 >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log; done 
-echo "   * Add clib2 custom files"
+echo -e "\e[0m\e[36m   * Customise clib2\e[0m"
 cp -r $WORKSPACE/_install/recipes/files/clib2/* $WORKSPACE/_sources/build-gcc/clib2 >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 cd clib2
 echo -e "\e[0m\e[36m   * Build clib2 ($CPU)\e[0m"

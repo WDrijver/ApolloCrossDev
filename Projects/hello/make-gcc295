@@ -37,13 +37,13 @@ all: init build clean exit
 build: $(EXE)
 
 $(EXE) : $(O_FILES) 
-	$(O_LINKER) $(O_FLAGS) $(EXE) $(O_FILES) >>log.txt 2>>log.txt
+	$(O_LINKER) $(O_FLAGS) $(EXE) $(O_FILES) >>log-295.txt 2>>log-295.txt
 
 $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
-	$(C_COMPILER) $(C_FLAGS) $@ $< >>log.txt 2>>log.txt
+	$(C_COMPILER) $(C_FLAGS) $@ $< >>log-295.txt 2>>log-295.txt
 
 $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
-	$(S_COMPILER) $(S_FLAGS) $@ $< >>log.txt 2>>log.txt
+	$(S_COMPILER) $(S_FLAGS) $@ $< >>log-295.txt 2>>log-295.txt
 
 clean:
 	rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o
@@ -51,7 +51,7 @@ clean:
 .phony: init
 
 init:
-	rm -f $(EXE) log.txt
+	rm -f $(EXE) log-295.txt
 	clear
 	@echo "\e[37m---------------------------------\e[0m"
 	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-2.95 Edition v0.5\e[0m"    
