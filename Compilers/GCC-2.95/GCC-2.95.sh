@@ -1,6 +1,6 @@
 # ApolloCrossDev GCC-2.95 Install Script v0.5
 
-EDITION=GNU-2.95
+EDITION=GNU-2.95.3
 VERSION=0.5
 CPU=-j16
 
@@ -20,7 +20,7 @@ NDK39_DOWNLOAD=https://os.amigaworld.de/download.php?id=3
 
 # INIT Terminal
 clear
-echo -e "\e[1m\e[37m########## \e[31mApollo\e[1;30mCrossDev $EDITION Edition v$VERSION \e[37m ##########\e[0m\e[36m"
+echo -e "\e[1m\e[37m########## \e[31mApollo\e[1;30mCrossDev \e[36m$EDITION\e[30m v$VERSION \e[37m ##########\e[0m\e[36m"
 echo " "
 echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
 
@@ -39,36 +39,36 @@ echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
 sudo apt -y update >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 sudo apt -y install build-essential gawk flex bison expect dejagnu texinfo lhasa git subversion >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 
-# PART 3: Download GNU-Sources
-echo "3. Download GNU-Sources"
+# PART 3: Download Sources
+echo -e "\e[1m\e[37m3. Download Sources\e[0m\e[36m"
 echo "   * $BINUTILS_VERSION" 
 git clone --progress $BINUTILS_DOWNLOAD 2>>$LOGFILES/part3_err.log
 echo "   * $GCC_VERSION" 
 git clone --progress $GCC_DOWNLOAD 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile BinUtils
-echo "4. Compile BinUtils"
+echo -e "\e[1m\e[37m4. Compile $BINUTILS_VERSION\e[0m\e[36m"
 mkdir -p build-binutils
-echo "   * Configure"
+echo -e "\e[0m\e[36m   * Configure Binutils\e[0m"
 cd build-binutils
 ../$BINUTILS_VERSION/configure \
     --disable-nls \
     --prefix="$PREFIX" \
     --host=i686-linux-gnu \
     --target=$TARGET >>$LOGFILES/part4.log 2>/dev/null
-echo "   * Build ($CPU)"
+echo -e "\e[0m\e[36m   * Build Binutils ($CPU)\e[0m"
 make $CPU >>$LOGFILES/part4.log 2>/dev/null
-echo "   * Install ($CPU)"
+echo -e "\e[0m\e[36m   * Install Binutils ($CPU)\e[0m"
 make $CPU install-binutils >>$LOGFILES/part4.log 2>/dev/null
 make $CPU install-gas >>$LOGFILES/part4.log 2>/dev/null
 make $CPU install-ld >>$LOGFILES/part4.log 2>/dev/null
 cd ..
 
 # Part 6: Compile GCC
-echo "6. Compile GCC"
+echo -e "\e[1m\e[37m5. Compile $GCC_VERSION"
 mkdir -p build-gcc
 cd build-gcc
-echo "   * Configure"
+echo -e "\e[0m\e[36m   * Configure GCC\e[0m"
 ../$GCC_VERSION/configure \
     --prefix="$PREFIX" \
     --enable-languages=c,c++ \
@@ -76,21 +76,21 @@ echo "   * Configure"
     --build=i686-linux-gnu \
     --target=$TARGET  \
     >>$LOGFILES/part6.log 2>/dev/null  
-echo "   * Build (single CPU only)"
+echo -e "\e[0m\e[36m   * Build GCC (single CPU only)\e[0m"
 make -j1 all-gcc >>$LOGFILES/part6.log 2>/dev/null
-echo "   * Install (single CPU only)"
+echo -e "\e[0m\e[36m   * Install GCC (single CPU only)\e[0m"
 make -j1 install-gcc >>$LOGFILES/part6.log 2>/dev/null
 cd ..
 
-# PART 7: Amiga Libs/Includes
-echo "7. Amiga Libs"
+# PART 6: Amiga Libs/Includes
+echo -e "\e[1m\e[37m6. Amiga Libraries\e[0m\e[36m"
 echo "   * libnix"
 cp -r $WORKSPACE/_install/libnix $PREFIX/$TARGET
 echo "   * clib2"
 cp -r $WORKSPACE/_install/clib2 $PREFIX/$TARGET
 
-# PART 8: Download Amiga OS NDK's
-echo "8. Download AmigaOS NDK's"
+# PART 7: Download Amiga OS NDK's
+echo -e "\e[1m\e[37m7. Amiga NDK's\e[0m\e[36m"
 mkdir NDK3.2
 cd NDK3.2
 echo "   * Download NDK3.2.lha from AmiNet" 
@@ -110,8 +110,8 @@ rm -r $PREFIX/include/ndk_3.9
 rm $PREFIX/include/NDK_3.9.info
 cd ..
 
-# PART 9: Cleanup
-echo "9. Cleanup"
+# PART 8: Cleanup
+echo -e "\e[1m\e[37m8. Cleanup\e[0m\e[36m"
 cd $PREFIX
 rm -rf info
 rm -rf man
@@ -119,6 +119,6 @@ rm -rf $TARGET/include
 
 # FINISH
 echo " "
-echo "FINISHED"
+echo -e "\e[1m\e[32mFINISHED\e[0m"
 echo " "
 exit

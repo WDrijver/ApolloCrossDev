@@ -1,7 +1,7 @@
 # ApolloCrossDev VBCC Install Script v0.5
 
 EDITION=VBCC
-VERSION=0.3
+VERSION=0.5
 CPU=-j16
 
 WORKSPACE="`pwd`"
@@ -9,7 +9,7 @@ SOURCES=$WORKSPACE/_sources
 LOGFILES=$WORKSPACE/_logs
 PREFIX=$WORKSPACE/ApolloCrossDev
 TARGET=bin
-NDK=ndk
+NDK=include
 export PATH=$PREFIX/$TARGET:$PATH
 
 VBCC_VC=http://www.ibaug.de/vbcc/vbcc.tar.gz
@@ -27,11 +27,11 @@ echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
 # PART 1: Clean the House
 sudo echo -e "\e[1m\e[37m1. Clean the House\e[0m\e[36m"
 rm -f -r $PREFIX
-mkdir $PREFIX
+mkdir -p $PREFIX
 rm -f -r $LOGFILES
 mkdir -p $LOGFILES
 rm -f -r $SOURCES
-mkdir $SOURCES
+mkdir -p $SOURCES
 cd $SOURCES
 
 # PART 2: Update Linux Packages 
@@ -39,9 +39,9 @@ echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
 sudo apt -y update >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 sudo apt -y install build-essential gawk flex bison expect dejagnu texinfo lhasa git subversion >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 
-# PART 3: Download VBCC Sources
+# PART 3: Download Sources
 cd $SOURCES
-echo -e "\e[1m\e[37m3. Download VBCC-Sources\e[0m\e[36m"
+echo -e "\e[1m\e[37m3. Download Sources\e[0m\e[36m"
 echo -e "   * VBCC Compiler" 
 wget -nc $VBCC_VC -a $LOGFILES/part3.log
 echo "   * VBCC M68K Target" 
@@ -54,7 +54,7 @@ echo "   * UNIX Config Files"
 wget -nc $CONFIG -a $LOGFILES/part3.log
 
 # PART 4: Unpack VBCC-Sources
-echo -e "\e[1m\e[37m4. Unpack VBCC-Sources\e[0m\e[36m"
+echo -e "\e[1m\e[37m4. Unpack Sources\e[0m\e[36m"
 for f in *.tar*; do tar xfk $f >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log; done 
 
 # Part 5: Compile VBCC
@@ -138,8 +138,6 @@ cd ..
 
 # FINISH
 echo " "
-echo -e "\e[1m\e[31mFINISHED\e[0m"
+echo -e "\e[1m\e[32mFINISHED\e[0m"
 echo " "
-#echo -e "\e[1m\e[37mPlease restart VSC and enjoy \e[31mApollo\e[1;30mCrossDev\e[0m\e[36m"
-#echo " "
 exit

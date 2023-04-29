@@ -1,0 +1,5 @@
+/tmp/cc8zM1c1.o(.text+0x2c):/tmp/cc8zM1c1.o: undefined reference to `OpenLibrary'
+/tmp/cc8zM1c1.o(.text+0x46):/tmp/cc8zM1c1.o: undefined reference to `Output'
+/tmp/cc8zM1c1.o(.text+0x4e):/tmp/cc8zM1c1.o: undefined reference to `Write'
+/tmp/cc8zM1c1.o(.text+0x5c):/tmp/cc8zM1c1.o: undefined reference to `CloseLibrary'
+collect2: ld returned 1 exit status

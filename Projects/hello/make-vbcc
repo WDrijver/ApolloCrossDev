@@ -1,8 +1,7 @@
-
 PWD=$(shell pwd)
 DIR=$(notdir $(shell pwd))
 BIN=$(PWD)/../../Compilers/VBCC/ApolloCrossDev/bin
-NDK=$(PWD)/../../Compilers/VBCC/ApolloCrossDev/ndk
+NDK=$(PWD)/../../Compilers/VBCC/ApolloCrossDev/include
 
 C_COMPILER=$(BIN)/vc
 S_COMPILER=$(BIN)/vasmm68k_mot
@@ -11,15 +10,16 @@ O_LINKER=$(BIN)/vlink
 C_INCLUDE_VBCC=$(BIN)/targets/m68k-amigaos/include
 C_INCLUDE_NDK32=$(NDK)/NDK3.2/Include_H
 C_INCLUDE_NDK39=$(NDK)/NDK3.9/Include/include_h
+C_INCLUDE_NDKMUI=$(NDK)/NDKMUI/C/include
 S_INCLUDE_DEVPAC=$(NDK)/DevPac
 
 C_LIBS_VBCC=$(BIN)/targets/m68k-amigaos/lib
 C_LIBS_NDK32=$(NDK)/NDK3.2/lib
 C_LIBS_NDK39=$(NDK)/NDK3.9/Include/linker_libs
 
-C_FLAGS= +aos68k -I$(C_INCLUDE_VBCC) -I$(C_INCLUDE_NDK39) -c -o
+C_FLAGS= +aos68k -I$(C_INCLUDE_VBCC) -I$(C_INCLUDE_NDK39) -c -o 
 O_FLAGS= -bamigahunk -x -Bstatic -Cvbcc -nostdlib -mrel $(C_LIBS_VBCC)/startup.o -L$(C_LIBS_VBCC) -L$(C_LIBS_NDK39) -lvc -o 
-S_FLAGS= -quiet -m68080 -Fhunkexe -linedebug -o
+S_FLAGS= -quiet -m68080 -Fhunkexe -o
 
 C_SOURCEDIR=.
 S_SOURCEDIR=.
@@ -33,18 +33,18 @@ O_FILES=$(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst 
 
 EXE=$(DIR)-vbcc
 
-all: init build clean
+all: init build clean exit
 
 build: $(EXE)
 
 $(EXE) : $(O_FILES) 
-	$(O_LINKER) $(O_FLAGS) $(EXE) $(O_FILES)
+	$(O_LINKER) $(O_FLAGS) $(EXE) $(O_FILES) >>log.txt 2>>log.txt
 
 $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
-	$(C_COMPILER) $(C_FLAGS) $@ $<
+	$(C_COMPILER) $(C_FLAGS) $@ $< >>log.txt 2>>log.txt
 
 $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
-	$(S_COMPILER) $(S_FLAGS) $@ $<
+	$(S_COMPILER) $(S_FLAGS) $@ $< >>log.txt 2>>log.txt
 
 clean:
 	rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o
@@ -52,12 +52,20 @@ clean:
 .phony: init
 
 init:
+	rm -f $(EXE) log.txt
 	clear
+	@echo "\e[37m---------------------------------\e[0m"
 	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mVBCC Edition v0.5\e[0m"    
-	@echo "\e[36mC-Sources: \e[30m$(C_FILES)\e[0m"
-	@echo "\e[36mS-Sources: \e[1;30m$(S_FILES)\e[0m"
-	@echo "\e[37m-------------------------------------------------------------\e[0m"
-
+	@echo "\e[36mC-Sources : \e[37m$(C_FILES)\e[0m"
+	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
+	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"
+	@echo "\e[37m---------------------------------\e[30m"
+		
+exit:
+	@echo "\e[37m---------------------------------\e[0m"
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[32mCompile Successful\e[0m"
+	@echo "\e[37m---------------------------------\e[0m"
+	@echo " "
     
 
 

@@ -116,5 +116,8 @@ if ! shopt -oq posix; then
   fi
 fi
 
+export VBCC=$PWD/../Compilers/VBCC/ApolloCrossDev/bin
+export PATH=$VBCC:$PATH
+
 clear
 

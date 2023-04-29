@@ -1,5 +1,6 @@
 #include <proto/exec.h>
 #include <proto/dos.h>
+#include <clib/exec_protos.h>
 
 int main(int argc, void *argv[])
 {
