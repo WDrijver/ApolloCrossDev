@@ -26,7 +26,7 @@ mkdir -p $LOGFILES
 rm -f -r $SOURCES
 mkdir $SOURCES
 cd $SOURCES
-
+     
 # PART 2: Update Linux Packages 
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
 sudo apt -y update >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
@@ -55,7 +55,6 @@ echo -e "\e[1m\e[37m5. Cleanup\e[0m\e[36m"
 cd $PREFIX
 rm -rf info
 rm -rf man
-rm -rf $TARGET/include
 
 # FINISH
 echo " "

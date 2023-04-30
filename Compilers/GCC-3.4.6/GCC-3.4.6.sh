@@ -213,6 +213,8 @@ cp -r $WORKSPACE/_install/recipes/files/clib2/* $WORKSPACE/_sources/build-gcc/cl
 cd clib2
 echo -e "\e[0m\e[36m   * Build clib2 ($CPU)\e[0m"
 PATH="$PREFIX/bin:$PATH" make -f GNUmakefile.68k >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
+mkdir -p $PREFIX/$TARGET/include
+mkdir -p $PREFIX/$TARGET/lib
 cp -r $WORKSPACE/_sources/build-gcc/clib2/include $PREFIX/$TARGET >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 cp -r $WORKSPACE/_sources/build-gcc/clib2/lib $PREFIX/$TARGET >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 ln -sf $PREFIX/$TARGET/lib/ncrt0.o $PREFIX/$TARGET/lib/crt0.o >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
@@ -232,7 +234,6 @@ echo -e "\e[1m\e[37m12. Cleanup\e[0m\e[36m"
 cd $PREFIX
 rm -rf info
 rm -rf man
-rm -rf $TARGET/include
 
 # FINISH
 echo " "
