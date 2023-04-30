@@ -15,9 +15,9 @@ S_INCLUDE_DEVPAC=$(NDK)/DevPac
 C_LIBS_NDK32=$(NDK)/NDK3.2/lib
 C_LIBS_NDK39=$(NDK)/NDK3.9/Include/linker_libs
 
-C_FLAGS= -g -c -mcrt=clib2 -fomit-frame-pointer -m68040 -I$(C_INCLUDE_NDK39) -o 
+C_FLAGS= -g -c -mcrt=nix20 -fomit-frame-pointer -m68040 -I$(C_INCLUDE_NDK39) -o 
 S_FLAGS= -g -c -o 
-O_FLAGS= -g -mcrt=clib2 -fomit-frame-pointer -m68040 -I$(C_INCLUDE_NDK39) -o
+O_FLAGS= -g -mcrt=nix20 -fomit-frame-pointer -m68040 -I$(C_INCLUDE_NDK39) -o
 
 C_SOURCEDIR=.
 S_SOURCEDIR=.

@@ -79,9 +79,13 @@ echo -e "\e[0m\e[36m   * Configure GCC\e[0m"
     --build=i686-linux-gnu \
     --target=$TARGET  \
     >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-echo -e "\e[0m\e[36m   * Build GCC (1 CPU)\e[0m"
+echo -e "\e[0m\e[36m   * Build GCC - Phase #1 (-j1)\e[0m"
 make -j1 all-gcc >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-echo -e "\e[0m\e[36m   * Install GCC (1 CPU)\e[0m"
+echo -e "\e[0m\e[36m   * Install GCC - Phase #1 (-j1)\e[0m"
+make -j1 install-gcc >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+echo -e "\e[0m\e[36m   * Build GCC - Phase #2 (-j1)\e[0m"
+make -j1 all-gcc >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+echo -e "\e[0m\e[36m   * Install GCC - Phase #2 (-j1)\e[0m"
 make -j1 install-gcc >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cd $SOURCES
 
