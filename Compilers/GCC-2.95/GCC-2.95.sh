@@ -55,17 +55,17 @@ cd build-binutils
     --disable-nls \
     --prefix="$PREFIX" \
     --host=i686-linux-gnu \
-    --target=$TARGET >>$LOGFILES/part4.log 2>/dev/null
+    --target=$TARGET >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Build Binutils ($CPU)\e[0m"
-make $CPU >>$LOGFILES/part4.log 2>/dev/null
+make $CPU >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Install Binutils ($CPU)\e[0m"
-make $CPU install-binutils >>$LOGFILES/part4.log 2>/dev/null
-make $CPU install-gas >>$LOGFILES/part4.log 2>/dev/null
-make $CPU install-ld >>$LOGFILES/part4.log 2>/dev/null
+make $CPU install-binutils >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+make $CPU install-gas >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+make $CPU install-ld >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 cd ..
 
-# Part 6: Compile GCC
-echo -e "\e[1m\e[37m5. Compile $GCC_VERSION"
+# Part 5: Compile GCC
+echo -e "\e[1m\e[37m5. Compile $GCC_VERSION\e[0m"
 mkdir -p build-gcc
 cd build-gcc
 echo -e "\e[0m\e[36m   * Configure GCC\e[0m"
@@ -75,11 +75,11 @@ echo -e "\e[0m\e[36m   * Configure GCC\e[0m"
     --host=i686-linux-gnu \
     --build=i686-linux-gnu \
     --target=$TARGET  \
-    >>$LOGFILES/part6.log 2>/dev/null  
-echo -e "\e[0m\e[36m   * Build GCC (single CPU only)\e[0m"
-make -j1 all-gcc >>$LOGFILES/part6.log 2>/dev/null
-echo -e "\e[0m\e[36m   * Install GCC (single CPU only)\e[0m"
-make -j1 install-gcc >>$LOGFILES/part6.log 2>/dev/null
+    >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+echo -e "\e[0m\e[36m   * Build GCC (1 CPU)\e[0m"
+make -j1 all-gcc >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+echo -e "\e[0m\e[36m   * Install GCC (1 CPU)\e[0m"
+make -j1 install-gcc >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cd ..
 
 # PART 6: Amiga Libs/Includes

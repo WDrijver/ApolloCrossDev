@@ -4,21 +4,20 @@ BIN=$(PWD)/../../Compilers/GCC-2.95/ApolloCrossDev/bin
 NDK=$(PWD)/../../Compilers/GCC-2.95/ApolloCrossDev/include
 
 C_COMPILER=$(BIN)/m68k-amigaos-gcc
-S_COMPILER=$(BIN)/vasmm68k_mot
-O_LINKER=$(BIN)/vlink
+S_COMPILER=$(BIN)/m68k-amigaos-gcc
+O_LINKER=$(BIN)/m68k-amigaos-gcc
 
 C_INCLUDE_NDK32=$(NDK)/NDK3.2/Include_H
 C_INCLUDE_NDK39=$(NDK)/NDK3.9/Include/include_h
 C_INCLUDE_NDKMUI=$(NDK)/NDKMUI/C/include
 S_INCLUDE_DEVPAC=$(NDK)/DevPac
 
-C_LIBS_VBCC=$(BIN)/targets/m68k-amigaos/lib
 C_LIBS_NDK32=$(NDK)/NDK3.2/lib
 C_LIBS_NDK39=$(NDK)/NDK3.9/Include/linker_libs
 
-C_FLAGS= -nostdlib -I$(C_INCLUDE_NDK39) -noixemul -o 
-S_FLAGS= -Fhunkexe -m68040 -quiet -I$(S_INCLUDE) -o
-O_FLAGS= -g -o
+C_FLAGS= -g -c -noixemul -I$(C_INCLUDE_NDK39) -o 
+S_FLAGS= -g -c -o 
+O_FLAGS= -g -noixemul -o 
 
 C_SOURCEDIR=.
 S_SOURCEDIR=.
@@ -37,7 +36,7 @@ all: init build clean exit
 build: $(EXE)
 
 $(EXE) : $(O_FILES) 
-	$(O_LINKER) $(O_FLAGS) $(EXE) $(O_FILES) >>log-295.txt 2>>log-295.txt
+	$(O_LINKER) $(O_FILES) $(O_FLAGS) $(EXE) >>log-295.txt 2>>log-295.txt
 
 $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
 	$(C_COMPILER) $(C_FLAGS) $@ $< >>log-295.txt 2>>log-295.txt
@@ -54,7 +53,7 @@ init:
 	rm -f $(EXE) log-295.txt
 	clear
 	@echo "\e[37m---------------------------------\e[0m"
-	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-2.95 Edition v0.5\e[0m"    
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-2.95.3 Edition v0.5\e[0m"    
 	@echo "\e[36mC-Sources : \e[37m$(C_FILES)\e[0m"
 	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
 	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"

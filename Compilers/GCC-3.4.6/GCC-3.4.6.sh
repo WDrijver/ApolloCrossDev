@@ -201,7 +201,7 @@ cp -r codesets/codesets/Developer/include/* $PREFIX/$TARGET/sys-include/
 cd $SOURCES
 
 # PART 10: Amiga Libs/Includes
-echo -e "\e[1m\e[37m9. Amiga NDK's"
+echo -e "\e[1m\e[37m10. Amiga Libraries"
 echo -e "\e[0m\e[36m   * Configure clib2\e[0m"
 cd build-gcc
 mkdir -p clib2
