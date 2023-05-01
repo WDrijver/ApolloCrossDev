@@ -7,4 +7,16 @@ offering selection of the best toolchains created by skilled Amiga developers in
 * GCC 12.2          : Bartman (Abyss)
 * VBCC/VASM/VLINK   : Dr.Barthelmann & Frank Wille
 
-Requirements for ApolloCrossDev: Debian of Ubunti 64-bit Linux Virtual Machine
+Requirements:
+1. Debian of Ubuntu 64-bit Linux Virtual Machine
+2. Microsoft Visual Studio Code
+3. Basic Git tools (sudo apt-get install git)
+4. ApolloExplorer
+
+Installation:
+1. Open Microsoft Visual Studio Code
+2. Clone ApolloCrossDev: copy  repository hyperlink | CTRL+Shift+P git clone | paste repository hyperlink
+3. Click "Open in New Window" | Right-click "Compilers" | Select "Open in integrated Terminal"
+4. Enter each Compiler directory (example: "cd GCC-2.95") and start Install script (example: "./GCC-2.95.sh")
+
+Instructions:
