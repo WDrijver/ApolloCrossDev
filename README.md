@@ -21,6 +21,6 @@ Installation:
 5. Enter each Compiler directory (example: "cd GCC-2.95") and start Install script (example: "./GCC-2.95.sh")
 
 Instructions:
-1. Create Projects/<mysource> directory for your *.c and *.s sourcefiles (example: Projects/hello)
-2. Copy Project/make-<compiler> file(s) to <mysource> (example: Projects/hello/make-gcc295 to use GCC 2.95.3)
-3. Type "make -f make-<mycompiler>" or read make-<compiler> file for further Compile instructions
+1. Create Projects/mysource directory for your *.c and *.s sourcefiles (example: Projects/hello)
+2. Copy your choice of make-xxxyyy makefile(s) (example: Projects/hello/make-gcc295 to use GCC 2.95.3)
+3. Type "make -f make-xxxyyy" or read make-xxxyyy file for further Compile instructions
