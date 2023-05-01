@@ -1,3 +1,10 @@
+# ApolloCrossDev Makefile for GCC-2.95.3
+#
+# 1. Update BIN and NDK if you are not using Project/<myfolder> for sourcefiles
+# 2. Update C_FLAGS if you need alternate settings (example: C_INCLUDE_NDK32)
+# 3. All *.c and *.s files will be compiled and linked into <myfolder>-gcc295 executable
+# 4. Copy this makefile into <myfolder>, enter <myfolder> in terminal and type "make -f make-gcc295"
+
 PWD=$(shell pwd)
 DIR=$(notdir $(shell pwd))
 BIN=$(PWD)/../../Compilers/GCC-2.95/ApolloCrossDev/bin
@@ -15,9 +22,9 @@ S_INCLUDE_DEVPAC=$(NDK)/DevPac
 C_LIBS_NDK32=$(NDK)/NDK3.2/lib
 C_LIBS_NDK39=$(NDK)/NDK3.9/Include/linker_libs
 
-C_FLAGS= -g -c -mcrt=nix20 -fomit-frame-pointer -m68040 -I$(C_INCLUDE_NDK39) -o 
-S_FLAGS= -g -c -o 
-O_FLAGS= -g -mcrt=nix20 -fomit-frame-pointer -m68040 -I$(C_INCLUDE_NDK39) -o
+C_FLAGS= -g -c -mcrt=clib2 -fomit-frame-pointer -m68040 -I$(C_INCLUDE_NDK39) -o 
+S_FLAGS= $(C_FLAGS)
+O_FLAGS= $(C_FLAGS)
 
 C_SOURCEDIR=.
 S_SOURCEDIR=.

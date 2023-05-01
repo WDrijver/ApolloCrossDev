@@ -1,4 +1,13 @@
 # ApolloCrossDev GCC-2.95 Install Script v0.5
+# 
+# Installation:
+# 1. Enter Compilers/GCC-2.95 directory
+# 2. Type "./GCC-2.95.sh" and hit ENTER
+#
+# Instructions:
+# 1. Create Projects/<mysource> directory
+# 2. Copy Projects/make-gcc295 into <mysource> 
+# 3. Read make-gcc295 for compile instructions
 
 EDITION=GNU-2.95.3
 VERSION=0.5
