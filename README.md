@@ -16,7 +16,7 @@ Requirements:
 Installation:
 1. Open Microsoft Visual Studio Code
 2. Clone ApolloCrossDev: Copy repository hyperlink | CTRL+Shift+P git clone | Paste repository hyperlink
-3. Click "Open in New Window" | Click "Compilers" | Click "ApolloCrossDev.code-workspace" | Click "Open Workspace"
+3. Click "Open in New Window" | Click "Compilers" + "ApolloCrossDev.code-workspace" + "Open Workspace"
 4. Open Terminal: Right-click "Compilers" | Select "Open in integrated Terminal"
 5. Enter each Compiler directory (example: "cd GCC-2.95") and start Install script (example: "./GCC-2.95.sh")
 
