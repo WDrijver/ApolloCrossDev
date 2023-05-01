@@ -1,7 +1,16 @@
-# ApolloCrossDev GCC-3.4.6 Install Script v0.5
+# ApolloCrossDev GCC-3.4.6 Install Script v0.6
+# 
+# Installation:
+# 1. Enter Compilers/GCC-3.4.6 directory
+# 2. Type "./GCC-3.4.6.sh" and hit ENTER
+#
+# Instructions:
+# 1. Create Projects/<mysource> directory
+# 2. Copy Projects/make-gcc346 into <mysource> 
+# 3. Read make-gcc346 for compile instructions
 
 EDITION=GNU-3.4.6
-VERSION=0.5
+VERSION=0.6
 CPU=-j16
 
 WORKSPACE="`pwd`"
@@ -261,3 +270,13 @@ cp -r $WORKSPACE/_sources/build-gcc/clib2/include $PREFIX/$TARGET >>$LOGFILES/pa
 cp -r $WORKSPACE/_sources/build-gcc/clib2/lib $PREFIX/$TARGET >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 ln -sf $PREFIX/$TARGET/lib/ncrt0.o $PREFIX/$TARGET/lib/crt0.o >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 cd $SOURCES
+
+mkdir -p NDK3.9
+echo -e "\e[0m\e[36m   * NDK 3.9\e[0m"
+wget -nc $NDK_DOWNLOAD -a $LOGFILES/part9.log 
+tar -C $PREFIX/include --strip-components=2 -xjf $NDK_ARCHIVE
+echo -e "\e[0m\e[36m   * Patch NDK 3.9\e[0m"
+for p in `ls $WORKSPACE/_install/recipes/patches/ndk/*.p`; do patch -d $PREFIX/include <$p -p0 >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log; done 
+echo -e "\e[0m\e[36m   * Customise NDK 3.9\e[0m"
+cp -r $WORKSPACE/_install/recipes/files/ndk/* $PREFIX/include >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
+mv $PREFIX/include/sys-include $PREFIX/include/NDK3.9

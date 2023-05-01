@@ -1,7 +1,16 @@
-# ApolloCrossDev - GCC-6.50 - Install Script v0.5
+# ApolloCrossDev GCC-6.50 - Install Script v0.6
+# 
+# Installation:
+# 1. Enter Compilers/GCC-6.5.0 directory
+# 2. Type "./GCC-6.5.0.sh" and hit ENTER
+#
+# Instructions:
+# 1. Create Projects/<mysource> directory
+# 2. Copy Projects/make-gcc650 into <mysource> 
+# 3. Read make-gcc650 for compile instructions
 
 EDITION=GCC-6.50
-VERSION=0.5
+VERSION=0.6
 CPU=-j16
 
 WORKSPACE="`pwd`"

@@ -1,0 +1,76 @@
+# ApolloCrossDev Makefile for GCC-2.95.3
+#
+# 1. Update BIN and NDK if you are not using Project/<dir> for sourcefiles
+# 2. Update C_FLAGS if you need alternate settings (example: C_INCLUDE_NDK32)
+# 3. All *.c and *.s files will be compiled and linked into <dir>-gcc2953 executable
+# 4. Copy this makefile into <dir>, rename to makefile or use "make -f make-gcc2953"
+# 5. Compile messages are recorded in <dir>/log-gcc2953.txt
+
+PWD=$(shell pwd)
+DIR=$(notdir $(shell pwd))
+BIN=$(PWD)/../../Compilers/GCC-2.95/ApolloCrossDev/bin
+NDK=$(PWD)/../../Compilers/GCC-2.95/ApolloCrossDev/include
+
+C_COMPILER=$(BIN)/m68k-amigaos-gcc
+S_COMPILER=$(BIN)/m68k-amigaos-gcc
+O_LINKER=$(BIN)/m68k-amigaos-gcc
+
+C_INCLUDE_NDK32=$(NDK)/NDK3.2/Include_H
+C_INCLUDE_NDK39=$(NDK)/NDK3.9/Include/include_h
+C_INCLUDE_NDKMUI=$(NDK)/NDKMUI/C/include
+S_INCLUDE_DEVPAC=$(NDK)/DevPac
+
+C_LIBS_NDK32=$(NDK)/NDK3.2/lib
+C_LIBS_NDK39=$(NDK)/NDK3.9/Include/linker_libs
+
+# -mcrt=clib2 selects clib2 | -mcrt=nix13 selects Libnix 1.3 | -mcrt=nix20 or -noixemul selects Libnix 2.0
+
+C_FLAGS= -g -c -mcrt=clib2 -fomit-frame-pointer -m68040 -I$(C_INCLUDE_NDK39) -o 
+S_FLAGS= $(C_FLAGS)
+O_FLAGS= $(C_FLAGS)
+
+C_SOURCEDIR=.
+S_SOURCEDIR=.
+
+C_OBJECTDIR=$(C_SOURCEDIR)
+S_OBJECTDIR=$(S_SOURCEDIR)
+
+C_FILES=$(wildcard $(C_SOURCEDIR)/*.c)
+S_FILES=$(wildcard $(S_SOURCEDIR)/*.s)
+O_FILES=$(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES))
+
+EXE=$(DIR)-gcc2953
+
+all: init build clean exit
+
+build: $(EXE)
+
+$(EXE) : $(O_FILES) 
+	$(O_LINKER) $(O_FILES) $(O_FLAGS) $(EXE) >>log-2953.txt 2>>log-2953.txt
+
+$(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
+	$(C_COMPILER) $(C_FLAGS) $@ $< >>log-2953.txt 2>>log-2953.txt
+
+$(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
+	$(S_COMPILER) $(S_FLAGS) $@ $< >>log-2953.txt 2>>log-2953.txt
+
+clean:
+	rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o
+
+.phony: init
+
+init:
+	rm -f $(EXE) $(O_FILES) log-2953.txt
+	clear
+	@echo "\e[37m---------------------------------\e[0m"
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-2.95.3 Edition v0.5\e[0m"    
+	@echo "\e[36mC-Sources : \e[37m$(C_FILES)\e[0m"
+	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
+	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"
+	@echo "\e[37m---------------------------------\e[30m"
+		
+exit:
+	@echo "\e[37m---------------------------------\e[0m"
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[32mCompile Successful\e[0m"
+	@echo "\e[37m---------------------------------\e[0m"
+	@echo " "

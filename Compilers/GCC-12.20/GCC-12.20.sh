@@ -1,4 +1,13 @@
-# ApolloCrossDev Build Script v0.2
+# ApolloCrossDev GCC-12.20 Install Script v0.6
+# 
+# Installation:
+# 1. Enter Compilers/GCC-12.20 directory
+# 2. Type "./GCC-12.20.sh" and hit ENTER
+#
+# Instructions:
+# 1. Create Projects/<mysource> directory
+# 2. Copy Projects/make-gcc1220 into <mysource> 
+# 3. Read make-gcc1220 for compile instructions
 
 EDITION=GCC-12.2
 VERSION=0.2

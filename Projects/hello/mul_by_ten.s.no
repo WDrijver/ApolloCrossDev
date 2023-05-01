@@ -1,7 +1,0 @@
-  XDEF       _mul_by_ten
-
-_mul_by_ten:
-  muls.w     #2,d0 
-  rts
-
-
