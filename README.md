@@ -11,13 +11,14 @@ Requirements:
 1. Debian of Ubuntu 64-bit Linux Virtual Machine
 2. Microsoft Visual Studio Code
 3. Basic Git tools (sudo apt-get install git)
-4. ApolloExplorer
+4. ApolloExplorer (optional for easy file-transfer to Apollo devices)
 
 Installation:
 1. Open Microsoft Visual Studio Code
-2. Clone ApolloCrossDev: copy repository hyperlink | CTRL+Shift+P git clone | paste repository hyperlink
-3. Click "Open in New Window" | Right-click "Compilers" | Select "Open in integrated Terminal"
-4. Enter each Compiler directory (example: "cd GCC-2.95") and start Install script (example: "./GCC-2.95.sh")
+2. Clone ApolloCrossDev: Copy repository hyperlink | CTRL+Shift+P git clone | Paste repository hyperlink
+3. Click "Open in New Window" | Click "Compilers" | Click "ApolloCrossDev.code-workspace" | Click "Open Workspace"
+4. Open Terminal: Right-click "Compilers" | Select "Open in integrated Terminal"
+5. Enter each Compiler directory (example: "cd GCC-2.95") and start Install script (example: "./GCC-2.95.sh")
 
 Instructions:
 1. Create Projects/<mysource> directory for your *.c and *.s sourcefiles (example: Projects/hello)
