@@ -63,7 +63,7 @@ init:
 	rm -f $(EXE) $(O_FILES) log-2953.txt
 	clear
 	@echo "\e[37m---------------------------------\e[0m"
-	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-2.95.3 Edition v0.5\e[0m"    
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-2.95.3 Edition v0.6\e[0m"    
 	@echo "\e[36mC-Sources : \e[37m$(C_FILES)\e[0m"
 	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
 	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"

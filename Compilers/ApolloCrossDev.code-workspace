@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../Projects"
+		},
+		{
+			"path": "../../Dev/SVN-Apollo/MeekuDot3D"
 		}
 	]
 }

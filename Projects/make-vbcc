@@ -1,23 +1,26 @@
 PWD=$(shell pwd)
 DIR=$(notdir $(shell pwd))
-BIN=$(PWD)/../../Compilers/VBCC/ApolloCrossDev/bin
-NDK=$(PWD)/../../Compilers/VBCC/ApolloCrossDev/include
+PREFIX=$(PWD)/../../../../ApolloCrossDev/Compilers/VBCC/ApolloCrossDev
+BIN=$(PREFIX)/bin
+NDK=$(PREFIX)/include
+TARGET=m68k-unknown-amigaos
 
-C_COMPILER=$(BIN)/vc
-S_COMPILER=$(BIN)/vasmm68k_mot
-O_LINKER=$(BIN)/vlink
+C_COMPILER=vc
+S_COMPILER=vasmm68k_mot
+O_LINKER=vlink
 
 C_INCLUDE_VBCC=$(BIN)/targets/m68k-amigaos/include
 C_INCLUDE_NDK32=$(NDK)/NDK3.2/Include_H
 C_INCLUDE_NDK39=$(NDK)/NDK3.9/Include/include_h
 C_INCLUDE_NDKMUI=$(NDK)/NDKMUI/C/include
 S_INCLUDE_DEVPAC=$(NDK)/DevPac
+C_INCLUDE_APOLLO=$(NDK)/Apollo/includes
 
 C_LIBS_VBCC=$(BIN)/targets/m68k-amigaos/lib
 C_LIBS_NDK32=$(NDK)/NDK3.2/lib
 C_LIBS_NDK39=$(NDK)/NDK3.9/Include/linker_libs
 
-C_FLAGS= +aos68k -I$(C_INCLUDE_VBCC) -I$(C_INCLUDE_NDK39) -c -o 
+C_FLAGS= +aos68k -I$(C_INCLUDE_VBCC) -I$(C_INCLUDE_NDK39) -I$(C_INCLUDE_APOLLO) -c -o 
 S_FLAGS= -quiet -m68080 -Fhunkexe -o
 O_FLAGS= -bamigahunk -x -Bstatic -Cvbcc -nostdlib -mrel $(C_LIBS_VBCC)/startup.o -L$(C_LIBS_VBCC) -L$(C_LIBS_NDK39) -lvc -o 
 
@@ -52,7 +55,7 @@ clean:
 .phony: init
 
 init:
-	rm -f $(EXE) log.txt
+	rm -f $(EXE) $(O_FILES) log.txt
 	clear
 	@echo "\e[37m---------------------------------\e[0m"
 	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mVBCC Edition v0.5\e[0m"    
