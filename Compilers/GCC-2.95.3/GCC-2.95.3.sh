@@ -98,6 +98,33 @@ echo -e "\e[0m\e[36m   * Install GCC - Phase #2 (-j1)\e[0m"
 make -j1 install-gcc >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cd $SOURCES
 
+LIBNIX_VERSION=2.1
+LIBNIX_DOWNLOAD=https://github.com/adtools/libnix
+
+echo "   * libnix-$LIBNIX_VERSION"
+git clone --progress $LIBNIX_DOWNLOAD >>$LOGFILES/part3.log 2>>$LOGFILES/part3_err.log
+
+echo -e "\e[0m\e[36m   * Configure libnix\e[0m"
+cd libnix
+./configure \
+    --prefix=$PREFIX/$TARGET/libnix \
+    --host=i686-linux-gnu \
+    --target=m68k-amigaos \
+     >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
+CC=$PREFIX/bin/m68k-amigaos-gcc \
+CPP='$PREFIX/bin/m68k-amigaos-gcc -E' \
+AR=$PREFIX/bin/m68k-amigaos-ar \
+AS=$PREFIX/bin/m68k-amigaos-as \
+RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
+LD=$PREFIX/bin/m68k-amigaos-ld \
+make >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
+make install >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.logcd $SOURCES
+cd $SOURCES
+
+
+
+
+exit
 # PART 6: Amiga Libs/Includes
 echo -e "\e[1m\e[37m6. Amiga Libraries\e[0m\e[36m"
 echo "   * libnix"

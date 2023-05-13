@@ -12,6 +12,8 @@
 EDITION=GNU-3.4.6
 VERSION=0.6
 CPU=-j16
+GCCVERSION=3.4.6
+CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
 
 WORKSPACE="`pwd`"
 SOURCES=$WORKSPACE/_sources
@@ -39,6 +41,8 @@ BISON_VERSION=bison-2.7.1
 BISON_DOWNLOAD=https://ftp.gnu.org/gnu/bison/$BISON_VERSION.tar.gz
 CLIB2_VERSION=V1_214
 CLIB2_DOWNLOAD=https://github.com/adtools/clib2/archive/$CLIB2_VERSION.tar.gz
+LIBNIX_VERSION=2.1
+LIBNIX_DOWNLOAD=https://github.com/adtools/libnix
 NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
 NDK39_DOWNLOAD=https://os.amigaworld.de/download.php?id=3
 NDK_VERSION=3.9
@@ -95,6 +99,8 @@ echo "   * $BISON_VERSION"
 wget -nc $BISON_DOWNLOAD -a $LOGFILES/part3.log
 echo "   * clib2-$CLIB2_VERSION"
 wget -nc $CLIB2_DOWNLOAD -a $LOGFILES/part3.log 
+echo "   * libnix-$LIBNIX_VERSION"
+git clone --progress $LIBNIX_DOWNLOAD >>$LOGFILES/part3.log 2>>$LOGFILES/part3_err.log
 
 # PART 4: Unpack Sources
 echo -e "\e[1m\e[37m4. Unpack Sources\e[0m\e[36m"
@@ -228,6 +234,27 @@ cp -r $WORKSPACE/_sources/build-gcc/clib2/include $PREFIX/$TARGET >>$LOGFILES/pa
 cp -r $WORKSPACE/_sources/build-gcc/clib2/lib $PREFIX/$TARGET >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 ln -sf $PREFIX/$TARGET/lib/ncrt0.o $PREFIX/$TARGET/lib/crt0.o >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 cd $SOURCES
+
+
+echo -e "\e[0m\e[36m   * Configure libnix\e[0m"
+mkdir -p built-libnix
+cd built-libnix
+$SOURCES/libnix/configure \
+    --prefix=$PREFIX/$TARGET/libnix \
+    --host=i686-linux-gnu \
+    --target=m68k-unknown-amigaos
+exit
+
+make \
+    CC=$PREFIX/bin/m68k-unknown-amigaos-gcc \
+    CPP=$PREFIX/bin/m68k-unknown-amigaos-gcc -E \
+    AR=$PREFIX/bin/m68k-unknown-amigaos-ar \
+    AS=$PREFIX/bin/m68k-unknown-amigaos-as \
+    RANLIB=$PREFIX/bin/m68k-unknown-amigaos-ranlib \
+    LD=$PREFIX/bin/m68k-unknown-amigaos-ld \
+
+make install
+
 
 # Part 11: Compile GCC (Phase #2)
 echo -e "\e[1m\e[37m11. Compile $GCC_VERSION (Phase #2)"

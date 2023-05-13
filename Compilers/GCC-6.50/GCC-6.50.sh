@@ -54,7 +54,7 @@ make clean >>$LOGFILES/part4.log 2>/dev/null
 echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>/dev/null
 echo -e "\e[0m\e[36m   * Build Amiga-GCC\e[0m"
-time make all -j3 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>/dev/null
+make all -j3 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>/dev/null
 cd ..
 
 # PART 5: Cleanup
