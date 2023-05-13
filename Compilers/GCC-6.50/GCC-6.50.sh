@@ -51,12 +51,10 @@ echo -e "\e[1m\e[37m4. Compile Amiga-GCC\e[0m\e[36m"
 cd amiga-gcc
 echo -e "\e[0m\e[36m   * Clean Amiga-GCC\e[0m"
 make clean >>$LOGFILES/part4.log 2>/dev/null
-echo -e "\e[0m\e[36m   * Build Amiga-GCC (Phase #1)\e[0m"
-make $CPU all PREFIX=$PREFIX >>$LOGFILES/part4.log 2>/dev/null
-echo -e "\e[0m\e[36m   * Build Amiga-GCC (Phase #2)\e[0m"
-make $CPU all PREFIX=$PREFIX >>$LOGFILES/part4.log 2>/dev/null
-echo -e "\e[0m\e[36m   * Build Amiga-GCC (Phase #3)\e[0m"
-make $CPU all PREFIX=$PREFIX >>$LOGFILES/part4.log 2>/dev/null
+echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
+make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>/dev/null
+echo -e "\e[0m\e[36m   * Build Amiga-GCC\e[0m"
+time make all -j3 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>/dev/null
 cd ..
 
 # PART 5: Cleanup

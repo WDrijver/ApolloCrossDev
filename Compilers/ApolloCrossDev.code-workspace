@@ -8,6 +8,15 @@
 		},
 		{
 			"path": "../../Dev/SVN-Apollo/MeekuDot3D"
+		},
+		{
+			"path": "../../Dev/lame-3.100"
+		},
+		{
+			"path": "../../Dev/libiconv-1.17"
+		},
+		{
+			"path": "../../Dev/lame-3.96"
 		}
 	]
 }
