@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-3.4.6 Install Script v0.6
+# ApolloCrossDev GCC-3.4.6 Install Script v0.7
 # 
 # Installation:
 # 1. Enter Compilers/GCC-3.4.6 directory
@@ -10,7 +10,7 @@
 # 3. Read make-gcc346 for compile instructions
 
 EDITION=GNU-3.4.6
-VERSION=0.6
+VERSION=0.7
 CPU=-j16
 GCCVERSION=3.4.6
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
@@ -39,8 +39,8 @@ MPC_VERSION=mpc-0.8.2
 MPC_DOWNLOAD=http://www.multiprecision.org/downloads/$MPC_VERSION.tar.gz
 BISON_VERSION=bison-2.7.1
 BISON_DOWNLOAD=https://ftp.gnu.org/gnu/bison/$BISON_VERSION.tar.gz
-CLIB2_VERSION=V1_214
-CLIB2_DOWNLOAD=https://github.com/adtools/clib2/archive/$CLIB2_VERSION.tar.gz
+CLIB2_VERSION=clib2
+CLIB2_DOWNLOAD=https://github.com/adtools/clib2
 LIBNIX_VERSION=2.1
 LIBNIX_DOWNLOAD=https://github.com/adtools/libnix
 NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
@@ -98,7 +98,7 @@ wget -nc $MPC_DOWNLOAD -a $LOGFILES/part3.log
 echo "   * $BISON_VERSION" 
 wget -nc $BISON_DOWNLOAD -a $LOGFILES/part3.log
 echo "   * clib2-$CLIB2_VERSION"
-wget -nc $CLIB2_DOWNLOAD -a $LOGFILES/part3.log 
+git clone --progress $CLIB2_DOWNLOAD 2>>$LOGFILES/part3_err.log
 echo "   * libnix-$LIBNIX_VERSION"
 git clone --progress $LIBNIX_DOWNLOAD >>$LOGFILES/part3.log 2>>$LOGFILES/part3_err.log
 
@@ -220,14 +220,14 @@ echo -e "\e[1m\e[37m10. Amiga Libraries"
 echo -e "\e[0m\e[36m   * Configure clib2\e[0m"
 cd build-gcc
 mkdir -p clib2
-cp -r $WORKSPACE/_sources/clib2-1_214/library/* $WORKSPACE/_sources/build-gcc/clib2
+cp -r $WORKSPACE/_sources/clib2/library/* $WORKSPACE/_sources/build-gcc/clib2
 echo -e "\e[0m\e[36m   * Patch clib2\e[0m"
 for p in `ls $WORKSPACE/_install/recipes/patches/clib2/*.p`; do patch -d $WORKSPACE/_sources/build-gcc/clib2 <$p -p0 >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log; done 
 echo -e "\e[0m\e[36m   * Customise clib2\e[0m"
 cp -r $WORKSPACE/_install/recipes/files/clib2/* $WORKSPACE/_sources/build-gcc/clib2 >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 cd clib2
 echo -e "\e[0m\e[36m   * Build clib2 ($CPU)\e[0m"
-PATH="$PREFIX/bin:$PATH" make -f GNUmakefile.68k >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
+PATH=$PREFIX/bin:$PATH make -f GNUmakefile.68k >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 mkdir -p $PREFIX/$TARGET/include
 mkdir -p $PREFIX/$TARGET/lib
 cp -r $WORKSPACE/_sources/build-gcc/clib2/include $PREFIX/$TARGET >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
@@ -235,25 +235,8 @@ cp -r $WORKSPACE/_sources/build-gcc/clib2/lib $PREFIX/$TARGET >>$LOGFILES/part10
 ln -sf $PREFIX/$TARGET/lib/ncrt0.o $PREFIX/$TARGET/lib/crt0.o >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 cd $SOURCES
 
-echo -e "\e[0m\e[36m   * Configure libnix\e[0m"
-mkdir -p built-libnix
-cd built-libnix
-$SOURCES/libnix/configure \
-    --prefix=$PREFIX/$TARGET/libnix \
-    --host=i686-linux-gnu \
-    --target=m68k-unknown-amigaos
 
-make \
-    CC=$PREFIX/bin/m68k-unknown-amigaos-gcc \
-    CPP=$PREFIX/bin/m68k-unknown-amigaos-gcc -E \
-    AR=$PREFIX/bin/m68k-unknown-amigaos-ar \
-    AS=$PREFIX/bin/m68k-unknown-amigaos-as \
-    RANLIB=$PREFIX/bin/m68k-unknown-amigaos-ranlib \
-    LD=$PREFIX/bin/m68k-unknown-amigaos-ld \
 
-make install
-
-exit
 
 # Part 11: Compile GCC (Phase #2)
 echo -e "\e[1m\e[37m11. Compile $GCC_VERSION (Phase #2)"
@@ -275,34 +258,3 @@ echo " "
 echo -e "\e[1m\e[32mFINISHED\e[0m"
 echo " "
 exit
-
-
-# SCRAPBOOK
-
-# PART 10: Amiga Libs/Includes
-echo "10. Amiga Libs"
-echo "   * Clone clib2"
-git clone --progress $CLIB2_DOWNLOAD >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
-echo "   * Configure"
-cd build-gcc
-mkdir -p clib2
-cp -r $WORKSPACE/_sources/clib2/library/* $WORKSPACE/_sources/build-gcc/clib2
-echo "   * Patch clib2 files"
-for p in `ls $WORKSPACE/_install/recipes/patches/clib2/*.p`; do patch -d $WORKSPACE/_sources/build-gcc/clib2 <$p -p0 >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log; done 
-cd clib2
-echo "   * Build ($CPU)"
-PATH="$PREFIX/bin:$PATH" make -f GNUmakefile.68k >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
-cp -r $WORKSPACE/_sources/build-gcc/clib2/include $PREFIX/$TARGET >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
-cp -r $WORKSPACE/_sources/build-gcc/clib2/lib $PREFIX/$TARGET >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
-ln -sf $PREFIX/$TARGET/lib/ncrt0.o $PREFIX/$TARGET/lib/crt0.o >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
-cd $SOURCES
-
-mkdir -p NDK3.9
-echo -e "\e[0m\e[36m   * NDK 3.9\e[0m"
-wget -nc $NDK_DOWNLOAD -a $LOGFILES/part9.log 
-tar -C $PREFIX/include --strip-components=2 -xjf $NDK_ARCHIVE
-echo -e "\e[0m\e[36m   * Patch NDK 3.9\e[0m"
-for p in `ls $WORKSPACE/_install/recipes/patches/ndk/*.p`; do patch -d $PREFIX/include <$p -p0 >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log; done 
-echo -e "\e[0m\e[36m   * Customise NDK 3.9\e[0m"
-cp -r $WORKSPACE/_install/recipes/files/ndk/* $PREFIX/include >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
-mv $PREFIX/include/sys-include $PREFIX/include/NDK3.9

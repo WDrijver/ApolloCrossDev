@@ -6,8 +6,8 @@
 #
 # Instructions:
 # 1. Create Projects/<mysource> directory
-# 2. Copy Projects/make-gcc295 into <mysource> 
-# 3. Read make-gcc295 for compile instructions
+# 2. Copy Projects/make-gcc2953 into <mysource> 
+# 3. Read make-gcc2953 for compile instructions
 
 EDITION=GNU-2.95.3
 VERSION=0.7
@@ -20,8 +20,6 @@ PREFIX=$WORKSPACE/ApolloCrossDev
 TARGET=m68k-amigaos
 export PATH=$PREFIX/bin:$PATH
 
-CC=
-CXX=
 FLAGS='-g -O2'
 
 NDK32_NAME=NDK3.2
@@ -208,9 +206,9 @@ make $CPU install-info >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cd $SOURCES
 
 # Part 7: Compile GCC
-echo -e "\e[1m\e[37m5. Compile $GCC_NAME\e[0m"
+echo -e "\e[1m\e[37m7. Compile $GCC_NAME\e[0m"
 echo -e "\e[0m\e[36m   * Unpack ixemul\e[0m"
-lha -xw=$SOURCES $IXEMUL_ARCHIVE >>$LOGFILES/part7.log 2>>$LOGFILES/part5_err.log
+lha -xw=$SOURCES $IXEMUL_ARCHIVE >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 mv ixemul $IXEMUL_NAME
 echo -e "\e[0m\e[36m   * Patch ixemul\e[0m"
 for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME <$p >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log; done  
@@ -248,15 +246,19 @@ CFLAGS_FOR_TARGET="-noixemul" \
 make -j1 install-gcc >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 cd $SOURCES
 
-echo -e "\e[0m\e[36m   * Install Header files\e[0m"
+echo -e "\e[0m\e[36m   * Install ixemul Headers\e[0m"
 cp -r $IXEMUL_NAME/include $PREFIX/$TARGET/libnix/include
 
-echo -e "\e[0m\e[36m   * Unpack libamiga\e[0m"
+# Part 8: Libraries
+echo -e "\e[1m\e[37m8. Compile Libraries\e[0m"
+
+echo -e -n "\e[0m\e[36m   * libamiga:\e[30m unpack | "
 tar xfk $LIBAMIGA_ARCHIVE >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
+echo -e "install\e[0m"
 mv lib $LIBAMIGA_NAME
 cp -r $LIBAMIGA_NAME $PREFIX/$TARGET/libnix/lib
 
-echo -e "\e[0m\e[36m   * Build libnix\e[0m"
+echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
 mkdir -p build-libnix
 cd build-libnix
 CC="$PREFIX/bin/$TARGET-gcc" \
@@ -270,7 +272,7 @@ $SOURCES/$LIBNIX_NAME/configure \
     --host=i686-linux-gnu \
     --target=$TARGET \
     >>$LOGFILES/libnix_configure.log 2>>$LOGFILES/libnix_configure_err.log   
-echo -e "\e[0m\e[36m   * Install libnix\e[0m"
+echo -e -n "make | "
 CC="$PREFIX/bin/$TARGET-gcc" \
 CPP="$PREFIX/bin/$TARGET-gcc -E" \
 AR="$PREFIX/bin/$TARGET-ar" \
@@ -278,17 +280,17 @@ AS="$PREFIX/bin/$TARGET-as" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 LD="$PREFIX/bin/$TARGET-ld" \
 make -j1 >>$LOGFILES/libnix_make.log 2>>$LOGFILES/libnix_make_err.log
+echo -e "install\e[0m"
 make -j1 install >>$LOGFILES/libnix_install.log 2>>$LOGFILES/libnix_install_err.log
 cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/libnix/include
 cd $SOURCES
 
-echo -e "\e[0m\e[36m   * Unpack libm\e[0m"
+echo -e -n "\e[0m\e[36m   * libm:\e[30m unpack | "
 tar xfk $LIBM_ARCHIVE >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 mv contrib/libm $LIBM_NAME
 rm -r contrib
 cp -f $WORKSPACE/_install/config.* $LIBM_NAME
-
-echo -e "\e[0m\e[36m   * Build libm\e[0m"
+echo -e -n "configure | "
 mkdir -p build-libm
 cd build-libm
 CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
@@ -299,13 +301,13 @@ $SOURCES/$LIBM_NAME/configure \
     --host=i686-linux-gnu \
     --target=$TARGET \
     >>$LOGFILES/libm_config.log 2>>$LOGFILES/libm_config_err.log  
-
-echo -e "\e[0m\e[36m   * Install libm\e[0m"
+echo -e -n "make | "
 make -j1 >>$LOGFILES/libm_make.log 2>>$LOGFILES/libm_make_err.log
+echo -e "install\e[0m"
 make -j1 install >>$LOGFILES/libm_make_install.log 2>>$LOGFILES/libm_make_install_err.log
 cd $SOURCES
 
-echo -e "\e[0m\e[36m   * Build libdebug\e[0m"
+echo -e -n "\e[0m\e[36m   * libdebug:\e[30m configure | "
 mkdir -p build-libdebug
 cd build-libdebug
 touch $SOURCES/$LIBDEBUG_NAME/configure
@@ -317,87 +319,53 @@ $SOURCES/$LIBDEBUG_NAME/configure \
     --host=i686-linux-gnu \
     --target=$TARGET \
     >>$LOGFILES/libdebug_config.log 2>>$LOGFILES/libdebug_config_err.log  
-echo -e "\e[0m\e[36m   * Install libdebug\e[0m"
+echo -e -n "make | "
 make -j1 >>$LOGFILES/libdebug_make.log 2>>$LOGFILES/libdebug_make_err.log
+echo -e "install\e[0m"
 make -j1 install >>$LOGFILES/libdebug_make_install.log 2>>$LOGFILES/libdebug_make_install_err.log
 cd $SOURCES
 
-echo -e "\e[0m\e[36m   * Build clib2\e[0m"
-mv clib2/library $CLIB2_NAME
-cd $CLIB2_NAME
-make -j1 -f GNUmakefile.68k >>$LOGFILES/clib2_make.log 2>>$LOGFILES/clib2_make_err.log
-cp -r lib $PREFIX/$TARGET/clib2
-cp -r include $PREFIX/$TARGET/clib2
+echo -e -n "\e[0m\e[36m   * clib2:\e[30m copy | "
+cd build-gcc
+mkdir -p clib2
+cp -r $WORKSPACE/_sources/clib2/library/* $WORKSPACE/_sources/build-gcc/clib2
+echo -e -n "patch | "
+for p in `ls $WORKSPACE/_install/patches/clib2/*.p`; do patch -d $WORKSPACE/_sources/build-gcc/clib2 <$p -p0 >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log; done 
+echo -e -n "customise | "
+cp -r $WORKSPACE/_install/files/clib2/* $WORKSPACE/_sources/build-gcc/clib2 >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
+cd clib2
+echo -e -n "make | "
+PATH=$PREFIX/bin:$PATH make -f GNUmakefile.68k >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
+echo -e "install\e[0m"
+mkdir -p $PREFIX/$TARGET/include
+mkdir -p $PREFIX/$TARGET/lib
+cp -r $WORKSPACE/_sources/build-gcc/clib2/include $PREFIX/$TARGET >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
+cp -r $WORKSPACE/_sources/build-gcc/clib2/lib $PREFIX/$TARGET >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
+ln -sf $PREFIX/$TARGET/lib/ncrt0.o $PREFIX/$TARGET/lib/crt0.o >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 cd $SOURCES
 
-exit
-###
-  with cwd('{prefix}/{target}/clib2'):
-    copytree('{build}/{clib2}/lib', 'lib')
-    copytree('{build}/{clib2}/include', 'include')
-
-  unpack('{clib2}', work_dir='{build}', top_dir='library')
-  make('{clib2}', makefile='GNUmakefile.68k', parallel=True)
-  install_clib2()
-
-exit
-
-###
-  unpack('{clib2}', work_dir='{build}', top_dir='library')
-  make('{clib2}', makefile='GNUmakefile.68k', parallel=True)
-  install_clib2()
-
-
+echo -e "\e[1m\e[37m9. Compile $GCC_NAME (Continued)\e[0m"
+cd build-gcc
 echo -e "\e[0m\e[36m   * Build GCC - Run #2\e[0m"
 MAKEINFO="makeinfo" \
 CFLAGS_FOR_TARGET="-noixemul" \
-make $CPU all-gcc >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
+make $CPU all-target >>$LOGFILES/part6_gcc_make_target.log 2>>$LOGFILES/part6_gcc_make_target_err.log
 echo -e "\e[0m\e[36m   * Install GCC - Run #2\e[0m"
 MAKEINFO="makeinfo" \
 CFLAGS_FOR_TARGET="-noixemul" \
-make -j1 install-gcc >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
-
+make -j1 install-target >>$LOGFILES/part6_gcc_make_install.log 2>>$LOGFILES/part6_gcc_make_install_err.log
 cd $SOURCES
 
-exit
-
-# PART 7: Amiga OS NDK's
-echo -e "\e[1m\e[37m7. Amiga NDK's"
+# PART 7: Additional Amiga NDK's
+echo -e "\e[1m\e[37m10. Additional Amiga NDK's"
 mkdir -p NDK3.2
 cd NDK3.2
 echo -e "\e[0m\e[36m   * NDK 3.2\e[0m"
 wget -nc $NDK32_DOWNLOAD -a $LOGFILES/part7.log
 lha -xw=$PREFIX/include/NDK3.2 NDK3.2.lha >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 
-
-LIBNIX_NAME=2.1
-LIBNIX_DOWNLOAD=https://github.com/adtools/libnix
-
-echo "   * libnix-$LIBNIX_NAME"
-git clone --progress $LIBNIX_DOWNLOAD >>$LOGFILES/part3.log 2>>$LOGFILES/part3_err.log
-
-echo -e "\e[0m\e[36m   * Configure libnix\e[0m"
-mkdir -p built-libnix
-cd built-libnix
-$SOURCES/libnix/configure \
-    --prefix=$PREFIX/$TARGET/libnix \
-    --host=i686-linux-gnu \
-    --target=m68k-amigaos
-
-make \
-    CC=$PREFIX/bin/m68k-amigaos-gcc \
-    CPP=$PREFIX/bin/m68k-amigaos-gcc -E \
-    AR=$PREFIX/bin/m68k-amigaos-ar \
-    AS=$PREFIX/bin/m68k-amigaos-as \
-    RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
-    LD=$PREFIX/bin/m68k-amigaos-ld \
-
-cd $SOURCES
-
-exit
-
 # PART 8: Cleanup
-echo -e "\e[1m\e[37m8. Cleanup\e[0m\e[36m"
+echo -e "\e[1m\e[37m11. Cleanup\e[0m\e[36m"
 cd $PREFIX
 rm -rf info
 rm -rf man
