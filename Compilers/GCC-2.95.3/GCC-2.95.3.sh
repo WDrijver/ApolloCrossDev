@@ -83,6 +83,7 @@ mkdir -p $PREFIX/$TARGET/ndk/lib
 mkdir -p $PREFIX/$TARGET/ndk/lib/fd
 mkdir -p $PREFIX/$TARGET/ndk/lib/sfd
 mkdir -p $PREFIX/$TARGET/libnix
+mkdir -p $PREFIX/$TARGET/clib2
 
 # PART 2: Update Linux Packages 
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
@@ -258,11 +259,17 @@ cp -r $LIBAMIGA_NAME $PREFIX/$TARGET/libnix/lib
 echo -e "\e[0m\e[36m   * Build libnix\e[0m"
 mkdir -p build-libnix
 cd build-libnix
+CC="$PREFIX/bin/$TARGET-gcc" \
+CPP="$PREFIX/bin/$TARGET-gcc -E" \
+AR="$PREFIX/bin/$TARGET-ar" \
+AS="$PREFIX/bin/$TARGET-as" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+LD="$PREFIX/bin/$TARGET-ld" \
 $SOURCES/$LIBNIX_NAME/configure \
     --prefix=$PREFIX/$TARGET/libnix \
     --host=i686-linux-gnu \
     --target=$TARGET \
-    >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log   
+    >>$LOGFILES/libnix_configure.log 2>>$LOGFILES/libnix_configure_err.log   
 echo -e "\e[0m\e[36m   * Install libnix\e[0m"
 CC="$PREFIX/bin/$TARGET-gcc" \
 CPP="$PREFIX/bin/$TARGET-gcc -E" \
@@ -270,8 +277,8 @@ AR="$PREFIX/bin/$TARGET-ar" \
 AS="$PREFIX/bin/$TARGET-as" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 LD="$PREFIX/bin/$TARGET-ld" \
-make -j1 >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
-make -j1 install >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
+make -j1 >>$LOGFILES/libnix_make.log 2>>$LOGFILES/libnix_make_err.log
+make -j1 install >>$LOGFILES/libnix_install.log 2>>$LOGFILES/libnix_install_err.log
 cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/libnix/include
 cd $SOURCES
 
@@ -279,11 +286,11 @@ echo -e "\e[0m\e[36m   * Unpack libm\e[0m"
 tar xfk $LIBM_ARCHIVE >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 mv contrib/libm $LIBM_NAME
 rm -r contrib
+cp -f $WORKSPACE/_install/config.* $LIBM_NAME
 
 echo -e "\e[0m\e[36m   * Build libm\e[0m"
 mkdir -p build-libm
 cd build-libm
-
 CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
@@ -296,11 +303,50 @@ $SOURCES/$LIBM_NAME/configure \
 echo -e "\e[0m\e[36m   * Install libm\e[0m"
 make -j1 >>$LOGFILES/libm_make.log 2>>$LOGFILES/libm_make_err.log
 make -j1 install >>$LOGFILES/libm_make_install.log 2>>$LOGFILES/libm_make_install_err.log
+cd $SOURCES
 
+echo -e "\e[0m\e[36m   * Build libdebug\e[0m"
+mkdir -p build-libdebug
+cd build-libdebug
+touch $SOURCES/$LIBDEBUG_NAME/configure
+CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
+AR="$PREFIX/bin/$TARGET-ar" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+$SOURCES/$LIBDEBUG_NAME/configure \
+    --prefix=$PREFIX/$TARGET/libnix \
+    --host=i686-linux-gnu \
+    --target=$TARGET \
+    >>$LOGFILES/libdebug_config.log 2>>$LOGFILES/libdebug_config_err.log  
+echo -e "\e[0m\e[36m   * Install libdebug\e[0m"
+make -j1 >>$LOGFILES/libdebug_make.log 2>>$LOGFILES/libdebug_make_err.log
+make -j1 install >>$LOGFILES/libdebug_make_install.log 2>>$LOGFILES/libdebug_make_install_err.log
+cd $SOURCES
 
-
+echo -e "\e[0m\e[36m   * Build clib2\e[0m"
+mv clib2/library $CLIB2_NAME
+cd $CLIB2_NAME
+make -j1 -f GNUmakefile.68k >>$LOGFILES/clib2_make.log 2>>$LOGFILES/clib2_make_err.log
+cp -r lib $PREFIX/$TARGET/clib2
+cp -r include $PREFIX/$TARGET/clib2
+cd $SOURCES
 
 exit
+###
+  with cwd('{prefix}/{target}/clib2'):
+    copytree('{build}/{clib2}/lib', 'lib')
+    copytree('{build}/{clib2}/include', 'include')
+
+  unpack('{clib2}', work_dir='{build}', top_dir='library')
+  make('{clib2}', makefile='GNUmakefile.68k', parallel=True)
+  install_clib2()
+
+exit
+
+###
+  unpack('{clib2}', work_dir='{build}', top_dir='library')
+  make('{clib2}', makefile='GNUmakefile.68k', parallel=True)
+  install_clib2()
+
 
 echo -e "\e[0m\e[36m   * Build GCC - Run #2\e[0m"
 MAKEINFO="makeinfo" \
