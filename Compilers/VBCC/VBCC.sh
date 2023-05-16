@@ -15,6 +15,7 @@ export PATH=$PREFIX/$TARGET:$PATH
 VBCC_VC=http://www.ibaug.de/vbcc/vbcc.tar.gz
 VBCC_M68K=http://phoenix.owl.de/vbcc/current/vbcc_target_m68k-amigaos.lha
 VASM=http://sun.hasenbraten.de/vasm/daily/vasm.tar.gz
+VDA_M68K=http://sun.hasenbraten.de/~frank/projects/download/vdam68k.tar.gz
 VLINK=http://sun.hasenbraten.de/vlink/daily/vlink.tar.gz
 CONFIG=http://phoenix.owl.de/vbcc/2022-05-22/vbcc_unix_config.tar.gz
 
@@ -50,6 +51,8 @@ echo "   * VASM Compiler"
 wget -nc $VASM -a $LOGFILES/part3.log
 echo "   * VLINK Binary Linker" 
 wget -nc $VLINK -a $LOGFILES/part3.log
+echo "   * UNIX Config Files" 
+wget -nc $VDA_M68K -a $LOGFILES/part3.log
 echo "   * UNIX Config Files" 
 wget -nc $CONFIG -a $LOGFILES/part3.log
 

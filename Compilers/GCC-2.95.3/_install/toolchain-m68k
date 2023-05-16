@@ -463,6 +463,7 @@ def build():
             '--host=i686-linux-gnu',
             '--target=m68k-amigaos',
             from_dir='{submodules}/{libnix}')
+            
   make('{libnix}',
        CC='m68k-amigaos-gcc',
        CPP='m68k-amigaos-gcc -E',

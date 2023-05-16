@@ -89,13 +89,26 @@ Library Structure:
     lib/        : libamiga.a    libc.a      libdebug.a      libm.a      libg.a      libpthread.a    libstubs.a  lib__m__.a       crt0.o        
     clib2/lib   : libamiga.a    libc.a      libdebug.a      libm.a      libnet.a    libunix.a   nb32crt0.o  nbcrt0.0    ncrt0.o     nr32crt0.o  nrcrt0.o
     libnix/lib  : detach.o  devinit.o   libinit.o   libinit.o   libm.a    libnix.a    libnix13.a  libnix20.a  libnixmain.a    libsocket.a libstack.a  nbcrt0.o    ncrt0.0 nlbcrt0.0   nlcrt0.o    nrcrt0.o swapstack.o  
+    libnix/
 
 Library Types:
     lib         = default
-    lib/libb    = 
-    lib/libb32  =
-    lib/libm020 =
-    lib/libm060 =
+    lib/libb    = -fbaserel -DSMALL_DATA
+    lib/libb32  = 
+    lib/libm020 = -m68020
+    lib/libm060 = 
+    libb/libm020 = -fbaserel -DSMALL_DATA -m68020
+    libm020/libm881 = -m68020 -m68881
+    libb/libm020/libm881 = -fbaserel -DSMALL_DAT -m68020 -m68881
+    libb32/libm020 = -fbaserel32 -DMSALL_DATA -m68020
+
+GCC 2.95.3 MULTILIB
+            ('libb', ['-fbaserel', '-DSMALL_DATA']),
+            ('libm020', ['-m68020']),
+            ('libb/libm020', ['-fbaserel', '-DSMALL_DATA', '-m68020']),
+            ('libm020/libm881', ['-m68020', '-m68881']),
+            ('libb/libm020/libm881', ['-fbaserel', '-DSMALL_DATA', '-m68020', '-m68881']),
+            ('libb32/libm020', ['-fbaserel32', '-DSMALL_DATA', '-m68020'])]
 
     lib/fd          =  
     lib/sfd         =

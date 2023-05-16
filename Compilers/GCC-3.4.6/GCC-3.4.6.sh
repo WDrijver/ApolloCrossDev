@@ -235,7 +235,6 @@ cp -r $WORKSPACE/_sources/build-gcc/clib2/lib $PREFIX/$TARGET >>$LOGFILES/part10
 ln -sf $PREFIX/$TARGET/lib/ncrt0.o $PREFIX/$TARGET/lib/crt0.o >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 cd $SOURCES
 
-
 echo -e "\e[0m\e[36m   * Configure libnix\e[0m"
 mkdir -p built-libnix
 cd built-libnix
@@ -243,7 +242,6 @@ $SOURCES/libnix/configure \
     --prefix=$PREFIX/$TARGET/libnix \
     --host=i686-linux-gnu \
     --target=m68k-unknown-amigaos
-exit
 
 make \
     CC=$PREFIX/bin/m68k-unknown-amigaos-gcc \
@@ -255,6 +253,7 @@ make \
 
 make install
 
+exit
 
 # Part 11: Compile GCC (Phase #2)
 echo -e "\e[1m\e[37m11. Compile $GCC_VERSION (Phase #2)"
