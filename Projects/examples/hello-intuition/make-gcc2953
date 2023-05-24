@@ -9,25 +9,25 @@
 PWD=$(shell pwd)
 DIR=$(notdir $(shell pwd))
 BIN=$(PWD)/../../../Compilers/GCC-2.95.3/ApolloCrossDev/bin
-NDK=$(PWD)/../../../Compilers/GCC-2.95.3/ApolloCrossDev/include
+NDK=$(PWD)/../../../Compilers/GCC-2.95.3/ApolloCrossDev/m68k-amigaos/ndk
 
 C_COMPILER=$(BIN)/m68k-amigaos-gcc
 S_COMPILER=$(BIN)/m68k-amigaos-gcc
 O_LINKER=$(BIN)/m68k-amigaos-gcc
 
 C_INCLUDE_NDK32=$(NDK)/NDK3.2/Include_H
-C_INCLUDE_NDK39=$(NDK)/NDK3.9/Include/include_h
+C_INCLUDE_NDK39=$(NDK)/include
 C_INCLUDE_NDKMUI=$(NDK)/NDKMUI/C/include
 S_INCLUDE_DEVPAC=$(NDK)/DevPac
 
 C_LIBS_NDK32=$(NDK)/NDK3.2/lib
-C_LIBS_NDK39=$(NDK)/NDK3.9/Include/linker_libs
+C_LIBS_NDK39=$(NDK)/lib
 
 # -mcrt=clib2 selects clib2 | -mcrt=nix13 selects Libnix 1.3 | -mcrt=nix20 or -noixemul selects Libnix 2.0
 
-C_FLAGS= -c $(O_FLAGS)
+C_FLAGS= -c -fomit-frame-pointer -m68040 -mcrt=nix20 -o
 S_FLAGS= $(C_FLAGS)
-O_FLAGS= -g -noixemul -fomit-frame-pointer -m68040 -I$(C_INCLUDE_NDK39) -o
+O_FLAGS= -fomit-frame-pointer -m68040 -mcrt=nix20 -o
 
 C_SOURCEDIR=.
 S_SOURCEDIR=.

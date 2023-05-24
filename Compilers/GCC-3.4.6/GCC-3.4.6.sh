@@ -41,8 +41,10 @@ BISON_VERSION=bison-2.7.1
 BISON_DOWNLOAD=https://ftp.gnu.org/gnu/bison/$BISON_VERSION.tar.gz
 CLIB2_VERSION=clib2
 CLIB2_DOWNLOAD=https://github.com/adtools/clib2
-LIBNIX_VERSION=2.1
+LIBNIX_NAME=libnix
 LIBNIX_DOWNLOAD=https://github.com/adtools/libnix
+LIBNIX3_NAME=libnix
+LIBNIX3_DOWNLOAD=https://github.com/diegocr/libnix
 NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
 NDK39_DOWNLOAD=https://os.amigaworld.de/download.php?id=3
 NDK_VERSION=3.9
@@ -77,11 +79,17 @@ mkdir -p $LOGFILES
 rm -f -r $SOURCES
 mkdir $SOURCES
 cd $SOURCES
+mkdir -p $PREFIX/$TARGET/libnix
+mkdir -p $PREFIX/$TARGET/clib2
+mkdir -p $PREFIX/$TARGET/clib2/include
+mkdir -p $PREFIX/$TARGET/clib2/lib
 
 # PART 2: Update Linux Packages 
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
 sudo apt -y update >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
-sudo apt -y install build-essential gawk flex bison expect dejagnu texinfo lhasa git subversion >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
+sudo apt -y install build-essential m4 gawk autoconf automake flex bison expect dejagnu texinfo lhasa git subversion \
+     make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev rsync libreadline-dev rename \
+>>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 
 # PART 3: Download Sources
 echo -e "\e[1m\e[37m3. Download Sources\e[0m\e[36m"
@@ -99,7 +107,7 @@ echo "   * $BISON_VERSION"
 wget -nc $BISON_DOWNLOAD -a $LOGFILES/part3.log
 echo "   * clib2-$CLIB2_VERSION"
 git clone --progress $CLIB2_DOWNLOAD 2>>$LOGFILES/part3_err.log
-echo "   * libnix-$LIBNIX_VERSION"
+echo "   * $LIBNIX_NAME"
 git clone --progress $LIBNIX_DOWNLOAD >>$LOGFILES/part3.log 2>>$LOGFILES/part3_err.log
 
 # PART 4: Unpack Sources
@@ -128,16 +136,24 @@ for p in `ls $WORKSPACE/_install/recipes/patches/binutils/*.p`; do patch -d $WOR
 echo -e "\e[0m\e[36m   * Configure Binutils\e[0m"
 mkdir -p build-binutils
 cd build-binutils
-CFLAGS="-m32" LDFLAGS="-m32" ../$BINUTILS_VERSION/configure \
+CFLAGS="$FLAGS -m32 -std=gnu11" \
+CXXFLAGS="$FLAGS -m32 -std=gnu++11" \
+LDFLAGS="-m32" \
+../$BINUTILS_VERSION/configure \
     --prefix="$PREFIX" \
     --target=$TARGET \
     --disable-nls \
-    --disable-werror \
+    --host=i686-linux-gnu \
+    --infodir="$PREFIX/$TARGET/info" \
+    --mandir="$PREFIX/share/man" \
     >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 echo -e "\e[0m\e[36m   * Build Binutils ($CPU)\e[0m"
 make $CPU >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 echo -e "\e[0m\e[36m   * Install Binutils ($CPU)\e[0m"
-make $CPU install >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make $CPU install-binutils >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make $CPU install-gas >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make $CPU install-ld >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make $CPU install-info >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cd $SOURCES
 
 # Part 7 Prepare GCC
@@ -160,15 +176,14 @@ mkdir -p build-gcc
 cd build-gcc
 echo -e "\e[0m\e[36m   * Configure GCC\e[0m"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" ../$GCC_VERSION/configure \
-	--disable-threads \
-	--disable-nls --disable-c-mbchar \
-	--enable-languages=c --enable-checking=no \
-	--enable-c99 --with-cross-host \
-	--disable-multilib --without-x \
-	--enable-maintainer-mode --disable-shared \
-	--without-headers \
     --prefix="$PREFIX" \
+    --infodir="$PREFIX/$TARGET/info" \
+    --mandir="$PREFIX/share/man" \
+    --host=i686-linux-gnu \
+    --build=i686-linux-gnu \
     --target=$TARGET \
+    --enable-languages=c,c++ \
+    --enable-version-specific-runtime-libs \
     >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log 
 echo -e "\e[0m\e[36m   * Build GCC (1 CPU)\e[0m"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 all-gcc >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
@@ -178,12 +193,7 @@ cd $SOURCES
 
 # PART 9: Amiga NDK's
 echo -e "\e[1m\e[37m9. Amiga NDK's"
-mkdir NDK3.2
-cd NDK3.2
-echo -e "\e[0m\e[36m   * NDK 3.2\e[0m"
-wget -nc $NDK32_DOWNLOAD -a $LOGFILES/part9.log
-lha -xw=$PREFIX/include/NDK3.2 NDK3.2.lha >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
-cd $SOURCES
+
 mkdir -p $PREFIX/$TARGET
 echo -e "\e[0m\e[36m   * NDK 3.9\e[0m"
 wget -nc $NDK_DOWNLOAD -a $LOGFILES/part9.log 
@@ -192,6 +202,123 @@ echo -e "\e[0m\e[36m   * Patch NDK 3.9\e[0m"
 for p in `ls $WORKSPACE/_install/recipes/patches/ndk/*.p`; do patch -d $PREFIX/$TARGET <$p -p0 >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log; done 
 echo -e "\e[0m\e[36m   * Customise NDK 3.9\e[0m"
 cp -r $WORKSPACE/_install/recipes/files/ndk/* $PREFIX/$TARGET >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
+cd $SOURCES
+
+# PART 10: Amiga Libs/Includes
+echo -e "\e[1m\e[37m10. Amiga Libraries"
+
+echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
+mkdir -p build-libnix
+cd build-libnix
+CC="$PREFIX/bin/$TARGET-gcc" \
+CPP="$PREFIX/bin/$TARGET-gcc -E" \
+AR="$PREFIX/bin/$TARGET-ar" \
+AS="$PREFIX/bin/$TARGET-as" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+LD="$PREFIX/bin/$TARGET-ld" \
+$SOURCES/$LIBNIX_NAME/configure \
+    --prefix=$PREFIX/$TARGET/libnix \
+    --host=i686-linux-gnu \
+    --target=$TARGET \
+    >>$LOGFILES/libnix_configure.log 2>>$LOGFILES/libnix_configure_err.log   
+
+echo -e -n "make | "
+CC="$PREFIX/bin/$TARGET-gcc" \
+CPP="$PREFIX/bin/$TARGET-gcc -E" \
+AR="$PREFIX/bin/$TARGET-ar" \
+AS="$PREFIX/bin/$TARGET-as" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+LD="$PREFIX/bin/$TARGET-ld" \
+
+make -j1 >>$LOGFILES/libnix_make.log 2>>$LOGFILES/libnix_make_err.log
+echo -e "install\e[0m"
+make -j1 install >>$LOGFILES/libnix_install.log 2>>$LOGFILES/libnix_install_err.log
+cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/include
+cd $SOURCES
+
+exit
+
+
+# Part 11: Compile GCC (Phase #2)
+echo -e "\e[1m\e[37m11. Compile $GCC_VERSION (Phase #2)"
+cd build-gcc
+echo -e "\e[0m\e[36m   * Build GCC (1 CPU)\e[0m"
+AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 all-gcc >>$LOGFILES/part11.log 2>>$LOGFILES/part11_err.log
+echo -e "\e[0m\e[36m   * Install GCC (1 CPU)\e[0m"
+AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 install-gcc >>$LOGFILES/part11.log 2>>$LOGFILES/part11_err.log
+cd $SOURCES
+
+# PART 12: Cleanup
+echo -e "\e[1m\e[37m12. Cleanup\e[0m\e[36m"
+cd $PREFIX
+rm -rf info
+rm -rf man
+
+# FINISH
+echo " "
+echo -e "\e[1m\e[32mFINISHED\e[0m"
+echo " "
+exit
+
+
+
+########################################################################################
+
+
+#Scrapbook
+
+
+#LIBNIX
+
+
+
+echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
+mkdir -p build-libnix
+cd build-libnix
+CC="$PREFIX/bin/$TARGET-gcc" \
+CPP="$PREFIX/bin/$TARGET-gcc -E" \
+AR="$PREFIX/bin/$TARGET-ar" \
+AS="$PREFIX/bin/$TARGET-as" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+LD="$PREFIX/bin/$TARGET-ld" \
+$SOURCES/$LIBNIX_NAME/configure \
+    --prefix=$PREFIX/$TARGET \
+    --host=i686-linux-gnu \
+    --target=$TARGET \
+    >>$LOGFILES/libnix_configure.log 2>>$LOGFILES/libnix_configure_err.log   
+echo -e -n "make | "
+CC="$PREFIX/bin/$TARGET-gcc" \
+CPP="$PREFIX/bin/$TARGET-gcc -E" \
+AR="$PREFIX/bin/$TARGET-ar" \
+AS="$PREFIX/bin/$TARGET-as" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+LD="$PREFIX/bin/$TARGET-ld" \
+make -j1 >>$LOGFILES/libnix_make.log 2>>$LOGFILES/libnix_make_err.log
+echo -e "install\e[0m"
+make -j1 install >>$LOGFILES/libnix_install.log 2>>$LOGFILES/libnix_install_err.log
+cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/include
+cd $SOURCES
+
+
+
+# PART 9: Amiga NDK's
+echo -e "\e[1m\e[37m9. Amiga NDK's"
+mkdir NDK3.2
+cd NDK3.2
+echo -e "\e[0m\e[36m   * NDK 3.2\e[0m"
+wget -nc $NDK32_DOWNLOAD -a $LOGFILES/part9.log
+lha -xw=$PREFIX/include/NDK3.2 NDK3.2.lha >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
+cd $SOURCES
+
+mkdir -p $PREFIX/$TARGET
+echo -e "\e[0m\e[36m   * NDK 3.9\e[0m"
+wget -nc $NDK_DOWNLOAD -a $LOGFILES/part9.log 
+tar -C $PREFIX/$TARGET --strip-components=2 -xjf $NDK_ARCHIVE
+echo -e "\e[0m\e[36m   * Patch NDK 3.9\e[0m"
+for p in `ls $WORKSPACE/_install/recipes/patches/ndk/*.p`; do patch -d $PREFIX/$TARGET <$p -p0 >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log; done 
+echo -e "\e[0m\e[36m   * Customise NDK 3.9\e[0m"
+cp -r $WORKSPACE/_install/recipes/files/ndk/* $PREFIX/$TARGET >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
+
 echo -e "\e[0m\e[36m   * $OPENURL_ARCHIVE\e[0m"
 wget -nc $OPENURL_DOWNLOAD -a $LOGFILES/part9.log 
 lha -xw=OpenURL $OPENURL_ARCHIVE >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
@@ -215,12 +342,46 @@ lha xw=codesets $CODESETS_ARCHIVE >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.l
 cp -r codesets/codesets/Developer/include/* $PREFIX/$TARGET/sys-include/
 cd $SOURCES
 
-# PART 10: Amiga Libs/Includes
-echo -e "\e[1m\e[37m10. Amiga Libraries"
+
+#	--disable-threads \
+#	--disable-nls --disable-c-mbchar \
+#	--enable-languages=c --enable-checking=no \
+#	--enable-c99 --with-cross-host \
+#   --without-x \
+#	--enable-maintainer-mode --disable-shared \
+#	--without-headers \
+#	--disable-multilib \ 
+
+echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
+mkdir -p build-libnix
+cd build-libnix
+CC="$PREFIX/bin/$TARGET-gcc" \
+CPP="$PREFIX/bin/$TARGET-gcc -E" \
+AR="$PREFIX/bin/$TARGET-ar" \
+AS="$PREFIX/bin/$TARGET-as" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+LD="$PREFIX/bin/$TARGET-ld" \
+$SOURCES/$LIBNIX_NAME/configure \
+    --prefix=$PREFIX/$TARGET/libnix \
+    --host=i686-linux-gnu \
+    --target=$TARGET \
+    >>$LOGFILES/libnix_configure.log 2>>$LOGFILES/libnix_configure_err.log   
+echo -e -n "make | "
+CC="$PREFIX/bin/$TARGET-gcc" \
+CPP="$PREFIX/bin/$TARGET-gcc -E" \
+AR="$PREFIX/bin/$TARGET-ar" \
+AS="$PREFIX/bin/$TARGET-as" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+LD="$PREFIX/bin/$TARGET-ld" \
+make -j1 >>$LOGFILES/libnix_make.log 2>>$LOGFILES/libnix_make_err.log
+echo -e "install\e[0m"
+make -j1 install >>$LOGFILES/libnix_install.log 2>>$LOGFILES/libnix_install_err.log
+cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/libnix/include
+cd $SOURCES
+
 echo -e "\e[0m\e[36m   * Configure clib2\e[0m"
-cd build-gcc
-mkdir -p clib2
-cp -r $WORKSPACE/_sources/clib2/library/* $WORKSPACE/_sources/build-gcc/clib2
+mkdir -p build-clib2
+cd build-clib2
 echo -e "\e[0m\e[36m   * Patch clib2\e[0m"
 for p in `ls $WORKSPACE/_install/recipes/patches/clib2/*.p`; do patch -d $WORKSPACE/_sources/build-gcc/clib2 <$p -p0 >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log; done 
 echo -e "\e[0m\e[36m   * Customise clib2\e[0m"
@@ -230,31 +391,37 @@ echo -e "\e[0m\e[36m   * Build clib2 ($CPU)\e[0m"
 PATH=$PREFIX/bin:$PATH make -f GNUmakefile.68k >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 mkdir -p $PREFIX/$TARGET/include
 mkdir -p $PREFIX/$TARGET/lib
-cp -r $WORKSPACE/_sources/build-gcc/clib2/include $PREFIX/$TARGET >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
-cp -r $WORKSPACE/_sources/build-gcc/clib2/lib $PREFIX/$TARGET >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
-ln -sf $PREFIX/$TARGET/lib/ncrt0.o $PREFIX/$TARGET/lib/crt0.o >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
+cp -r $WORKSPACE/_sources/build-gcc/clib2/include $PREFIX/$TARGET/clib2 >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
+cp -r $WORKSPACE/_sources/build-gcc/clib2/lib $PREFIX/$TARGET/clib2 >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
+#ln -sf $PREFIX/$TARGET/clib2/lib/ncrt0.o $PREFIX/$TARGET/clib2/lib/crt0.o >>$LOGFILES/part10.log 2>>$LOGFILES/part10_err.log
 cd $SOURCES
 
+CC="$PREFIX/bin/$TARGET-gcc" \
+CPP="$PREFIX/bin/$TARGET-gcc -E" \
+AR="$PREFIX/bin/$TARGET-ar" \
+AS="$PREFIX/bin/$TARGET-as" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+LD="$PREFIX/bin/$TARGET-ld" \
+CFLAGS="-Wall -m68020-60 -O2 -msoft-float -funroll-loops -fomit-frame-pointer -noixemul -I../headers -g"
+$SOURCES/$LIBNIX_NAME/configure \
+    --prefix=$PREFIX/$TARGET \
+    --host=i686-linux-gnu \
+    --target=$TARGET \
+    >>$LOGFILES/libnix_configure.log 2>>$LOGFILES/libnix_configure_err.log  
 
+# Clib2
 
-
-# Part 11: Compile GCC (Phase #2)
-echo -e "\e[1m\e[37m11. Compile $GCC_VERSION (Phase #2)"
-cd build-gcc
-echo -e "\e[0m\e[36m   * Build GCC (1 CPU)\e[0m"
-AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 all-gcc >>$LOGFILES/part11.log 2>>$LOGFILES/part11_err.log
-echo -e "\e[0m\e[36m   * Install GCC (1 CPU)\e[0m"
-AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 install-gcc >>$LOGFILES/part11.log 2>>$LOGFILES/part11_err.log
+echo -e "\e[0m\e[36m   * Configure clib2\e[0m"
+mkdir -p build-clib2
+cd build-clib2
+cp -r $WORKSPACE/_sources/clib2/library/* $SOURCES/build-clib2
+echo -e "\e[0m\e[36m   * Patch clib2\e[0m"
+for p in `ls $WORKSPACE/_install/recipes/patches/clib2/*.p`; do patch -d $SOURCES/build-clib2 <$p -p0 >>$LOGFILES/clib2_patch.log 2>>$LOGFILES/clib2_patch_err.log; done 
+echo -e "\e[0m\e[36m   * Customise clib2\e[0m"
+cp -r $WORKSPACE/_install/recipes/files/clib2/* $SOURCES/build-clib2 >>$LOGFILES/clib2_patch.log 2>>$LOGFILES/clib2_patch_err.log
+echo -e "\e[0m\e[36m   * Build clib2 ($CPU)\e[0m"
+PATH=$PREFIX/bin:$PATH make -f GNUmakefile.68k >>$LOGFILES/clib2_make.log 2>>$LOGFILES/clib2_make_err.log
+cp -r $SOURCES/build-clib2/include $PREFIX/$TARGET/clib2 >>$LOGFILES/clib2_make.log 2>>$LOGFILES/clib2_make_err.log
+cp -r $SOURCES/build-clib2/lib $PREFIX/$TARGET/clib2 >>$LOGFILES/clib2_make.log 2>>$LOGFILES/clib2_make_err.log
+ln -sf $PREFIX/$TARGET/clib2/lib/ncrt0.o $PREFIX/$TARGET/clib2/lib/crt0.o >>$LOGFILES/clib2_make.log 2>>$LOGFILES/clib2_make_err.log
 cd $SOURCES
-
-# PART 12: Cleanup
-echo -e "\e[1m\e[37m12. Cleanup\e[0m\e[36m"
-cd $PREFIX
-rm -rf info
-rm -rf man
-
-# FINISH
-echo " "
-echo -e "\e[1m\e[32mFINISHED\e[0m"
-echo " "
-exit
