@@ -1,0 +1,74 @@
+PWD=$(shell pwd)
+DIR=$(notdir $(shell pwd))
+PREFIX=$(PWD)/../../../Compilers/VBCC/ApolloCrossDev
+BIN=$(PREFIX)/bin
+NDK=$(PREFIX)/include
+
+C_COMPILER=vc
+S_COMPILER=vasmm68k_mot
+O_LINKER=vlink
+
+C_INCLUDE_VBCC=$(BIN)/targets/m68k-amigaos/include
+C_INCLUDE_NDK32=$(NDK)/NDK3.2/Include_H
+C_INCLUDE_NDK39=$(NDK)/NDK3.9/Include/include_h
+C_INCLUDE_NDKMUI=$(NDK)/NDKMUI/C/include
+C_INCLUDE_APOLLO=$(NDK)/ApolloInclude
+S_INCLUDE_DEVPAC=$(NDK)/ApolloDevPac
+
+C_LIBS_VBCC=$(BIN)/targets/m68k-amigaos/lib
+C_LIBS_NDK32=$(NDK)/NDK3.2/lib
+C_LIBS_NDK39=$(NDK)/NDK3.9/Include/linker_libs
+
+C_FLAGS= +aos68k -I$(C_INCLUDE_VBCC) -I$(C_INCLUDE_APOLLO) -I$(C_INCLUDE_NDK39) -c -o 
+S_FLAGS= -quiet -m68080 -Fhunkexe -o
+O_FLAGS= -bamigahunk -x -Bstatic -Cvbcc -nostdlib -mrel $(C_LIBS_VBCC)/startup.o -L$(C_LIBS_VBCC) -L$(C_LIBS_NDK39) -lvc -o 
+
+C_SOURCEDIR=.
+S_SOURCEDIR=.
+
+C_OBJECTDIR=$(C_SOURCEDIR)
+S_OBJECTDIR=$(S_SOURCEDIR)
+
+C_FILES=$(wildcard $(C_SOURCEDIR)/*.c)
+S_FILES=$(wildcard $(S_SOURCEDIR)/*.s)
+O_FILES=$(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES))
+
+EXE=$(DIR)-vbcc
+
+all: init build clean exit
+
+build: $(EXE)
+
+$(EXE) : $(O_FILES) 
+	$(O_LINKER) $(O_FLAGS) $(EXE) $(O_FILES) >>log-vbcc.txt 2>>log-vbcc.txt
+
+$(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
+	$(C_COMPILER) $(C_FLAGS) $@ $< >>log-vbcc.txt 2>>log-vbcc.txt
+
+$(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
+	$(S_COMPILER) $(S_FLAGS) $@ $< >>log-vbcc.txt 2>>log-vbcc.txt
+
+clean:
+	rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o 
+
+.phony: init
+
+init:
+	rm -f $(EXE) $(O_FILES) log-vbcc.txt
+	clear
+	@echo "\e[37m---------------------------------\e[0m"
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mVBCC Edition v0.5\e[0m"    
+	@echo "\e[36mC-Sources : \e[37m$(C_FILES)\e[0m"
+	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
+	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"
+	@echo "\e[37m---------------------------------\e[30m"
+		
+exit:
+	@echo "\e[37m---------------------------------\e[0m"
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[32mCompile Successful\e[0m"
+	@echo "\e[37m---------------------------------\e[0m"
+	@echo " "
+    
+
+
+ 

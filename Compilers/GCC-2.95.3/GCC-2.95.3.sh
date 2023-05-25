@@ -28,6 +28,22 @@ NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
 NDK39_NAME=NDK_3.9
 NDK39_DOWNLOAD=https://os.amigaworld.de/download.php?id=3
 NDK39_ARCHIVE=NDK39.lha
+
+M4_NAME="m4-1.4.17"
+M4_DOWNLOAD="https://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.gz"
+GAWK_NAME="gawk-3.1.8"
+GAWK_DOWNLOAD="https://ftp.gnu.org/gnu/gawk/gawk-3.1.8.tar.gz"
+AUTOCONF_NAME="autoconf-2.13"
+AUTOCONF_DOWNLOAD="https://ftp.gnu.org/gnu/autoconf/autoconf-2.13.tar.gz"
+BISON_NAME="bison-1.35"
+BISON_DOWNLOAD="https://ftp.gnu.org/gnu/bison/bison-1.35.tar.gz"
+TEXINFO_NAME="texinfo-4.12"
+TEXINFO_DOWNLOAD="https://ftp.gnu.org/gnu/texinfo/texinfo-4.12.tar.gz"
+AUTOMAKE_NAME="automake-1.15"
+AUTOMAKE_DOWNLOAD="https://ftp.gnu.org/gnu/automake/automake-1.15.tar.gz"
+FLEX_NAME="flex-2.5.4"
+FLEX_DOWNLOAD="ftp://ftp.uk.freesbie.org/sites/distfiles.gentoo.org/distfiles/flex-2.5.4a.tar.gz"
+
 BINUTILS_NAME=amigaos-binutils-2.14
 BINUTILS_DOWNLOAD=https://github.com/adtools/amigaos-binutils-2.14
 GCC_NAME=amigaos-gcc-2.95.3
@@ -63,30 +79,17 @@ echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
 # PART 1: Clean the House
 sudo echo -e "\e[1m\e[37m1. Prepare Installation\e[0m\e[36m"
 echo "   * Clean the House" 
-rm -f -r $PREFIX
-rm -f -r $LOGFILES
-rm -f -r $SOURCES
+rm -f -r $PREFIX $LOGFILES $SOURCES
 echo "   * Create Directories" 
-mkdir -p $LOGFILES
-mkdir -p $SOURCES
-mkdir -p $PREFIX
-mkdir -p $PREFIX/bin
-mkdir -p $PREFIX/etc
-mkdir -p $PREFIX/$TARGET
-mkdir -p $PREFIX/$TARGET/bin
-mkdir -p $PREFIX/$TARGET/ndk
-mkdir -p $PREFIX/$TARGET/ndk/include
-mkdir -p $PREFIX/$TARGET/ndk/include/inline
-mkdir -p $PREFIX/$TARGET/ndk/include/lvo
-mkdir -p $PREFIX/$TARGET/ndk/lib
-mkdir -p $PREFIX/$TARGET/ndk/lib/fd
-mkdir -p $PREFIX/$TARGET/ndk/lib/sfd
-mkdir -p $PREFIX/$TARGET/libnix
-mkdir -p $PREFIX/$TARGET/libnix/lib
-mkdir -p $PREFIX/$TARGET/clib2
+mkdir -p $PREFIX $LOGFILES $SOURCES
+mkdir -p $PREFIX/bin $PREFIX/etc $PREFIX/$TARGET $PREFIX/$TARGET/bin $PREFIX/$TARGET/clib2
+mkdir -p $PREFIX/$TARGET/ndk $PREFIX/$TARGET/ndk/include $PREFIX/$TARGET/ndk/include/inline $PREFIX/$TARGET/ndk/include/lvo
+mkdir -p $PREFIX/$TARGET/ndk/lib $PREFIX/$TARGET/ndk/lib/fd $PREFIX/$TARGET/ndk/lib/sfd $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/lib
+cd $SOURCES
 
 # PART 2: Update Linux Packages 
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
+echo -e "\e[36m   * On first run: please be patient"
 sudo apt -y update >>$LOGFILES/part2_linux_updates.log 2>>$LOGFILES/part2_linux_updates_err.log
 sudo apt -y install build-essential m4 gawk autoconf automake flex bison expect dejagnu texinfo lhasa git subversion \
      make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev rsync libreadline-dev rename \
@@ -94,7 +97,20 @@ sudo apt -y install build-essential m4 gawk autoconf automake flex bison expect 
 
 # PART 3: Prepare Sources
 echo -e "\e[1m\e[37m3. Download Sources\e[0m\e[36m"
-cd $SOURCES
+echo -e -n "\e[36m   *Compile Tools:\e[30m $M4_NAME |"
+wget -nc $M4_DOWNLOAD -a $LOGFILES/part3_sources.log
+echo -n " $GAWK_NAME |" 
+wget -nc $GAWK_DOWNLOAD -a $LOGFILES/part3_sources.log
+echo -n " $AUTOCONF_NAME |" 
+wget -nc $AUTOCONF_DOWNLOAD -a $LOGFILES/part3_sources.log
+echo -n " $BISON_NAME |" 
+wget -nc $BISON_DOWNLOAD -a $LOGFILES/part3_sources.log
+echo -n " $TEXINFO_NAME |" 
+wget -nc $TEXINFO_DOWNLOAD -a $LOGFILES/part3_sources.log
+echo -n " $AUTOMAKE_NAME |" 
+wget -nc $AUTOMAKE_DOWNLOAD -a $LOGFILES/part3_sources.log
+echo -n " $FLEX_NAME |" 
+wget -nc $FLEX_DOWNLOAD -a $LOGFILES/part3_sources.log
 echo -e -n "\e[36m   * GNU Sources:\e[30m $BINUTILS_NAME |" 
 git clone --progress $BINUTILS_DOWNLOAD 2>>$LOGFILES/part3_sources.log
 echo " $GCC_NAME" 
@@ -111,7 +127,7 @@ echo -n " $LIBAMIGA_NAME |"
 wget -nc $LIBAMIGA_DOWNLOAD -a $LOGFILES/part3_sources.log
 echo " $LIBM_NAME" 
 wget -nc $LIBM_DOWNLOAD -a $LOGFILES/part3_sources.log
-echo -e -n "\e[36m   * Tools:\e[30m $FD2SFD_NAME |"
+echo -e -n "\e[36m   * Library Tools:\e[30m $FD2SFD_NAME |"
 git clone --progress $FD2SFD_DOWNLOAD 2>>$LOGFILES/part3_sources.log
 echo -n " $SFDC_NAME |" 
 git clone --progress $SFDC_DOWNLOAD 2>>$LOGFILES/part3_sources.log
@@ -121,8 +137,23 @@ echo -e "\e[0m\e[36m   * NDKS's:\e[30m $NDK39_NAME |"
 wget -nc $NDK39_DOWNLOAD -a $LOGFILES/part3_sources.log
 mv download.php?id=3 $NDK39_ARCHIVE
 
-# PART 4: Tools
+# PART 4: Unpack Sources
+echo -e "\e[1m\e[37m4. Unpack Sources\e[0m\e[36m"
+for f in *.tar*; do tar xfk $f >>$LOGFILES/part4_unpack.log 2>>$LOGFILES/part4_unpack_err.log; done 
+
+# PART 5: Tools
 echo -e "\e[1m\e[37m4. Install Tools\e[0m\e[36m"
+
+echo "   * $M4_NAME" 
+mkdir -p build-m4
+cd build-m4
+../$M4_NAME/configure \
+    --prefix=$PREFIX/bin
+>>$LOGFILES/part4_tools_m4_configure.log 2>>$LOGFILES/part4_tools_m4_configure_err.log
+make $CPU >>$LOGFILES/part4_tools_fd2sfd.log >>$LOGFILES/part4_tools_m4_make.log 2>>$LOGFILES/part4_tools_m4_make_err.log
+make $CPU install >>$LOGFILES/part4_tools_fd2sfd.log >>$LOGFILES/part4_tools_m4_make.log 2>>$LOGFILES/part4_tools_m4_make_err.log
+cd $SOURCES
+
 echo "   * $FD2SFD_NAME" 
 cd $FD2SFD_NAME
 ./configure \
@@ -148,6 +179,8 @@ cd $SFDC_NAME
 make >>$LOGFILES/part4_tools_fd2pragma.log 2>>$LOGFILES/part4_tools_fd2pragma_err.log
 make install >>$LOGFILES/part4_tools_fd2pragma.log 2>>$LOGFILES/part4_tools_fd2pragma_err.log
 cd $SOURCES
+
+exit
 
 # PART 5: AmigaOS 3.9 NDK
 echo -e "\e[1m\e[37m5. Amiga OS 3.9 NDK\e[0m\e[36m"
@@ -252,8 +285,6 @@ cd $SOURCES
 # Part 8: Libraries
 echo -e "\e[1m\e[37m8. Compile Libraries\e[0m"
 
-echo -e -n "\e[0m\e[36m   * libamiga:\e[30m unpack | "
-tar xfk $LIBAMIGA_ARCHIVE >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
 echo -e "install\e[0m"
 mv lib $LIBAMIGA_NAME >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
 cp -r $LIBAMIGA_NAME/* $PREFIX/$TARGET/libnix/lib >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
@@ -285,8 +316,6 @@ make -j1 install >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_mak
 cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/libnix/include
 cd $SOURCES
 
-echo -e -n "\e[0m\e[36m   * libm:\e[30m unpack | "
-tar xfk $LIBM_ARCHIVE >>$LOGFILES/part8_libm_extract.log 2>>$LOGFILES/part8_libm_extract_err.log
 mv contrib/libm $LIBM_NAME
 rm -r contrib
 cp -f $WORKSPACE/_install/config.* $LIBM_NAME

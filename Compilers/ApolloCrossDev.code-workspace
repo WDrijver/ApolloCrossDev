@@ -13,10 +13,15 @@
 			"path": "../../Dev/lame-3.100"
 		},
 		{
-			"path": "../../Dev/libiconv-1.17"
+			"path": "../../Dev/lame-3.96"
 		},
 		{
-			"path": "../../Dev/lame-3.96"
+			"path": "../../Dev/Flype"
 		}
-	]
+	],
+	"settings": {
+		"files.associations": {
+			"*.x": "c"
+		}
+	}
 }
