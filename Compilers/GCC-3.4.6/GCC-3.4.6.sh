@@ -111,7 +111,7 @@ for f in *.tar*; do tar xfk $f >>$LOGFILES/part4_unpack.log 2>>$LOGFILES/part4_u
 # Part 5: Compile BinUtils
 echo -e "\e[1m\e[37m5. Compile $BINUTILS_VERSION"
 echo -e "\e[0m\e[36m   * Patch Binutils\e[0m"
-for p in `ls $WORKSPACE/_install/recipes/patches/binutils/*.p`; do patch -d $WORKSPACE/_sources/$BINUTILS_VERSION <$p -p0 >>$LOGFILES/part6_binutils_patch.log 2>>$LOGFILES/part6_binutils_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/binutils/*.p`; do patch -d $WORKSPACE/_sources/$BINUTILS_VERSION <$p -p0 >>$LOGFILES/part5_binutils_patch.log 2>>$LOGFILES/part5_binutils_patch_err.log; done 
 echo -e "\e[0m\e[36m   * Configure Binutils\e[0m"
 mkdir -p build-binutils
 cd build-binutils
@@ -122,11 +122,11 @@ LDFLAGS="-m32" \
     --target=$TARGET \
     --disable-nls \
     --disable-werror \
-    >>$LOGFILES/part6_binutils_configure.log 2>>$LOGFILES/part6_binutils_configure_err.log
+    >>$LOGFILES/part5_binutils_configure.log 2>>$LOGFILES/part5_binutils_configure_err.log
 echo -e "\e[0m\e[36m   * Build Binutils ($CPU)\e[0m"
-make $CPU >>$LOGFILES/part6_binutils_make.log 2>>$LOGFILES/part6_binutils_make_err.log
+make $CPU >>$LOGFILES/part5_binutils_make.log 2>>$LOGFILES/part5_binutils_make_err.log
 echo -e "\e[0m\e[36m   * Install Binutils ($CPU)\e[0m"
-make $CPU install >>$LOGFILES/part6_binutils_make.log 2>>$LOGFILES/part6_binutils_make_err.log
+make $CPU install >>$LOGFILES/part5_binutils_make.log 2>>$LOGFILES/part5_binutils_make_err.log
 cd $SOURCES
 
 # Part 6: Compile Bison
@@ -139,7 +139,7 @@ cd build-bison
 ../$BISON_VERSION/configure \
     --prefix="$PREFIX" >>$LOGFILES/part6_bison_configure.log 2>>$LOGFILES/part6_bison_configure_err.log
 echo -e "\e[0m\e[36m   * Build Bison ($CPU)\e[0m"
-make $CPU >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+make $CPU >>$LOGFILES/part6_bison_make.log 2>>$LOGFILES/part6_bison_make_err.log
 echo -e "\e[0m\e[36m   * Install Bison ($CPU)\e[0m"
 make $CPU install >>$LOGFILES/part6_bison_make.log 2>>$LOGFILES/part6_bison_make_err.log
 cd $SOURCES
@@ -280,9 +280,6 @@ echo -e "install\e[0m"
 make -j1 install >>$LOGFILES/libnix_install.log 2>>$LOGFILES/libnix_install_err.log
 cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/include
 cd $SOURCES
-
-exit
-
 
 # Part 11: Compile GCC (Phase #2)
 echo -e "\e[1m\e[37m11. Compile $GCC_VERSION (Phase #2)"
