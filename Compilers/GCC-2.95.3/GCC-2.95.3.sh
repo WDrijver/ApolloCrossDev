@@ -12,6 +12,8 @@
 EDITION=GNU-2.95.3
 VERSION=1.0
 CPU=-j1
+GCCVERSION=2.95.3
+CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
 
 WORKSPACE="`pwd`"
 ARCHIVES=$WORKSPACE/_archives
@@ -20,12 +22,13 @@ BUILDS=$WORKSPACE/_builds
 LOGFILES=$WORKSPACE/_logs
 PREFIX=$WORKSPACE/ApolloCrossDev
 TARGET=m68k-amigaos
+export PATH=$PREFIX/bin:$PATH
+
 CC="gcc"
 CXX="g++"
 CC32="gcc -m32 -std=gnu11"
 CXX32="g++ -m32 -std=gnu++11"
 FLAGS="-g -O2"
-export PATH=$PREFIX/bin:$PATH
 
 NDK32_NAME=NDK3.2
 NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
