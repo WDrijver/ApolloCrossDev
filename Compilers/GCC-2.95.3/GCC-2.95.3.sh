@@ -10,12 +10,13 @@
 # 3. Read make-gcc2953 for compile instructions
 
 EDITION=GNU-2.95.3
-VERSION=0.8
+VERSION=1.0
 CPU=-j1
 
 WORKSPACE="`pwd`"
 SOURCES=$WORKSPACE/_sources
-LOGFILES=$WORKSPACE/_logs
+BUILDS=$WORKSPACE/_builds
+LOGFILES=$BUILDS/_logs
 PREFIX=$WORKSPACE/ApolloCrossDev
 TARGET=m68k-amigaos
 CC="gcc"
@@ -65,27 +66,12 @@ echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
 # PART 1: Clean the House
 sudo echo -e "\e[1m\e[37m1. Prepare Installation\e[0m\e[36m"
 echo "   * Clean the House" 
-rm -f -r $PREFIX
-rm -f -r $LOGFILES
-rm -f -r $SOURCES
+rm -f -r $BUILDS $PREFIX
 echo "   * Create Directories" 
-mkdir -p $LOGFILES
-mkdir -p $SOURCES
-mkdir -p $PREFIX
-mkdir -p $PREFIX/bin
-mkdir -p $PREFIX/etc
-mkdir -p $PREFIX/$TARGET
-mkdir -p $PREFIX/$TARGET/bin
-mkdir -p $PREFIX/$TARGET/ndk
-mkdir -p $PREFIX/$TARGET/ndk/include
-mkdir -p $PREFIX/$TARGET/ndk/include/inline
-mkdir -p $PREFIX/$TARGET/ndk/include/lvo
-mkdir -p $PREFIX/$TARGET/ndk/lib
-mkdir -p $PREFIX/$TARGET/ndk/lib/fd
-mkdir -p $PREFIX/$TARGET/ndk/lib/sfd
-mkdir -p $PREFIX/$TARGET/libnix
-mkdir -p $PREFIX/$TARGET/libnix/lib
-mkdir -p $PREFIX/$TARGET/clib2
+mkdir -p $SOURCES $BUILDS $LOGFILES $PREFIX/$TARGET
+mkdir -p $PREFIX/bin $PREFIX/etc  $PREFIX/$TARGET/bin $PREFIX/$TARGET/ndk $PREFIX/$TARGET/ndk/include $PREFIX/$TARGET/ndk/lib
+mkdir -p $PREFIX/$TARGET/ndk/include/inline $PREFIX/$TARGET/ndk/include/lvo  $PREFIX/$TARGET/ndk/lib/fd $PREFIX/$TARGET/ndk/lib/sfd
+mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/lib $PREFIX/$TARGET/clib2
 
 # PART 2: Update Linux Packages 
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
@@ -95,7 +81,7 @@ sudo apt -y install build-essential m4 gawk autoconf automake flex bison expect 
      make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev rsync libreadline-dev rename \
      >>$LOGFILES/part2_linux_updates.log 2>>$LOGFILES/part2_linux_updates_err.log
 
-# PART 3: Prepare Sources
+# PART 3: Prepare Sources (Sources moved locally in ApolloCrossDev Git Repo)
 echo -e "\e[1m\e[37m3. Download Sources\e[0m\e[36m"
 cd $SOURCES
 echo -e -n "\e[36m   * GNU Sources:\e[30m $BINUTILS_NAME |" 
@@ -123,35 +109,41 @@ git clone --progress $FD2PRAGMA_DOWNLOAD 2>>$LOGFILES/part3_sources.log
 echo -e "\e[0m\e[36m   * NDKS's:\e[30m $NDK39_NAME |"
 wget -nc $NDK39_DOWNLOAD -a $LOGFILES/part3_sources.log
 mv download.php?id=3 $NDK39_ARCHIVE
-
+exit
 # PART 4: Tools
+CD $SOURCES
 echo -e "\e[1m\e[37m4. Install Tools\e[0m\e[36m"
 echo "   * $FD2SFD_NAME" 
-cd $FD2SFD_NAME
-./configure \
+mkdir -p $BUILDS/build-$FD2SFD_NAME
+cd $BUILDS/build-$FD2SFD_NAME
+$SOURCES/$FD2SFD_NAME/configure \
     --prefix=$PREFIX \
     >>$LOGFILES/part4_tools_fd2sfd.log 2>>$LOGFILES/part4_tools_fd2sfd_err.log
 make >>$LOGFILES/part4_tools_fd2sfd.log 2>>$LOGFILES/part4_tools_fd2sfd_err.log
 cp fd2sfd $PREFIX/bin >>$LOGFILES/part4_tools_fd2sfd.log 2>>$LOGFILES/part4_tools_fd2sfd_err.log
 cp cross/share/$TARGET/alib.h $PREFIX/$TARGET/ndk/include/inline >>$LOGFILES/part4_tools_fd2sfd.log 2>>$LOGFILES/part4_tools_fd2sfd_err.log
 cd $SOURCES
+
 echo "   * $FD2PRAGMA_NAME" 
-cd $FD2PRAGMA_NAME
-./configure \
+mkdir -p $BUILDS/build-$FD2PRAGMA_NAME
+cd $BUILDS/build-$FD2PRAGMA_NAME
+$SOURCES/$FD2PRAGMA_NAME/configure \
     >>$LOGFILES/part4_tools_fd2pragma.log 2>>$LOGFILES/part4_tools_fd2pragma_err.log
 make >>$LOGFILES/part4_tools_fd2pragma.log 2>>$LOGFILES/part4_tools_fd2pragma_err.log
 cp fd2pragma $PREFIX/bin 
 cp Include/inline/* $PREFIX/$TARGET/ndk/include/inline 
 cd $SOURCES
-echo "   * $SFDC_NAME" 
-cd $SFDC_NAME
-./configure \
-    --prefix=$PREFIX \
-    >>$LOGFILES/part4_tools_fd2pragma.log 2>>$LOGFILES/part4_tools_fd2pragma_err.log
-make >>$LOGFILES/part4_tools_fd2pragma.log 2>>$LOGFILES/part4_tools_fd2pragma_err.log
-make install >>$LOGFILES/part4_tools_fd2pragma.log 2>>$LOGFILES/part4_tools_fd2pragma_err.log
-cd $SOURCES
 
+echo "   * $SFDC_NAME" 
+mkdir -p $BUILDS/build-$SFDC_NAME
+cd $BUILDS/build-$SFDC_NAME
+$SOURCES/$SFDC_NAME/configure \
+    --prefix=$PREFIX \
+    >>$LOGFILES/part4_tools_sfdc.log 2>>$LOGFILES/part4_tools_sfdc_err.log
+make >>$LOGFILES/part4_tools_sfdc.log 2>>$LOGFILES/part4_tools_sfdc_err.log
+make install >>$LOGFILES/part4_tools_sfdc.log 2>>$LOGFILES/part4_tools_sfdc_err.log
+cd $SOURCES
+exit
 # PART 5: AmigaOS 3.9 NDK
 echo -e "\e[1m\e[37m5. Amiga OS 3.9 NDK\e[0m\e[36m"
 echo -e "\e[0m\e[36m   * Unpack $NDK39_ARCHIVE\e[0m"
@@ -329,13 +321,14 @@ make -j1 install >>$LOGFILES/part8_libdebug_make.log 2>>$LOGFILES/part8_libdebug
 cd $SOURCES
 
 echo -e -n "\e[0m\e[36m   * clib2:\e[30m make | "
-cd clib2/library
+cp -r clib2 build-clib2
+cd build-clib2/library
 PATH=$PREFIX/bin:$PATH make -f GNUmakefile.68k >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
 echo -e "install\e[0m"
 mkdir -p $PREFIX/$TARGET/include
 mkdir -p $PREFIX/$TARGET/lib
-cp -r $SOURCES/$CLIB2_NAME/library/include $PREFIX/$TARGET/clib2 >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
-cp -r $SOURCES/$CLIB2_NAME/library/lib $PREFIX/$TARGET/clib2 >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
+cp -r $SOURCES/build-clib2/library/include $PREFIX/$TARGET/clib2 >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
+cp -r $SOURCES/build-clib2/library/lib $PREFIX/$TARGET/clib2 >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
 ln -sf $PREFIX/$TARGET/clib2/lib/ncrt0.o $PREFIX/$TARGET/clib2/lib/crt0.o >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
 cd $SOURCES
 
@@ -374,6 +367,34 @@ exit
 
 # SCRAPBOOK
 
+# PART 3: Prepare Sources (Sources moved locally in ApolloCrossDev Git Repo)
+echo -e "\e[1m\e[37m3. Download Sources\e[0m\e[36m"
+cd $SOURCES
+echo -e -n "\e[36m   * GNU Sources:\e[30m $BINUTILS_NAME |" 
+git clone --progress $BINUTILS_DOWNLOAD 2>>$LOGFILES/part3_sources.log
+echo " $GCC_NAME" 
+git clone --progress $GCC_DOWNLOAD 2>>$LOGFILES/part3_sources.log
+echo -e -n "\e[36m   * Libraries\e[30m: $CLIB2_NAME |"
+git clone --progress $CLIB2_DOWNLOAD 2>>$LOGFILES/part3_sources.log
+echo -n " $LIBNIX_NAME |" 
+git clone --progress $LIBNIX_DOWNLOAD 2>>$LOGFILES/part3_sources.log
+echo -n " $LIBDEBUG_NAME |" 
+git clone --progress $LIBDEBUG_DOWNLOAD 2>>$LOGFILES/part3_sources.log
+echo -n " $IXEMUL_NAME |" 
+wget -nc $IXEMUL_DOWNLOAD -a $LOGFILES/part3_sources.log
+echo -n " $LIBAMIGA_NAME |" 
+wget -nc $LIBAMIGA_DOWNLOAD -a $LOGFILES/part3_sources.log
+echo " $LIBM_NAME" 
+wget -nc $LIBM_DOWNLOAD -a $LOGFILES/part3_sources.log
+echo -e -n "\e[36m   * Tools:\e[30m $FD2SFD_NAME |"
+git clone --progress $FD2SFD_DOWNLOAD 2>>$LOGFILES/part3_sources.log
+echo -n " $SFDC_NAME |" 
+git clone --progress $SFDC_DOWNLOAD 2>>$LOGFILES/part3_sources.log
+echo " $FD2PRAGMA_NAME" 
+git clone --progress $FD2PRAGMA_DOWNLOAD 2>>$LOGFILES/part3_sources.log
+echo -e "\e[0m\e[36m   * NDKS's:\e[30m $NDK39_NAME |"
+wget -nc $NDK39_DOWNLOAD -a $LOGFILES/part3_sources.log
+mv download.php?id=3 $NDK39_ARCHIVE
 
 
 
