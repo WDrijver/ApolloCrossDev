@@ -77,6 +77,7 @@ rm -f -r $PREFIX $LOGFILES $SOURCES
 echo "   * Create Directories" 
 mkdir -p $PREFIX $LOGFILES $SOURCES
 mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/lib
+mkdir -p $PREFIX/$TARGET/sys-include
 
 cd $SOURCES
 
@@ -181,6 +182,7 @@ AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$
 echo -e "\e[0m\e[36m   * Install GCC (1 CPU)\e[0m"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 install-gcc >>$LOGFILES/part8_gcc_make.log 2>>$LOGFILES/part8_gcc_make_err.log
 cd $SOURCES
+cp -r $SOURCES/build-gcc/gcc/include/* $PREFIX/$TARGET/sys-include/ >>$LOGFILES/part8_gcc_include.log 2>>$LOGFILES/part8_gcc_include_err.log
 
 # PART 9: Amiga NDK's
 echo -e "\e[1m\e[37m9. Amiga NDK's"
@@ -216,7 +218,7 @@ lha xw=codesets $CODESETS_ARCHIVE >>$LOGFILES/part9_NDK_Amiga.log 2>>$LOGFILES/p
 cp -r codesets/codesets/Developer/include/* $PREFIX/$TARGET/sys-include/
 cd $SOURCES
 
-# PART 10: Amiga Libs/Includes
+# PART 10: Amiga Libraries: CLib2
 echo -e "\e[1m\e[37m10. Amiga Libraries"
 echo -e "\e[0m\e[36m   * Configure clib2\e[0m"
 mkdir -p build-clib2
@@ -242,6 +244,7 @@ echo -e "\e[0m\e[36m   * Install GCC (1 CPU)\e[0m"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 install-gcc >>$LOGFILES/part11_gcc_make.log 2>>$LOGFILES/part11_gcc_make_err.log
 cd $SOURCES
 
+# Part 12: Amiga Libraries
 echo -e "\e[1m\e[37m12. Amiga Libraries"
 echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
 mkdir -p build-libnix
@@ -256,7 +259,7 @@ $SOURCES/$LIBNIX_NAME/configure \
     --prefix=$PREFIX/$TARGET/libnix \
     --host=i686-linux-gnu \
     --target=$TARGET \
-    >>$LOGFILES/libnix_configure.log 2>>$LOGFILES/libnix_configure_err.log   
+    >>$LOGFILES/part12_libnix_configure.log 2>>$LOGFILES/part12_libnix_configure_err.log   
 echo -e -n "make | "
 CC="$PREFIX/bin/$TARGET-gcc" \
 CPP="$PREFIX/bin/$TARGET-gcc -E" \
@@ -264,14 +267,14 @@ AR="$PREFIX/bin/$TARGET-ar" \
 AS="$PREFIX/bin/$TARGET-as" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 LD="$PREFIX/bin/$TARGET-ld" \
-make -j1 >>$LOGFILES/libnix_make.log 2>>$LOGFILES/libnix_make_err.log
+make -j1 >>$LOGFILES/part12_libnix_make.log 2>>$LOGFILES/part12_libnix_make_err.log
 echo -e "install\e[0m"
-make -j1 install >>$LOGFILES/libnix_install.log 2>>$LOGFILES/libnix_install_err.log
+make -j1 install >>$LOGFILES/part12_libnix_make.log 2>>$LOGFILES/part12_libnix_make_err.log
 cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/include
 cd $SOURCES
 
-# PART 12: Cleanup
-echo -e "\e[1m\e[37m12. Cleanup\e[0m\e[36m"
+# PART 13: Cleanup
+echo -e "\e[1m\e[37m13. Cleanup\e[0m\e[36m"
 cd $PREFIX
 rm -rf info
 rm -rf man

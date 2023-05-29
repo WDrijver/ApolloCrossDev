@@ -1,9 +1,0 @@
-/home/willem/ApolloCrossDev/Compilers/GCC-2.95.3/_sources/fd2sfd/fd2inline.c: In function ‘fD_write’:
-/home/willem/ApolloCrossDev/Compilers/GCC-2.95.3/_sources/fd2sfd/fd2inline.c:1668:8: warning: variable ‘vd’ set but not used [-Wunused-but-set-variable]
- 1668 |    int vd=0, a45=0, d7=0;
-      |        ^~
-At top level:
-/home/willem/ApolloCrossDev/Compilers/GCC-2.95.3/_sources/fd2sfd/fd2inline.c:28:19: warning: ‘version_str’ defined but not used [-Wunused-const-variable=]
-   28 | static const char version_str[]="$VER: fd2sfd " VERSION " (" DATE ")\r\n";
-      |                   ^~~~~~~~~~~
-cp: cannot stat 'cross/share/m68k-amigaos/alib.h': No such file or directory
