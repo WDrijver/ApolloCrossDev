@@ -14,9 +14,10 @@ VERSION=1.0
 CPU=-j1
 
 WORKSPACE="`pwd`"
+ARCHIVES=$WORKSPACE/_archives
 SOURCES=$WORKSPACE/_sources
 BUILDS=$WORKSPACE/_builds
-LOGFILES=$BUILDS/_logs
+LOGFILES=$WORKSPACE/_logs
 PREFIX=$WORKSPACE/ApolloCrossDev
 TARGET=m68k-amigaos
 CC="gcc"
@@ -66,9 +67,9 @@ echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
 # PART 1: Clean the House
 sudo echo -e "\e[1m\e[37m1. Prepare Installation\e[0m\e[36m"
 echo "   * Clean the House" 
-rm -f -r $BUILDS $PREFIX
+rm -f -r $SOURCES $BUILDS $LOGFILES $PREFIX
 echo "   * Create Directories" 
-mkdir -p $SOURCES $BUILDS $LOGFILES $PREFIX/$TARGET
+mkdir -p $SOURCES $BUILDS $LOGFILES $PREFIX $PREFIX/$TARGET
 mkdir -p $PREFIX/bin $PREFIX/etc  $PREFIX/$TARGET/bin $PREFIX/$TARGET/ndk $PREFIX/$TARGET/ndk/include $PREFIX/$TARGET/ndk/lib
 mkdir -p $PREFIX/$TARGET/ndk/include/inline $PREFIX/$TARGET/ndk/include/lvo  $PREFIX/$TARGET/ndk/lib/fd $PREFIX/$TARGET/ndk/lib/sfd
 mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/lib $PREFIX/$TARGET/clib2
@@ -81,37 +82,14 @@ sudo apt -y install build-essential m4 gawk autoconf automake flex bison expect 
      make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev rsync libreadline-dev rename \
      >>$LOGFILES/part2_linux_updates.log 2>>$LOGFILES/part2_linux_updates_err.log
 
-# PART 3: Prepare Sources (Sources moved locally in ApolloCrossDev Git Repo)
-echo -e "\e[1m\e[37m3. Download Sources\e[0m\e[36m"
-cd $SOURCES
-echo -e -n "\e[36m   * GNU Sources:\e[30m $BINUTILS_NAME |" 
-git clone --progress $BINUTILS_DOWNLOAD 2>>$LOGFILES/part3_sources.log
-echo " $GCC_NAME" 
-git clone --progress $GCC_DOWNLOAD 2>>$LOGFILES/part3_sources.log
-echo -e -n "\e[36m   * Libraries\e[30m: $CLIB2_NAME |"
-git clone --progress $CLIB2_DOWNLOAD 2>>$LOGFILES/part3_sources.log
-echo -n " $LIBNIX_NAME |" 
-git clone --progress $LIBNIX_DOWNLOAD 2>>$LOGFILES/part3_sources.log
-echo -n " $LIBDEBUG_NAME |" 
-git clone --progress $LIBDEBUG_DOWNLOAD 2>>$LOGFILES/part3_sources.log
-echo -n " $IXEMUL_NAME |" 
-wget -nc $IXEMUL_DOWNLOAD -a $LOGFILES/part3_sources.log
-echo -n " $LIBAMIGA_NAME |" 
-wget -nc $LIBAMIGA_DOWNLOAD -a $LOGFILES/part3_sources.log
-echo " $LIBM_NAME" 
-wget -nc $LIBM_DOWNLOAD -a $LOGFILES/part3_sources.log
-echo -e -n "\e[36m   * Tools:\e[30m $FD2SFD_NAME |"
-git clone --progress $FD2SFD_DOWNLOAD 2>>$LOGFILES/part3_sources.log
-echo -n " $SFDC_NAME |" 
-git clone --progress $SFDC_DOWNLOAD 2>>$LOGFILES/part3_sources.log
-echo " $FD2PRAGMA_NAME" 
-git clone --progress $FD2PRAGMA_DOWNLOAD 2>>$LOGFILES/part3_sources.log
-echo -e "\e[0m\e[36m   * NDKS's:\e[30m $NDK39_NAME |"
-wget -nc $NDK39_DOWNLOAD -a $LOGFILES/part3_sources.log
-mv download.php?id=3 $NDK39_ARCHIVE
-exit
+# PART 3: Unpack Archives
+cd $ARCHIVES
+echo -e "\e[1m\e[37m4. Unpack Source Archives\e[0m\e[36m"
+for f in *.tar*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
+lha -xw=$SOURCES $NDK39_ARCHIVE >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log
+
 # PART 4: Tools
-CD $SOURCES
+cd $SOURCES
 echo -e "\e[1m\e[37m4. Install Tools\e[0m\e[36m"
 echo "   * $FD2SFD_NAME" 
 mkdir -p $BUILDS/build-$FD2SFD_NAME
@@ -146,8 +124,6 @@ cd $SOURCES
 exit
 # PART 5: AmigaOS 3.9 NDK
 echo -e "\e[1m\e[37m5. Amiga OS 3.9 NDK\e[0m\e[36m"
-echo -e "\e[0m\e[36m   * Unpack $NDK39_ARCHIVE\e[0m"
-lha -xw=$SOURCES $NDK39_ARCHIVE >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
 echo -e "\e[0m\e[36m   * Patch AmigaOS NDK 3.9\e[0m"
 for p in `ls $WORKSPACE/_install/patches/$NDK39_NAME/Include/include_h/devices/*.diff`; do patch -d $SOURCES/$NDK39_NAME/Include/include_h/devices <$p >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done 
 for p in `ls $WORKSPACE/_install/patches/$NDK39_NAME/Include/include_h/graphics/*.diff`; do patch -d $SOURCES/$NDK39_NAME/Include/include_h/graphics <$p >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done 
@@ -247,9 +223,7 @@ cd $SOURCES
 # Part 8: Libraries
 echo -e "\e[1m\e[37m8. Compile Libraries\e[0m"
 
-echo -e -n "\e[0m\e[36m   * libamiga:\e[30m unpack | "
-tar xfk $LIBAMIGA_ARCHIVE >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
-echo -e "install\e[0m"
+echo -e "\e[0m\e[36m   * libamiga:\e[30m install\e[0m"
 mv lib $LIBAMIGA_NAME >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
 cp -r $LIBAMIGA_NAME/* $PREFIX/$TARGET/libnix/lib >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
 
@@ -280,8 +254,7 @@ make -j1 install >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_mak
 cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/libnix/include
 cd $SOURCES
 
-echo -e -n "\e[0m\e[36m   * libm:\e[30m unpack | "
-tar xfk $LIBM_ARCHIVE >>$LOGFILES/part8_libm_extract.log 2>>$LOGFILES/part8_libm_extract_err.log
+echo -e -n "\e[0m\e[36m   * libm:\e[30m configure | "
 mv contrib/libm $LIBM_NAME
 rm -r contrib
 cp -f $WORKSPACE/_install/config.* $LIBM_NAME
