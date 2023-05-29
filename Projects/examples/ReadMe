@@ -109,12 +109,8 @@ libnix
     
     clib2/lib   : libamiga.a    libc.a      libdebug.a      libm.a      libnet.a    libunix.a   nb32crt0.o  nbcrt0.0    ncrt0.o     nr32crt0.o  nrcrt0.o
     
-
-    
-    
-
 Library Types:
-    lib         = default
+    lib         = default                           
     lib/libb    = -fbaserel -DSMALL_DATA
     lib/libb32  = 
     lib/libm020 = -m68020
@@ -124,13 +120,14 @@ Library Types:
     libb/libm020/libm881 = -fbaserel -DSMALL_DAT -m68020 -m68881
     libb32/libm020 = -fbaserel32 -DMSALL_DATA -m68020
 
-GCC 2.95.3 MULTILIB
-            ('libb', ['-fbaserel', '-DSMALL_DATA']),
-            ('libm020', ['-m68020']),
-            ('libb/libm020', ['-fbaserel', '-DSMALL_DATA', '-m68020']),
-            ('libm020/libm881', ['-m68020', '-m68881']),
-            ('libb/libm020/libm881', ['-fbaserel', '-DSMALL_DATA', '-m68020', '-m68881']),
-            ('libb32/libm020', ['-fbaserel32', '-DSMALL_DATA', '-m68020'])]
+	cd lib; 	$(MAK2) libamiga CFLAGS="-O3 -fomit-frame-pointer"
+	cd libb;	$(MAK2) libamiga CFLAGS="-O3 -fomit-frame-pointer -fbaserel"
+	cd libb32;	$(MAK2) libamiga CFLAGS="-O3 -fomit-frame-pointer -fbaserel32 -m68020"
+#   -fbaserel -DSMALL_DATA	for small data model
+#   -fbaserel32			for large baserel model
+#   -m68020			for 68020 specific code
+#   -m68060			for 68060 specific code
+#   -m68881			for 68881 specific code (FPU)
 
     lib/fd          =  
     lib/sfd         =
