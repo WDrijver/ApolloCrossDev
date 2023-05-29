@@ -1,0 +1,786 @@
+#!/usr/bin/python2.7 -B
+
+# Build cross toolchain for AmigaOS <= 3.9 / M68k target.
+
+from fnmatch import fnmatch
+from glob import glob
+from logging import info, getLogger
+from os import environ
+import argparse
+import logging
+import platform
+import re
+import string
+import sys
+
+URLS = \
+  ['https://ftp.gnu.org/gnu/m4/m4-1.4.17.tar.gz',
+   'https://ftp.gnu.org/gnu/gawk/gawk-3.1.8.tar.gz',
+   'https://ftp.gnu.org/gnu/autoconf/autoconf-2.13.tar.gz',
+   'https://ftp.gnu.org/gnu/bison/bison-1.35.tar.gz',
+   'https://ftp.gnu.org/gnu/texinfo/texinfo-4.12.tar.gz',
+   'https://ftp.gnu.org/gnu/automake/automake-1.15.tar.gz',
+   ('ftp://ftp.uk.freesbie.org/sites/distfiles.gentoo.org/distfiles/' +
+    'flex-2.5.4a.tar.gz', 'flex-2.5.4.tar.gz'),
+   ('http://www.haage-partner.de/download/AmigaOS/NDK39.lha', 'NDK_3.9.lha'),
+   ('ftp://ftp.exotica.org.uk/mirrors/geekgadgets/amiga/m68k/snapshots/' +
+    '990529/bin/libamiga-bin.tgz', 'libamiga.tar.gz'),
+   ('ftp://ftp.exotica.org.uk/mirrors/geekgadgets/amiga/m68k/snapshots/' +
+    '990529/src/libm-5.4-src.tgz', 'libm-5.4.tar.gz'),
+   ('http://downloads.sf.net/project/amiga/ixemul.library/48.2/ixemul-src.lha',
+    'ixemul-48.2.lha'),
+   ('http://server.owl.de/~frank/tags/vasm1_8d.tar.gz', 'vasm.tar.gz'),
+   ('http://server.owl.de/~frank/tags/vlink0_16a.tar.gz', 'vlink.tar.gz'),
+   ('http://server.owl.de/~frank/tags/vbcc0_9fP1.tar.gz', 'vbcc.tar.gz'),
+   'http://de3.aminet.net/dev/asm/ira.lha',
+   'http://sun.hasenbraten.de/~frank/projects/download/vdam68k.tar.gz',
+   ('http://server.owl.de/~frank/vbcc/current/vbcc_target_m68k-amigaos.lha',
+    'vclib.lha')]
+
+  
+MULTILIB = [('', []),
+            ('libb', ['-fbaserel', '-DSMALL_DATA']),
+            ('libm020', ['-m68020']),
+            ('libb/libm020', ['-fbaserel', '-DSMALL_DATA', '-m68020']),
+            ('libm020/libm881', ['-m68020', '-m68881']),
+            ('libb/libm020/libm881',
+             ['-fbaserel', '-DSMALL_DATA', '-m68020', '-m68881']),
+            ('libb32/libm020', ['-fbaserel32', '-DSMALL_DATA', '-m68020'])]
+
+from common import * # NOQA
+
+
+@recipe('target-prepare')
+def prepare_target():
+  info('preparing target')
+
+  with cwd('{prefix}'):
+    mkdir('bin', 'etc', '{target}')
+  with cwd('{prefix}/{target}'):
+    mkdir('bin', 'ndk/include/inline', 'ndk/include/lvo',
+          'ndk/lib', 'ndk/lib/fd', 'ndk/lib/sfd')
+
+
+@recipe('{NDK}-install')
+def install_ndk():
+  info('installing ndk')
+
+  copytree('{sources}/{NDK}/Include/include_h', '{prefix}/{target}/ndk/include')
+  copytree('{sources}/{NDK}/Include/include_i', '{prefix}/{target}/ndk/include')
+  copytree('{sources}/{NDK}/Include/fd', '{prefix}/{target}/ndk/lib/fd')
+  copytree('{sources}/{NDK}/Include/sfd', '{prefix}/{target}/ndk/lib/sfd')
+  copytree('{sources}/{NDK}/Include/linker_libs', '{prefix}/{target}/ndk/lib',
+           exclude=['README'])
+  copytree('{sources}/{NDK}/Documentation/Autodocs', '{prefix}/{target}/ndk/doc')
+
+  for name in find('{prefix}/{target}/ndk/lib/sfd', include=['*.sfd']):
+    base = path.basename(name).split('_')[0]
+
+    execute('sfdc', '--target=m68k-amigaos', '--mode=proto',
+            '--output={prefix}/{target}/ndk/include/proto/%s.h' % base, name)
+    execute('sfdc', '--target=m68k-amigaos', '--mode=macros',
+            '--output={prefix}/{target}/ndk/include/inline/%s.h' % base, name)
+    execute('sfdc', '--target=m68k-amigaos', '--mode=lvo',
+            '--output={prefix}/{target}/ndk/include/lvo/%s_lib.i' % base, name)
+
+
+@recipe('headers-install')
+def headers_install():
+  info('installing ixemul header files')
+
+  copytree('{sources}/{ixemul}/include', '{prefix}/{target}/libnix/include')
+
+
+@recipe('fd2sfd-install')
+def install_fd2sfd():
+  info('installing fd2sfd')
+
+  copy('{build}/fd2sfd/fd2sfd', '{prefix}/bin')
+  copy('{build}/fd2sfd/cross/share/{target}/alib.h',
+       '{prefix}/{target}/ndk/include/inline')
+
+
+@recipe('fd2pragma-install')
+def install_fd2pragma():
+  info('installing fd2pragma')
+
+  copy('{build}/fd2pragma/fd2pragma', '{prefix}/bin')
+  for header in ['macros.h', 'stubs.h']:
+      copy(path.join('{build}/fd2pragma/Include/inline', header),
+           '{prefix}/{target}/ndk/include/inline')
+
+
+@recipe('tools-install')
+def install_tools():
+  info('installing extra tools')
+
+  copy('{build}/ira/ira', '{prefix}/bin')
+  copy('{build}/vdam68k/vda68k', '{prefix}/bin')
+
+
+@recipe('{libamiga}-install')
+def install_libamiga():
+  info('installing libamiga')
+
+  copytree('{sources}/{libamiga}/lib', '{prefix}/{target}/libnix/lib')
+
+
+@recipe('{clib2}-install')
+def install_clib2():
+  info('installing clib2')
+
+  with cwd('{prefix}/{target}/clib2'):
+    copytree('{build}/{clib2}/lib', 'lib')
+    copytree('{build}/{clib2}/include', 'include')
+
+
+@recipe('vbcc-build')
+def build_vbcc():
+  copytree('{sources}/vbcc', '{build}/vbcc')
+  mkdir('{build}/vbcc/bin')
+  config = textfile(
+    'y', 'y', 'signed char',
+    'y', 'unsigned char',
+    'n', 'y', 'signed short',
+    'n', 'y', 'unsigned short',
+    'n', 'y', 'signed int',
+    'n', 'y', 'unsigned int',
+    'n', 'y', 'signed long long',
+    'n', 'y', 'unsigned long long',
+    'n', 'y', 'float',
+    'n', 'y', 'double')
+  make('vbcc', TARGET='m68k', ETCDIR='\\"{prefix}/etc/\\"', CONFIG=config)
+  remove(config)
+
+
+@recipe('vlink-build')
+def build_vlink():
+  mkdir('{build}/vlink/objects')
+  make('vlink')
+
+
+@recipe('vbcc-install')
+def install_vbcc_toolchain():
+  info('installing vasm')
+
+  copy('{build}/vasm/vasmm68k_mot', '{prefix}/{target}/bin')
+  copy('{build}/vasm/vobjdump', '{prefix}/bin')
+  vasm = textfile(
+    '#!/bin/sh',
+    '',
+    '{prefix}/{target}/bin/vasmm68k_mot -I{prefix}/{target}/ndk/include "$@"')
+  chmod(vasm, 0755)
+  move(vasm, '{prefix}/bin/vasm')
+
+  info('installing vlink')
+
+  copy('{build}/vlink/vlink', '{prefix}/bin')
+
+  info('installing vbcc')
+
+  copy('{build}/vbcc/bin/vbccm68k', '{prefix}/{target}/bin')
+  copy('{build}/vbcc/bin/vc', '{prefix}/bin')
+  copy('{build}/vbcc/bin/vprof', '{prefix}/bin')
+
+  info('installing vbcc_target_m68k-amigaos')
+
+  copytree('{sources}/vclib/targets/m68k-amigaos/include',
+           '{prefix}/{target}/vbcc/include')
+  copytree('{sources}/vclib/targets/m68k-amigaos/lib',
+           '{prefix}/{target}/vbcc/lib')
+  config = textfile(
+    ('-cc={prefix}/{target}/bin/vbccm68k -hunkdebug %s -o= %s %s -O=%ld' +
+     ' -quiet -I{prefix}/{target}/vbcc/include -I{prefix}/{target}/ndk/include' +
+     ' -I{prefix}/{target}/include'),
+    ('-ccv={prefix}/{target}/bin/vbccm68k -hunkdebug %s -o= %s %s -O=%ld' +
+     ' -I{prefix}/{target}/vbcc/include -I{prefix}/{target}/ndk/include' +
+     ' -I{prefix}/{target}/include'),
+    ('-as={prefix}/{target}/bin/vasmm68k_mot -Fhunk -phxass -opt-fconst' +
+     ' -nowarn=62 -quiet -I{prefix}/{target}/ndk/include' +
+     ' -I{prefix}/{target}/include %s -o %s'),
+    ('-asv={prefix}/{target}/bin/vasmm68k_mot -Fhunk -phxass -opt-fconst' +
+     ' -nowarn=62 -I{prefix}/{target}/ndk/include' +
+     ' -I{prefix}/{target}/include %s -o %s'),
+    '-rm=rm %s',
+    '-rmv=rm -v %s',
+    ('-ld={prefix}/bin/vlink -bamigahunk -x -Bstatic -Cvbcc -nostdlib' +
+     ' {prefix}/{target}/vbcc/lib/startup.o %s %s' +
+     ' -L{prefix}/{target}/vbcc/lib -lvc -o %s'),
+    ('-l2={prefix}/bin/vlink -bamigahunk -x -Bstatic -Cvbcc -nostdlib' +
+     ' %s %s -L{prefix}/{target}/vbcc/lib' +
+     ' -L{prefix}/{target}/vbcc/include -o %s'),
+    ('-ldv={prefix}/bin/vlink -bamigahunk -t -x -Bstatic -Cvbcc -nostdlib' +
+     ' {prefix}/{target}/vbcc/lib/startup.o %s %s' +
+     ' -L{prefix}/{target}/vbcc/lib -lvc -o %s'),
+    ('-l2v={prefix}/bin/vlink -bamigahunk -t -x -Bstatic -Cvbcc -nostdlib' +
+     ' %s %s -L{prefix}/{target}/vbcc/lib -o %s'),
+    '-ldnodb=-s -Rshort',
+    '-ul=-l%s',
+    '-cf=-F%s',
+    '-ml=500')
+  chmod(config, 0644)
+  move(config, '{prefix}/etc/vc.config')
+
+
+def update_autotools(dst):
+  copy('{sources}/{automake}/lib/config.guess', path.join(dst, 'config.guess'))
+  copy('{sources}/{automake}/lib/config.sub', path.join(dst, 'config.sub'))
+
+
+def touch_genfiles(dst):
+  """
+  For binutils and gcc we want to make sure C source & headers file doesn't get
+  regenerated. Otherwise it can cause weird errors later in the build process
+  (e.g. in ldexp.c:560)
+  """
+  for name in find(dst, include=['*.l', '*.y']):
+    basename = path.splitext(name)[0]
+    for c_file in glob(basename + '.c'):
+      touch(c_file)
+    for h_file in glob(basename + '.h'):
+      touch(h_file)
+
+
+def download():
+  with cwd('{archives}'):
+    for url in URLS:
+      if type(url) == tuple:
+        url, name = url[0], url[1]
+      else:
+        name = path.basename(url)
+      fetch(name, url)
+
+  execute('git', 'submodule', 'init');
+  execute('git', 'submodule', 'update');
+
+
+def build():
+  for var in environ.keys():
+    if var not in ['_', 'LOGNAME', 'HOME', 'SHELL', 'TMPDIR', 'PWD']:
+      del environ[var]
+
+  PATH = ['/usr/bin', '/bin']
+
+  if fnmatch(platform.system(), 'MSYS_NT*'):
+    PATH.append('/usr/bin/core_perl') # pod2text, pod2man
+
+  environ['PATH'] = ":".join(PATH)
+  environ['LANG'] = 'C'
+  environ['TERM'] = 'xterm'
+
+  add_site_dir('{prefix}')
+
+  """
+  Make sure we always choose known compiler (from the distro) and not one in
+  user's path that could shadow the original one.
+  """
+  if platform.system() == 'Darwin':
+    CC, CXX = 'clang', 'clang++'
+  else:
+    CC, CXX = 'gcc', 'g++'
+
+  CC = find_executable(CC)
+  CXX = find_executable(CXX)
+  FLAGS = '-g -O2'
+
+  if getLogger().isEnabledFor(logging.DEBUG):
+    FLAGS += ' -Wall'
+  else:
+    FLAGS += ' -w'
+    environ['MAKEFLAGS'] = '--silent'
+
+  environ['CC'] = CC
+  environ['CXX'] = CXX
+  environ['PATH'] = ':'.join([path.join('{prefix}', 'bin'),
+                              path.join('{host}', 'bin'),
+                              environ['PATH']])
+
+  setvar(cc=environ['CC'], cxx=environ['CXX'])
+
+  """
+  When we have a working compiler in our path, we shoule also check if the
+  required programs, headers and libraries are present.
+  """
+
+  find_executable('perl')
+  find_executable('pod2text')
+  find_executable('pod2man')
+  find_executable('gperf')
+  find_executable('patch')
+  find_executable('make')
+  find_executable('git')
+  find_executable('yacc')
+
+  require_header(['ncurses.h', 'ncurses/ncurses.h'],
+                 lang='c', errmsg='libncurses-dev package missing')
+
+  py_ver = 'python%d.%d' % (sys.version_info.major, sys.version_info.minor)
+  require_header([path.join(py_ver, 'Python.h')],
+                 lang='c', errmsg='python-dev package missing')
+
+  execute('git', 'submodule', 'init', 'submodules/python-lhafile');
+  execute('git', 'submodule', 'update', 'submodules/python-lhafile');
+  unpack('python-lha', work_dir='{build}')
+  pysetup('python-lha')
+
+  download()
+
+  unpack('{automake}')
+
+  unpack('{m4}')
+  configure('{m4}', '--prefix={host}')
+  make('{m4}', parallel=True)
+  make('{m4}', 'install')
+
+  unpack('{gawk}')
+  update_autotools('{sources}/{gawk}')
+  configure('{gawk}', '--prefix={host}')
+  make('{gawk}', parallel=True)
+  make('{gawk}', 'install')
+
+  unpack('{flex}')
+  configure('{flex}', '--prefix={host}')
+  make('{flex}')
+  make('{flex}', 'install')
+
+  unpack('{bison}')
+  update_autotools('{sources}/{bison}/config')
+  configure('{bison}', '--prefix={host}')
+  make('{bison}', parallel=True)
+  make('{bison}', 'install')
+
+  unpack('{texinfo}')
+  update_autotools('{sources}/{texinfo}/build-aux')
+  configure('{texinfo}', '--prefix={host}')
+  make('{texinfo}', parallel=True)
+  make('{texinfo}', 'install')
+
+  unpack('{autoconf}')
+  update_autotools('{sources}/{autoconf}')
+  configure('{autoconf}', '--prefix={host}')
+  make('{autoconf}', parallel=True)
+  make('{autoconf}', 'install')
+
+  prepare_target()
+
+  unpack('vasm', work_dir='{build}')
+  make('vasm', CPU='m68k', SYNTAX='mot')
+
+  unpack('vlink', work_dir='{build}')
+  build_vlink()
+
+  unpack('vbcc')
+  patch('vbcc')
+  build_vbcc()
+
+  unpack('vclib', top_dir='vbcc_target_m68k-amigaos')
+
+  install_vbcc_toolchain()
+
+  update_autotools('{submodules}/fd2sfd')
+  unpack('fd2sfd', work_dir='{build}')
+  configure('fd2sfd', '--prefix={prefix}', from_dir='{build}/fd2sfd')
+  make('fd2sfd')
+  install_fd2sfd()
+
+  unpack('fd2pragma', work_dir='{build}')
+  make('fd2pragma')
+  install_fd2pragma()
+
+  unpack('sfdc')
+  configure('sfdc', '--prefix={prefix}', copy_source=True)
+  make('sfdc')
+  make('sfdc', 'install')
+
+  unpack('{NDK}')
+  patch('{NDK}')
+  install_ndk()
+
+  """
+  On 64-bit architecture GNU Assembler crashes writing out an object, due to
+  (probably) miscalculated structure sizes.  There could be some other bugs
+  lurking there in 64-bit mode, but I have little incentive chasing them.
+  Just compile everything in 32-bit mode and forget about the issues.
+  """
+
+  ARCH = '-m32' if platform.machine() == 'x86_64' else ''
+  CC = ' '.join([CC, ARCH, '-std=gnu11'])
+  CXX = ' '.join([CXX, ARCH, '-std=gnu++11'])
+
+  """
+  Older gcc compilers (i.e. 2.95.3 and 3.4.6) and binutils have to be tricked
+  into thinking that they're being compiled on Linux IA-32 machine. Theirs
+  config.guess script knows nothing about x86-64 or darwin.
+  """
+
+  with env(CC=CC, CXX=CXX, CFLAGS=FLAGS, CXXFLAGS=FLAGS):
+    configure('{binutils}',
+              '--prefix={prefix}',
+              '--infodir={prefix}/{target}/info',
+              '--mandir={prefix}/share/man',
+              '--disable-nls',
+              '--host=i686-linux-gnu',
+              '--target=m68k-amigaos',
+              from_dir='{submodules}/{binutils}')
+    touch_genfiles('{submodules}/{binutils}')
+    make('{binutils}', parallel=True)
+    make('{binutils}', 'install-binutils')
+    make('{binutils}', 'install-gas')
+    make('{binutils}', 'install-ld')
+    make('{binutils}', 'install-info')
+
+  unpack('{ixemul}', top_dir='ixemul')
+  patch('{ixemul}')
+
+  with env(CC=CC, CXX=CXX, CFLAGS=FLAGS, CXXFLAGS=FLAGS):
+    configure('{gcc}',
+              '--prefix={prefix}',
+              '--infodir={prefix}/{target}/info',
+              '--mandir={prefix}/share/man',
+              '--host=i686-linux-gnu',
+              '--build=i686-linux-gnu',
+              '--target=m68k-amigaos',
+              '--enable-languages=c,c++',
+              '--enable-version-specific-runtime-libs',
+              '--with-headers={sources}/{ixemul}/include',
+              from_dir='{submodules}/{gcc}')
+    touch_genfiles('{submodules}/{gcc}')
+    touch('{submodules}/{gcc}/gcc/c-parse.gperf')
+    touch('{submodules}/{gcc}/gcc/configure')
+    # parallel build fails for all-gcc
+    make('{gcc}', 'all-gcc',
+         MAKEINFO='makeinfo', CFLAGS_FOR_TARGET='-noixemul')
+    make('{gcc}', 'install-gcc',
+         MAKEINFO='makeinfo', CFLAGS_FOR_TARGET='-noixemul')
+
+  headers_install()
+
+  unpack('{libamiga}', top_dir='.')
+  install_libamiga()
+
+  configure('{libnix}',
+            '--prefix={prefix}/{target}/libnix',
+            '--host=i686-linux-gnu',
+            '--target=m68k-amigaos',
+            from_dir='{submodules}/{libnix}')
+            
+  make('{libnix}',
+       CC='m68k-amigaos-gcc',
+       CPP='m68k-amigaos-gcc -E',
+       AR='m68k-amigaos-ar',
+       AS='m68k-amigaos-as',
+       RANLIB='m68k-amigaos-ranlib',
+       LD='m68k-amigaos-ld')
+  make('{libnix}', 'install')
+
+  copy('{submodules}/{libnix}/sources/headers/stabs.h',
+       '{prefix}/{target}/libnix/include')
+
+  unpack('{libm}', top_dir='contrib/libm')
+  update_autotools('{sources}/{libm}')
+  with env(CC='m68k-amigaos-gcc -noixemul',
+           AR='m68k-amigaos-ar',
+           RANLIB='m68k-amigaos-ranlib'):
+    configure('{libm}',
+              '--prefix={prefix}/{target}/libnix',
+              '--host=i686-linux-gnu',
+              '--target=m68k-amigaos')
+  make('{libm}')
+  make('{libm}', 'install')
+
+  with env(CC='m68k-amigaos-gcc -noixemul',
+           AR='m68k-amigaos-ar',
+           RANLIB='m68k-amigaos-ranlib'):
+    touch('{submodules}/{libdebug}/configure')
+    configure('{libdebug}',
+              '--prefix={prefix}/{target}/libnix',
+              '--host=m68k-amigaos',
+              from_dir='{submodules}/{libdebug}')
+  make('{libdebug}')
+  make('{libdebug}', 'install')
+
+  unpack('{clib2}', work_dir='{build}', top_dir='library')
+  make('{clib2}', makefile='GNUmakefile.68k', parallel=True)
+  install_clib2()
+
+  with env(CC=CC, CXX=CXX, CFLAGS=FLAGS, CXXFLAGS=FLAGS):
+    make('{gcc}', 'all-target', parallel=True,
+         MAKEINFO='makeinfo', CFLAGS_FOR_TARGET='-noixemul')
+    make('{gcc}', 'install-target',
+         MAKEINFO='makeinfo', CFLAGS_FOR_TARGET='-noixemul')
+
+  unpack('ira', top_dir='ira', work_dir='{build}')
+  make('ira')
+
+  unpack('vdam68k', top_dir='vda/M68k', work_dir='{build}')
+  make('vdam68k')
+
+  install_tools()
+
+  # pyinstall('amitools')
+  # pyfixbin('amitools', ['fdtool', 'geotool', 'hunktool', 'rdbtool', 'romtool',
+  #                       'typetool', 'vamos', 'vamospath', 'xdfscan', 'xdftool'])
+
+
+def clean():
+  rmtree('{stamps}')
+  rmtree('{sources}')
+  rmtree('{host}')
+  rmtree('{build}')
+  rmtree('{tmpdir}')
+
+
+def read_sdk(filename):
+  phase = 'info'
+  info = {}
+  files = []
+
+  for line in open(filename):
+    line = line.strip()
+
+    if phase == 'info':
+      if line == '':
+        phase = 'files'
+      else:
+        fields = [field.strip() for field in line.split(':', 1)]
+        info[string.lower(fields[0])] = fields[1]
+    elif phase == 'files':
+      if ':' in line:
+        fields = [field.strip() for field in re.split('[: ]+', line)]
+        files.append(tuple(fields))
+      elif '=' in line:
+        fields = [field.strip() for field in line.split('=')]
+        files.append(tuple(['file'] + fields))
+      else:
+        files.append(('file', line))
+
+  return (info, files)
+
+
+def list_sdk():
+  print 'Available SDKs:'
+
+  for filename in find('{top}/sdk', include=['*.sdk']):
+    info, _ = read_sdk(filename)
+    name = path.splitext(path.basename(filename))[0]
+    print ' - %s %s : %s' % (name, info['version'], info['short'])
+
+
+def add_stubs(src):
+  obj = re.sub(r'\.c$', r'.o', src)
+
+  for libdir, cflags in MULTILIB:
+    lib = path.join('{prefix}/{target}/libnix/lib',
+                    libdir, 'libnix/libstubs.a')
+    info('stubs: "%s" -> "%s"', obj, lib)
+    cflags = list(cflags) + ['-noixemul', '-c', '-o', obj, src]
+    execute('m68k-amigaos-gcc', '-Wall', '-O3', '-fomit-frame-pointer', *cflags)
+    execute('m68k-amigaos-ar', 'rs', lib, obj)
+    remove(obj)
+
+
+def add_lib(src, libname):
+  obj = re.sub(r'\.a$', r'.o', libname)
+
+  for libdir, cflags in MULTILIB:
+    lib = path.join('{prefix}/{target}/lib', libdir, libname)
+    info('lib: "%s" -> "%s"', obj, lib)
+    cflags = list(cflags) + ['-noixemul', '-c', '-o', obj, src]
+    execute('m68k-amigaos-gcc', '-Wall', '-O3', '-fomit-frame-pointer', *cflags)
+    execute('m68k-amigaos-ar', 'rcs', lib, obj)
+    remove(obj)
+
+
+@recipe('install-sdk', 1)
+def process_sdk(sdk, lib_name, files):
+  with cwd(path.join('{sources}', sdk)):
+    for f in files:
+      kind = f[0]
+
+      if kind == 'fd2sfd':
+        fd, protos = f[1:]
+        sfd = path.splitext(path.basename(fd))[0]
+        if not fd.endswith('_lib.fd'):
+          sfd = sfd + '_lib.sfd'
+        else:
+          sfd = sfd + '.sfd'
+        info('fd2sfd: "%s" "%s" -> "%s"', fd, protos, sfd)
+        execute('fd2sfd', '-o', sfd, fd, protos)
+        copy(sfd, path.join('{prefix}/{target}/lib/sfd', sfd))
+      elif kind == 'sfdc':
+        source = f[1]
+        basename = re.sub(r'_lib.sfd$', r'', path.basename(source))
+
+        proto = path.join('{prefix}/{target}/include/proto', basename + '.h')
+        inline = path.join('{prefix}/{target}/include/inline', basename + '.h')
+        lvo = path.join('{prefix}/{target}/include/lvo', basename + '.i')
+
+        info('sfdc: "%s" -> "%s"', source, proto)
+        execute('sfdc', '--quiet', '--target=m68k-amigaos', '--mode=proto',
+                '--output=' + proto, source)
+        info('sfdc: "%s" -> "%s"', source, inline)
+        execute('sfdc', '--quiet', '--target=m68k-amigaos', '--mode=macros',
+                '--output=' + inline, source)
+        info('sfdc: "%s" -> "%s"', source, lvo)
+        execute('sfdc', '--quiet', '--target=m68k-amigaos', '--mode=lvo',
+                '--output=' + lvo, source)
+      elif kind == 'stubs':
+        filename = f[1]
+        c_file = re.sub(r'_lib\.sfd$', r'.c', path.basename(filename))
+
+        info('stubs: "%s" -> "%s"', filename, c_file)
+        execute('sfdc', '--quiet', '--target=m68k-amigaos', '--mode=autoopen',
+                '--output=' + c_file, filename)
+        add_stubs(c_file)
+      elif kind == 'lib':
+        filename = f[1]
+        c_file = re.sub(r'_lib.sfd$', r'.c', path.basename(filename))
+        lib_file = 'lib' + lib_name + '.a'
+
+        info('lib: %s -> %s', filename, c_file)
+        execute('sfdc', '--quiet', '--target=m68k-amigaos', '--mode=stubs',
+                '--output=' + c_file, filename)
+        add_lib(c_file, lib_file)
+      elif kind == 'file':
+        source = f[1]
+        try:
+          name = f[2]
+        except:
+          name = path.basename(f[1])
+
+        if any(name.endswith(ext) for ext in ['.doc', '.html', '.pdf', '.ps']):
+          copy(source, path.join('{prefix}/{target}/doc', name))
+        elif name.endswith('.guide'):
+          copy(source, path.join('{prefix}/{target}/guide', name))
+        elif any(name.endswith(ext) for ext in ['.h', '.i']):
+          lastdir = path.basename(path.dirname(f[1]))
+          mkdir(path.join('{prefix}/{target}/include', lastdir))
+          copy(source, path.join('{prefix}/{target}/include', lastdir, name))
+        elif name.endswith('.fd'):
+          copy(source, path.join('{prefix}/{target}/lib/fd', name))
+        elif name.endswith('.sfd'):
+          copy(source, path.join('{prefix}/{target}/lib/sfd', name))
+
+
+def install_sdk(*names):
+  environ['PATH'] = ":".join([path.join('{prefix}', 'bin'),
+                              path.join('{host}', 'bin'),
+                              environ['PATH']])
+
+  add_site_dir('{prefix}')
+
+  with cwd('{prefix}/{target}'):
+    mkdir('doc', 'guide', 'include/proto', 'include/inline', 'include/lvo',
+          'lib/fd', 'lib/sfd')
+
+    for d, _ in MULTILIB:
+      mkdir(path.join('lib', d))
+
+  for name in names:
+    filename = path.join('{top}/sdk', name + '.sdk')
+
+    if not path.exists(filename):
+      panic('No SDK description file for "%s".', name)
+
+    desc, files = read_sdk(filename)
+
+    pkg = name + '-' + desc['version']
+    _, ext = path.splitext(path.basename(desc['url']))
+
+    with cwd('{archives}'):
+      fetch(pkg + ext, desc['url'])
+
+    unpack(pkg, top_dir='.')
+
+    if path.isdir(path.join('{patches}', pkg)):
+      patch(pkg, work_dir=path.join('{sources}', pkg))
+
+    process_sdk(pkg, name, files)
+
+
+def test():
+  install_sdk('mmu', 'mui')
+
+  environ['PATH'] = ":".join([path.join('{prefix}', 'bin'),
+                              environ['PATH']])
+
+  with cwd(path.join('{top}', 'examples')):
+    execute('make', 'clean')
+    execute('make')
+
+
+if __name__ == "__main__":
+  logging.basicConfig(level=logging.DEBUG, format='%(levelname)s: %(message)s')
+
+  if not sys.version_info[:2] == (2, 7):
+    panic('I need Python 2.7 to run!')
+
+  if not any(fnmatch(platform.system(), pat)
+             for pat in ['Darwin', 'Linux', 'CYGWIN_NT*', 'MSYS_NT*']):
+    panic('Build on %s not supported!', platform.system())
+
+  if platform.machine() not in ['i686', 'x86_64']:
+    panic('Build on %s architecture not supported!', platform.machine())
+
+  parser = argparse.ArgumentParser(description='Build cross toolchain.')
+  parser.add_argument('action',
+                      choices=['build', 'list-sdk', 'install-sdk', 'clean',
+                               'test', 'download'],
+                      default='build', help='perform action')
+  parser.add_argument('args', metavar='ARGS', type=str, nargs='*',
+                      help='action arguments')
+  parser.add_argument('--binutils', choices=['2.9.1', '2.14'], default='2.14',
+                      help='desired binutils version')
+  parser.add_argument('--gcc', choices=['2.95.3'], default='2.95.3',
+                      help='desired gcc version')
+  parser.add_argument('-q', '--quiet', action='store_true')
+  parser.add_argument('--prefix', type=str, default=None,
+                      help='installation directory')
+  args = parser.parse_args()
+
+  setvar(top=path.abspath(path.dirname(sys.argv[0])),
+         binutils_ver=args.binutils,
+         gcc_ver=args.gcc,
+         py_ver='python%d.%d' % (sys.version_info.major, sys.version_info.minor))
+
+  setvar(m4='m4-1.4.17',
+         gawk='gawk-3.1.8',
+         flex='flex-2.5.4',
+         bison='bison-1.35',
+         automake='automake-1.15',
+         autoconf='autoconf-2.13',
+         texinfo='texinfo-4.12',
+         NDK='NDK_3.9',
+         ixemul='ixemul-48.2',
+         clib2='clib2',
+         libm='libm-5.4',
+         libnix='libnix',
+         libamiga='libamiga',
+         libdebug='libdebug',
+         binutils='binutils-{binutils_ver}',
+         gcc='gcc-{gcc_ver}',
+         gpp='g++-{gcc_ver}',
+         target='m68k-amigaos',
+         python=sys.executable,
+         sitedir=path.join('lib', '{py_ver}', 'site-packages'),
+         patches=path.join('{top}', 'patches'),
+         stamps=path.join('{top}', '.build-m68k', 'stamps'),
+         build=path.join('{top}', '.build-m68k', 'build'),
+         sources=path.join('{top}', '.build-m68k', 'sources'),
+         host=path.join('{top}', '.build-m68k', 'host'),
+         tmpdir=path.join('{top}', '.build-m68k', 'tmp'),
+         prefix=path.join('{top}', 'm68k-amigaos'),
+         archives=path.join('{top}', '.build-m68k', 'archives'),
+         submodules=path.join('{top}', 'submodules'))
+
+  if args.quiet:
+    getLogger().setLevel(logging.INFO)
+
+  if args.prefix is not None:
+    setvar(prefix=args.prefix)
+
+  if not path.exists('{prefix}'):
+    mkdir('{prefix}')
+
+  action = args.action.replace('-', '_')
+  globals()[action].__call__(*args.args)

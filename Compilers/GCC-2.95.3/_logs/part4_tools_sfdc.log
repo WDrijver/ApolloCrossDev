@@ -1,0 +1,8 @@
+checking for perl... perl
+checking for pod2text... pod2text
+checking for pod2man... pod2man
+checking for a BSD-compatible install... /usr/bin/install -c
+configure: creating ./config.status
+config.status: creating Makefile
+config.status: creating gg-sfdc.spec
+config.status: creating sfdc.readme

@@ -1,0 +1,8 @@
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+W: GPG error: http://dk.archive.ubuntu.com/ubuntu xenial InRelease: The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 40976EAF437D05B5 NO_PUBKEY 3B4FE6ACC0B21F32
+E: The repository 'http://dk.archive.ubuntu.com/ubuntu xenial InRelease' is not signed.
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+

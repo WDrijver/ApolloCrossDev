@@ -87,9 +87,9 @@ cd $ARCHIVES
 echo -e "\e[1m\e[37m4. Unpack Source Archives\e[0m\e[36m"
 for f in *.tar*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
 lha -xw=$SOURCES $NDK39_ARCHIVE >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log
+cd $SOURCES
 
 # PART 4: Tools
-cd $SOURCES
 echo -e "\e[1m\e[37m4. Install Tools\e[0m\e[36m"
 echo "   * $FD2SFD_NAME" 
 mkdir -p $BUILDS/build-$FD2SFD_NAME
@@ -103,9 +103,8 @@ cp cross/share/$TARGET/alib.h $PREFIX/$TARGET/ndk/include/inline >>$LOGFILES/par
 cd $SOURCES
 
 echo "   * $FD2PRAGMA_NAME" 
-mkdir -p $BUILDS/build-$FD2PRAGMA_NAME
+cp $SOURCES/$FD2PRAGMA_NAME $BUILDS/build-$FD2PRAGMA_NAME
 cd $BUILDS/build-$FD2PRAGMA_NAME
-$SOURCES/$FD2PRAGMA_NAME/configure \
     >>$LOGFILES/part4_tools_fd2pragma.log 2>>$LOGFILES/part4_tools_fd2pragma_err.log
 make >>$LOGFILES/part4_tools_fd2pragma.log 2>>$LOGFILES/part4_tools_fd2pragma_err.log
 cp fd2pragma $PREFIX/bin 

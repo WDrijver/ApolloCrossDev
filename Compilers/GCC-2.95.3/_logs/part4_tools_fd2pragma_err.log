@@ -1,0 +1,2 @@
+./GCC-2.95.3.sh: line 113: /home/willem/ApolloCrossDev/Compilers/GCC-2.95.3/_sources/fd2pragma/configure: No such file or directory
+make: *** No targets specified and no makefile found.  Stop.
