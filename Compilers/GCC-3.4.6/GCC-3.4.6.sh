@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-3.4.6 Install Script v0.9
+# ApolloCrossDev GCC-3.4.6 Install Script v1.0
 # 
 # Installation:
 # 1. Enter Compilers/GCC-3.4.6 directory
@@ -10,13 +10,15 @@
 # 3. Read make-gcc346 for compile instructions
 
 EDITION=GNU-3.4.6
-VERSION=0.9
+VERSION=1.0
 CPU=-j1
 GCCVERSION=3.4.6
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
 
 WORKSPACE="`pwd`"
+ARCHIVES=$WORKSPACE/_archives
 SOURCES=$WORKSPACE/_sources
+BUILDS=$WORKSPACE/_builds
 LOGFILES=$WORKSPACE/_logs
 PREFIX=$WORKSPACE/ApolloCrossDev
 TARGET=m68k-unknown-amigaos
@@ -27,42 +29,42 @@ GCC_AUTOHEADER=autoheader2.64
 GCC_AUTORECONF=autoreconf2.64
 GCC_AUTOM4TE=autom4te2.64
 
-BINUTILS_VERSION=amigaos-binutils-2.14
-BINUTILS_DOWNLOAD=https://github.com/adtools/$BINUTILS_VERSION
-GCC_VERSION=gcc-3.4.6
-GCC_DOWNLOAD=https://ftp.gnu.org/gnu/gcc/$GCC_VERSION/$GCC_VERSION.tar.gz
-GMP_VERSION=gmp-4.3.2
-GMP_DOWNLOAD=https://ftp.gnu.org/gnu/gmp/$GMP_VERSION.tar.gz
-MPFR_VERSION=mpfr-2.4.2
-MPFR_DOWNLOAD=http://www.mpfr.org/$MPFR_VERSION/$MPFR_VERSION.tar.gz
-MPC_VERSION=mpc-0.8.2
-MPC_DOWNLOAD=http://www.multiprecision.org/downloads/$MPC_VERSION.tar.gz
-BISON_VERSION=bison-2.7.1
-BISON_DOWNLOAD=https://ftp.gnu.org/gnu/bison/$BISON_VERSION.tar.gz
-CLIB2_VERSION=clib2
+BINUTILS_NAME=amigaos-binutils-2.14
+BINUTILS_DOWNLOAD=https://github.com/adtools/$BINUTILS_NAME
+GCC_NAME=gcc-3.4.6
+GCC_DOWNLOAD=https://ftp.gnu.org/gnu/gcc/$GCC_NAME/$GCC_NAME.tar.gz
+GMP_NAME=gmp-4.3.2
+GMP_DOWNLOAD=https://ftp.gnu.org/gnu/gmp/$GMP_NAME.tar.gz
+MPFR_NAME=mpfr-2.4.2
+MPFR_DOWNLOAD=http://www.mpfr.org/$MPFR_NAME/$MPFR_NAME.tar.gz
+MPC_NAME=mpc-0.8.2
+MPC_DOWNLOAD=http://www.multiprecision.org/downloads/$MPC_NAME.tar.gz
+BISON_NAME=bison-2.7.1
+BISON_DOWNLOAD=https://ftp.gnu.org/gnu/bison/$BISON_NAME.tar.gz
+CLIB2_NAME=clib2
 CLIB2_DOWNLOAD=https://github.com/adtools/clib2
 LIBNIX_NAME=libnix
 LIBNIX_DOWNLOAD=https://github.com/adtools/libnix
-#LIBNIX3_NAME=libnix
-#LIBNIX3_DOWNLOAD=https://github.com/diegocr/libnix
+LIBNIX3_NAME=libnix
+LIBNIX3_DOWNLOAD=https://github.com/diegocr/libnix
 NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
 NDK39_DOWNLOAD=https://os.amigaworld.de/download.php?id=3
-NDK_VERSION=3.9
-NDK_ARCHIVE=ndk-$NDK_VERSION-includes.tar.bz2
+NDK_NAME=3.9
+NDK_ARCHIVE=ndk-$NDK_NAME-includes.tar.bz2
 NDK_DOWNLOAD=http://kas1e.mikendezign.com/zerohero_crosscompilers_backup/files/m68k-amigaos/$NDK_ARCHIVE
-OPENURL_VERSION=7.16
-OPENURL_ARCHIVE=OpenURL-$OPENURL_VERSION.lha
-OPENURL_DOWNLOAD=https://github.com/jens-maus/libopenurl/releases/download/$OPENURL_VERSION/$OPENURL_ARCHIVE
-AMISSL_VERSION=4.4
-AMISSL_ARCHIVE=AmiSSL-$AMISSL_VERSION.lha 
-AMISSL_DOWNLOAD=https://github.com/jens-maus/amissl/releases/download/$AMISSL_VERSION/$AMISSL_ARCHIVE
+OPENURL_NAME=7.16
+OPENURL_ARCHIVE=OpenURL-$OPENURL_NAME.lha
+OPENURL_DOWNLOAD=https://github.com/jens-maus/libopenurl/releases/download/$OPENURL_NAME/$OPENURL_ARCHIVE
+AMISSL_NAME=4.4
+AMISSL_ARCHIVE=AmiSSL-$AMISSL_NAME.lha 
+AMISSL_DOWNLOAD=https://github.com/jens-maus/amissl/releases/download/$AMISSL_NAME/$AMISSL_ARCHIVE
 GUIGFX_ARCHIVE=guigfxlib.lha
 GUIGFX_DOWNLOAD=http://neoscientists.org/~bifat/binarydistillery/$GUIGFX_ARCHIVE
 RENDER_ARCHIVE=renderlib.lha
 RENDER_DOWNLOAD=http://neoscientists.org/~bifat/binarydistillery/$RENDER_ARCHIVE
-CODESETS_VERSION=6.20
-CODESETS_ARCHIVE=codesets-$CODESETS_VERSION.lha
-CODESETS_DOWNLOAD=https://github.com/jens-maus/libcodesets/releases/download/$CODESETS_VERSION/$CODESETS_ARCHIVE
+CODESETS_NAME=6.20
+CODESETS_ARCHIVE=codesets-$CODESETS_NAME.lha
+CODESETS_DOWNLOAD=https://github.com/jens-maus/libcodesets/releases/download/$CODESETS_NAME/$CODESETS_ARCHIVE
 
 # INIT Terminal
 clear
@@ -73,9 +75,9 @@ echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
 # PART 1: Clean the House
 sudo echo -e "\e[1m\e[37m1. Prepare Installation\e[0m\e[36m"
 echo "   * Clean the House" 
-rm -f -r $PREFIX $LOGFILES $SOURCES
+rm -f -r $SOURCES $BUILDS $LOGFILES $PREFIX
 echo "   * Create Directories" 
-mkdir -p $PREFIX $LOGFILES $SOURCES
+mkdir -p $SOURCES $BUILDS $LOGFILES $PREFIX $PREFIX/$TARGET
 mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/lib
 mkdir -p $PREFIX/$TARGET/sys-include
 
@@ -88,39 +90,23 @@ sudo apt -y install build-essential m4 gawk autoconf automake flex bison expect 
      make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev rsync libreadline-dev rename \
     >>$LOGFILES/part2_update_linux.log 2>>$LOGFILES/part2_update_linux_err.log
 
-# PART 3: Download Sources
-echo -e "\e[1m\e[37m3. Download Sources\e[0m\e[36m"
-echo "   * $BINUTILS_VERSION" 
-git clone --progress $BINUTILS_DOWNLOAD 2>>$LOGFILES/part3_sources.log
-echo "   * $GCC_VERSION" 
-wget -nc $GCC_DOWNLOAD -a $LOGFILES/part3_sources.log
-echo "   * $GMP_VERSION" 
-wget -nc $GMP_DOWNLOAD -a $LOGFILES/part3_sources.log
-echo "   * $MPFR_VERSION" 
-wget -nc $MPFR_DOWNLOAD -a $LOGFILES/part3_sources.log
-echo "   * $MPC_VERSION" 
-wget -nc $MPC_DOWNLOAD -a $LOGFILES/part3_sources.log
-echo "   * $BISON_VERSION" 
-wget -nc $BISON_DOWNLOAD -a $LOGFILES/part3_sources.log
-echo "   * clib2-$CLIB2_VERSION"
-git clone --progress $CLIB2_DOWNLOAD 2>>$LOGFILES/part3_sources.log
-echo "   * $LIBNIX_NAME"
-git clone --progress $LIBNIX_DOWNLOAD 2>>$LOGFILES/part3_sources.log
-exit
-# PART 4: Unpack Sources
-echo -e "\e[1m\e[37m4. Unpack Sources\e[0m\e[36m"
-for f in *.tar*; do tar xfk $f >>$LOGFILES/part4_unpack.log 2>>$LOGFILES/part4_unpack_err.log; done 
+# PART 3: Unpack Archives
+cd $ARCHIVES
+echo -e "\e[1m\e[37m4. Unpack Source Archives\e[0m\e[36m"
+for f in *.tar*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
+for f in *.tgz*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
+cd $SOURCES
 
 # Part 5: Compile BinUtils
-echo -e "\e[1m\e[37m5. Compile $BINUTILS_VERSION"
+echo -e "\e[1m\e[37m5. Compile $BINUTILS_NAME"
 echo -e "\e[0m\e[36m   * Patch Binutils\e[0m"
-for p in `ls $WORKSPACE/_install/recipes/patches/binutils/*.p`; do patch -d $WORKSPACE/_sources/$BINUTILS_VERSION <$p -p0 >>$LOGFILES/part5_binutils_patch.log 2>>$LOGFILES/part5_binutils_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/binutils/*.p`; do patch -d $WORKSPACE/_sources/$BINUTILS_NAME <$p -p0 >>$LOGFILES/part5_binutils_patch.log 2>>$LOGFILES/part5_binutils_patch_err.log; done 
 echo -e "\e[0m\e[36m   * Configure Binutils\e[0m"
-mkdir -p build-binutils
-cd build-binutils
+mkdir -p $BUILDS/build-$BINUTILS_NAME
+cd $BUILDS/build-$BINUTILS_NAME
 CFLAGS="-m32" \
 LDFLAGS="-m32" \
-../$BINUTILS_VERSION/configure \
+$SOURCES/$BINUTILS_NAME/configure \
     --prefix=$PREFIX \
     --target=$TARGET \
     --disable-nls \
@@ -133,13 +119,13 @@ make $CPU install >>$LOGFILES/part5_binutils_make.log 2>>$LOGFILES/part5_binutil
 cd $SOURCES
 
 # Part 6: Compile Bison
-echo -e "\e[1m\e[37m5. Compile $BISON_VERSION\e[0m\e[36m"
+echo -e "\e[1m\e[37m5. Compile $BISON_NAME\e[0m\e[36m"
 echo -e "\e[0m\e[36m   * Patch Bison\e[0m"
-for p in `ls $WORKSPACE/_install/recipes/patches/bison/*.p`; do patch -d $WORKSPACE/_sources/$BISON_VERSION <$p -p0 >>$LOGFILES/part6_bison_patch.log 2>>$LOGFILES/part6_bison_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/bison/*.p`; do patch -d $WORKSPACE/_sources/$BISON_NAME <$p -p0 >>$LOGFILES/part6_bison_patch.log 2>>$LOGFILES/part6_bison_patch_err.log; done 
 echo -e "\e[0m\e[36m   * Configure Bison ($CPU)\e[0m"
-mkdir -p build-bison
-cd build-bison
-../$BISON_VERSION/configure \
+mkdir -p $BUILDS/build-$BISON_NAME
+cd $BUILDS/build-$BISON_NAME
+$SOURCES/$BISON_NAME/configure \
     --prefix="$PREFIX" >>$LOGFILES/part6_bison_configure.log 2>>$LOGFILES/part6_bison_configure_err.log
 echo -e "\e[0m\e[36m   * Build Bison ($CPU)\e[0m"
 make $CPU >>$LOGFILES/part6_bison_make.log 2>>$LOGFILES/part6_bison_make_err.log
@@ -148,25 +134,25 @@ make $CPU install >>$LOGFILES/part6_bison_make.log 2>>$LOGFILES/part6_bison_make
 cd $SOURCES
 
 # Part 7 Prepare GCC
-echo -e "\e[1m\e[37m7. Prepare $GCC_VERSION\e[0m\e[36m"
-echo "   * Move $GMP_VERSION to $GCC_VERSION/gmp"
-mv $GMP_VERSION $GCC_VERSION/gmp >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
-echo "   * Move $MPFR_VERSION to $GCC_VERSION/mpfr"
-mv $MPFR_VERSION $GCC_VERSION/mpfr >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
-echo "   * Move $MPC_VERSION to $GCC_VERSION/mpc"
-mv $MPC_VERSION $GCC_VERSION/mpc >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
+echo -e "\e[1m\e[37m7. Prepare $GCC_NAME\e[0m\e[36m"
+echo "   * Move $GMP_NAME to $GCC_NAME/gmp"
+mv $GMP_NAME $GCC_NAME/gmp >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
+echo "   * Move $MPFR_NAME to $GCC_NAME/mpfr"
+mv $MPFR_NAME $GCC_NAME/mpfr >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
+echo "   * Move $MPC_NAME to $GCC_NAME/mpc"
+mv $MPC_NAME $GCC_NAME/mpc >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
 echo -e "\e[0m\e[36m   * Patch GCC\e[0m"
-for p in `ls $WORKSPACE/_install/recipes/patches/gcc/*.p`; do patch -d $WORKSPACE/_sources/$GCC_VERSION <$p -p0 >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log; done 
-patch $WORKSPACE/_sources/$GCC_VERSION/gcc/collect2.c $WORKSPACE/_install/recipes/patches.wd/collect2.c.p >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
+for p in `ls $WORKSPACE/_install/recipes/patches/gcc/*.p`; do patch -d $WORKSPACE/_sources/$GCC_NAME <$p -p0 >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log; done 
+patch $WORKSPACE/_sources/$GCC_NAME/gcc/collect2.c $WORKSPACE/_install/recipes/patches.wd/collect2.c.p >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
 echo -e "\e[0m\e[36m   * Customise GCC\e[0m"
-cp -r $WORKSPACE/_install/recipes/files/gcc/* $GCC_VERSION >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
+cp -r $WORKSPACE/_install/recipes/files/gcc/* $GCC_NAME >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
 
 # Part 8: Compile GCC (Phase #1)
-echo -e "\e[1m\e[37m8. Compile $GCC_VERSION (Phase #1)"
-mkdir -p build-gcc
-cd build-gcc
+echo -e "\e[1m\e[37m8. Compile $GCC_NAME (Phase #1)"
+mkdir -p $BUILDS/build-$GCC_NAME
+cd $BUILDS/build-$GCC_NAME
 echo -e "\e[0m\e[36m   * Configure GCC\e[0m"
-AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" ../$GCC_VERSION/configure \
+AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" $SOURCES/$GCC_NAME/configure \
 	--prefix=$PREFIX \
 	--target=$TARGET \
 	--disable-threads \
@@ -182,7 +168,7 @@ AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$
 echo -e "\e[0m\e[36m   * Install GCC (1 CPU)\e[0m"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 install-gcc >>$LOGFILES/part8_gcc_make.log 2>>$LOGFILES/part8_gcc_make_err.log
 cd $SOURCES
-cp -r $SOURCES/build-gcc/gcc/include/* $PREFIX/$TARGET/sys-include/ >>$LOGFILES/part8_gcc_include.log 2>>$LOGFILES/part8_gcc_include_err.log
+cp -r $BUILDS/build-$GCC_NAME/gcc/include/* $PREFIX/$TARGET/sys-include/ >>$LOGFILES/part8_gcc_include.log 2>>$LOGFILES/part8_gcc_include_err.log
 
 # PART 9: Amiga NDK's
 echo -e "\e[1m\e[37m9. Amiga NDK's"
@@ -221,23 +207,23 @@ cd $SOURCES
 # PART 10: Amiga Libraries: CLib2
 echo -e "\e[1m\e[37m10. Amiga Libraries"
 echo -e "\e[0m\e[36m   * Configure clib2\e[0m"
-mkdir -p build-clib2
-cd build-clib2
-cp -r $WORKSPACE/_sources/clib2/library/* $SOURCES/build-clib2
+mkdir -p $BUILDS/build-$CLIB2_NAME
+cd $BUILDS/build-$CLIB2_NAME
+cp -r $SOURCES/clib2/library/* $SOURCES/build-$CLIB2_NAME
 echo -e "\e[0m\e[36m   * Patch clib2\e[0m"
-for p in `ls $WORKSPACE/_install/recipes/patches/clib2/*.p`; do patch -d $SOURCES/build-clib2 <$p -p0 >>$LOGFILES/part10_clib2_patch.log 2>>$LOGFILES/part10_clib2_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/clib2/*.p`; do patch -d $BUILDS/build-$CLIB2_NAME <$p -p0 >>$LOGFILES/part10_clib2_patch.log 2>>$LOGFILES/part10_clib2_patch_err.log; done 
 echo -e "\e[0m\e[36m   * Customise clib2\e[0m"
-cp -r $WORKSPACE/_install/recipes/files/clib2/* $SOURCES/build-clib2 >>$LOGFILES/part10_clib2_patch.log 2>>$LOGFILES/part10_clib2_patch_err.log
+cp -r $WORKSPACE/_install/recipes/files/clib2/* $BUILDS/build-$CLIB2_NAME >>$LOGFILES/part10_clib2_patch.log 2>>$LOGFILES/part10_clib2_patch_err.log
 echo -e "\e[0m\e[36m   * Build clib2 ($CPU)\e[0m"
 PATH=$PREFIX/bin:$PATH make -f GNUmakefile.68k >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
-cp -r $SOURCES/build-clib2/include $PREFIX/$TARGET >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
-cp -r $SOURCES/build-clib2/lib $PREFIX/$TARGET >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
+cp -r $BUILDS/build-$CLIB2_NAME/include $PREFIX/$TARGET >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
+cp -r $BUILDS/build-$CLIB2_NAME/lib $PREFIX/$TARGET >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
 ln -sf $PREFIX/$TARGET/lib/ncrt0.o $PREFIX/$TARGET/lib/crt0.o >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
 cd $SOURCES
 
 # Part 11: Compile GCC (Phase #2)
-echo -e "\e[1m\e[37m11. Compile $GCC_VERSION (Phase #2)"
-cd build-gcc
+echo -e "\e[1m\e[37m11. Compile $GCC_NAME (Phase #2)"
+cd $BUILDS/build-$GCC_NAME
 echo -e "\e[0m\e[36m   * Build GCC (1 CPU)\e[0m"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 all-gcc >>$LOGFILES/part11_gcc_make.log 2>>$LOGFILES/part11_gcc_make_err.log
 echo -e "\e[0m\e[36m   * Install GCC (1 CPU)\e[0m"
@@ -247,8 +233,8 @@ cd $SOURCES
 # Part 12: Amiga Libraries
 echo -e "\e[1m\e[37m12. Amiga Libraries"
 echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
-mkdir -p build-libnix
-cd build-libnix
+mkdir -p $BUILDS/build-$LIBNIX_NAME
+cd $BUILDS/build-$LIBNIX_NAME
 CC="$PREFIX/bin/$TARGET-gcc" \
 CPP="$PREFIX/bin/$TARGET-gcc -E" \
 AR="$PREFIX/bin/$TARGET-ar" \
@@ -285,13 +271,28 @@ echo -e "\e[1m\e[32mFINISHED\e[0m"
 echo " "
 exit
 
-
-
 ########################################################################################
 
-
 #Scrapbook
-
+# PART 3: Download Sources
+echo -e "\e[1m\e[37m3. Download Sources\e[0m\e[36m"
+echo "   * $BINUTILS_NAME" 
+git clone --progress $BINUTILS_DOWNLOAD 2>>$LOGFILES/part3_sources.log
+echo "   * $GCC_NAME" 
+wget -nc $GCC_DOWNLOAD -a $LOGFILES/part3_sources.log
+echo "   * $GMP_NAME" 
+wget -nc $GMP_DOWNLOAD -a $LOGFILES/part3_sources.log
+echo "   * $MPFR_NAME" 
+wget -nc $MPFR_DOWNLOAD -a $LOGFILES/part3_sources.log
+echo "   * $MPC_NAME" 
+wget -nc $MPC_DOWNLOAD -a $LOGFILES/part3_sources.log
+echo "   * $BISON_NAME" 
+wget -nc $BISON_DOWNLOAD -a $LOGFILES/part3_sources.log
+echo "   * clib2-$CLIB2_NAME"
+git clone --progress $CLIB2_DOWNLOAD 2>>$LOGFILES/part3_sources.log
+echo "   * $LIBNIX_NAME"
+git clone --progress $LIBNIX_DOWNLOAD 2>>$LOGFILES/part3_sources.log
+exit
 
 #LIBNIX
 mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/lib
