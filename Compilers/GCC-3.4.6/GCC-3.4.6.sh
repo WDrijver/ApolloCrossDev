@@ -106,7 +106,7 @@ echo "   * clib2-$CLIB2_VERSION"
 git clone --progress $CLIB2_DOWNLOAD 2>>$LOGFILES/part3_sources.log
 echo "   * $LIBNIX_NAME"
 git clone --progress $LIBNIX_DOWNLOAD 2>>$LOGFILES/part3_sources.log
-
+exit
 # PART 4: Unpack Sources
 echo -e "\e[1m\e[37m4. Unpack Sources\e[0m\e[36m"
 for f in *.tar*; do tar xfk $f >>$LOGFILES/part4_unpack.log 2>>$LOGFILES/part4_unpack_err.log; done 
