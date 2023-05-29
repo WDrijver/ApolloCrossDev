@@ -86,6 +86,8 @@ sudo apt -y install build-essential m4 gawk autoconf automake flex bison expect 
 cd $ARCHIVES
 echo -e "\e[1m\e[37m4. Unpack Source Archives\e[0m\e[36m"
 for f in *.tar*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
+for f in *.tgz*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
+lha -xw=$SOURCES $IXEMUL_ARCHIVE >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log
 lha -xw=$SOURCES $NDK39_ARCHIVE >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log
 cd $SOURCES
 
@@ -103,7 +105,7 @@ cp cross/share/$TARGET/alib.h $PREFIX/$TARGET/ndk/include/inline >>$LOGFILES/par
 cd $SOURCES
 
 echo "   * $FD2PRAGMA_NAME" 
-cp $SOURCES/$FD2PRAGMA_NAME $BUILDS/build-$FD2PRAGMA_NAME
+cp -r $SOURCES/$FD2PRAGMA_NAME $BUILDS/build-$FD2PRAGMA_NAME
 cd $BUILDS/build-$FD2PRAGMA_NAME
     >>$LOGFILES/part4_tools_fd2pragma.log 2>>$LOGFILES/part4_tools_fd2pragma_err.log
 make >>$LOGFILES/part4_tools_fd2pragma.log 2>>$LOGFILES/part4_tools_fd2pragma_err.log
@@ -112,15 +114,15 @@ cp Include/inline/* $PREFIX/$TARGET/ndk/include/inline
 cd $SOURCES
 
 echo "   * $SFDC_NAME" 
-mkdir -p $BUILDS/build-$SFDC_NAME
+cp -r $SOURCES/$SFDC_NAME $BUILDS/build-$SFDC_NAME
 cd $BUILDS/build-$SFDC_NAME
-$SOURCES/$SFDC_NAME/configure \
+./configure \
     --prefix=$PREFIX \
     >>$LOGFILES/part4_tools_sfdc.log 2>>$LOGFILES/part4_tools_sfdc_err.log
 make >>$LOGFILES/part4_tools_sfdc.log 2>>$LOGFILES/part4_tools_sfdc_err.log
 make install >>$LOGFILES/part4_tools_sfdc.log 2>>$LOGFILES/part4_tools_sfdc_err.log
 cd $SOURCES
-exit
+
 # PART 5: AmigaOS 3.9 NDK
 echo -e "\e[1m\e[37m5. Amiga OS 3.9 NDK\e[0m\e[36m"
 echo -e "\e[0m\e[36m   * Patch AmigaOS NDK 3.9\e[0m"
@@ -155,11 +157,11 @@ cd $SOURCES
 # Part 6: Compile BinUtils
 echo -e "\e[1m\e[37m6. Compile $BINUTILS_NAME"
 echo -e "\e[0m\e[36m   * Configure Binutils\e[0m"
-mkdir -p build-binutils
-cd build-binutils
+mkdir -p $BUILDS/build-$BINUTILS_NAME
+cd $BUILDS/build-$BINUTILS_NAME
 CC=$CC32 CXX=$CXX32 \
 CFLAGS=$FLAGS CXXFLAGS=$FLAGS \
-../$BINUTILS_NAME/configure \
+$SOURCES/$BINUTILS_NAME/configure \
     --prefix="$PREFIX" \
     --target="$TARGET" \
     --disable-nls \
@@ -178,8 +180,7 @@ cd $SOURCES
 
 # Part 7: Compile GCC Run #1
 echo -e "\e[1m\e[37m7. Compile $GCC_NAME\e[0m"
-echo -e "\e[0m\e[36m   * Unpack ixemul\e[0m"
-lha -xw=$SOURCES $IXEMUL_ARCHIVE >>$LOGFILES/part7_ixemul_extract.log 2>>$LOGFILES/part7_ixemul_extract_err.log
+
 mv ixemul $IXEMUL_NAME
 echo -e "\e[0m\e[36m   * Patch ixemul\e[0m"
 for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done  
@@ -191,12 +192,13 @@ for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/stdio/*.diff`; do patch -d
 for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/stdlib/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/stdlib <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
 for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/string/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/string <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
 for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/utils/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/utils <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-mkdir -p build-gcc
-cd build-gcc
+
+mkdir -p $BUILDS/build-$GCC_NAME
+cd $BUILDS/build-$GCC_NAME
 echo -e "\e[0m\e[36m   * Configure GCC\e[0m"
 CC=$CC32 CXX=$CXX32 \
 CFLAGS=$FLAGS CXXFLAGS=$FLAGS \
-../$GCC_NAME/configure \
+$SOURCES/$GCC_NAME/configure \
     --prefix="$PREFIX" \
     --infodir="$PREFIX/$TARGET/info" \
     --mandir="$PREFIX/share/man" \
@@ -227,8 +229,8 @@ mv lib $LIBAMIGA_NAME >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga
 cp -r $LIBAMIGA_NAME/* $PREFIX/$TARGET/libnix/lib >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
 
 echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
-mkdir -p build-libnix
-cd build-libnix
+mkdir -p $BUILDS/build-$LIBNIX_NAME
+cd $BUILDS/build-$LIBNIX_NAME
 CC="$PREFIX/bin/$TARGET-gcc" \
 CPP="$PREFIX/bin/$TARGET-gcc -E" \
 AR="$PREFIX/bin/$TARGET-ar" \
@@ -258,8 +260,8 @@ mv contrib/libm $LIBM_NAME
 rm -r contrib
 cp -f $WORKSPACE/_install/config.* $LIBM_NAME
 echo -e -n "configure | "
-mkdir -p build-libm
-cd build-libm
+mkdir -p $BUILDS/build-$LIBM_NAME
+cd $BUILDS/build-$LIBM_NAME
 CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
@@ -275,8 +277,8 @@ make -j1 install >>$LOGFILES/part8_libm_make.log 2>>$LOGFILES/part8_libm_make_er
 cd $SOURCES
 
 echo -e -n "\e[0m\e[36m   * libdebug:\e[30m configure | "
-mkdir -p build-libdebug
-cd build-libdebug
+mkdir -p $BUILDS/build-$LIBDEBUG_NAME
+cd $BUILDS/build-$LIBDEBUG_NAME
 touch $SOURCES/$LIBDEBUG_NAME/configure
 CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
 AR="$PREFIX/bin/$TARGET-ar" \
@@ -293,20 +295,20 @@ make -j1 install >>$LOGFILES/part8_libdebug_make.log 2>>$LOGFILES/part8_libdebug
 cd $SOURCES
 
 echo -e -n "\e[0m\e[36m   * clib2:\e[30m make | "
-cp -r clib2 build-clib2
-cd build-clib2/library
+cp -r clib2 $BUILDS/build-$CLIB2_NAME
+cd $BUILDS/build-$CLIB2_NAME/library
 PATH=$PREFIX/bin:$PATH make -f GNUmakefile.68k >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
 echo -e "install\e[0m"
 mkdir -p $PREFIX/$TARGET/include
 mkdir -p $PREFIX/$TARGET/lib
-cp -r $SOURCES/build-clib2/library/include $PREFIX/$TARGET/clib2 >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
-cp -r $SOURCES/build-clib2/library/lib $PREFIX/$TARGET/clib2 >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
+cp -r $BUILDS/build-$CLIB2_NAME/library/include $PREFIX/$TARGET/clib2 >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
+cp -r $BUILDS/build-$CLIB2_NAME/library/lib $PREFIX/$TARGET/clib2 >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
 ln -sf $PREFIX/$TARGET/clib2/lib/ncrt0.o $PREFIX/$TARGET/clib2/lib/crt0.o >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
 cd $SOURCES
 
 # Part 9: Compile GCC Run #2
 echo -e "\e[1m\e[37m9. Compile $GCC_NAME (Continued)\e[0m"
-cd build-gcc
+cd $BUILDS/build-$GCC_NAME
 echo -e "\e[0m\e[36m   * Build GCC - Run #2\e[0m"
 MAKEINFO="makeinfo" \
 CFLAGS_FOR_TARGET="-noixemul" \

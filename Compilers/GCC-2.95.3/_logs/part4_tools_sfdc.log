@@ -6,3 +6,7 @@ configure: creating ./config.status
 config.status: creating Makefile
 config.status: creating gg-sfdc.spec
 config.status: creating sfdc.readme
+make: Nothing to be done for 'all'.
+/usr/bin/install -c -d /home/willem/ApolloCrossDev/Compilers/GCC-2.95.3/ApolloCrossDev/bin /home/willem/ApolloCrossDev/Compilers/GCC-2.95.3/ApolloCrossDev/share/man/man1
+/usr/bin/install -c sfdc /home/willem/ApolloCrossDev/Compilers/GCC-2.95.3/ApolloCrossDev/bin
+/usr/bin/install -c -m 644 sfdc.1 /home/willem/ApolloCrossDev/Compilers/GCC-2.95.3/ApolloCrossDev/share/man/man1

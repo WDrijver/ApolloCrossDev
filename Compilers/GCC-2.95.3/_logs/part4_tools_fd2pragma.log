@@ -1,0 +1,1 @@
+gcc -o fd2pragma -O2 fd2pragma.c

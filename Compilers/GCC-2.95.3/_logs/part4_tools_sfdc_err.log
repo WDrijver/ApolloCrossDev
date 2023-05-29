@@ -1,3 +1,1 @@
-config.status: WARNING:  '/home/willem/ApolloCrossDev/Compilers/GCC-2.95.3/_sources/sfdc/Makefile.in' seems to ignore the --datarootdir setting
-make: *** No rule to make target 'main.pl', needed by 'sfdc'.  Stop.
-make: *** No rule to make target 'main.pl', needed by 'sfdc'.  Stop.
+config.status: WARNING:  'Makefile.in' seems to ignore the --datarootdir setting

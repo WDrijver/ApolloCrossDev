@@ -1,12 +1,11 @@
 Hit:1 http://nl.archive.ubuntu.com/ubuntu jammy InRelease
-Hit:2 http://packages.microsoft.com/repos/code stable InRelease
+Hit:2 http://security.ubuntu.com/ubuntu jammy-security InRelease
 Get:3 http://dk.archive.ubuntu.com/ubuntu xenial InRelease [247 kB]
-Get:4 http://security.ubuntu.com/ubuntu jammy-security InRelease [110 kB]
+Hit:4 http://packages.microsoft.com/repos/code stable InRelease
 Hit:5 http://nl.archive.ubuntu.com/ubuntu jammy-updates InRelease
 Hit:6 http://nl.archive.ubuntu.com/ubuntu jammy-backports InRelease
 Err:3 http://dk.archive.ubuntu.com/ubuntu xenial InRelease
   The following signatures couldn't be verified because the public key is not available: NO_PUBKEY 40976EAF437D05B5 NO_PUBKEY 3B4FE6ACC0B21F32
-Get:7 http://security.ubuntu.com/ubuntu jammy-security/main amd64 c-n-f Metadata [9.896 B]
 Reading package lists...
 Reading package lists...
 Building dependency tree...
