@@ -65,6 +65,9 @@ RENDER_DOWNLOAD=http://neoscientists.org/~bifat/binarydistillery/$RENDER_ARCHIVE
 CODESETS_NAME=6.20
 CODESETS_ARCHIVE=codesets-$CODESETS_NAME.lha
 CODESETS_DOWNLOAD=https://github.com/jens-maus/libcodesets/releases/download/$CODESETS_NAME/$CODESETS_ARCHIVE
+IXEMUL_NAME=ixemul-48.2
+IXEMUL_DOWNLOAD=http://downloads.sf.net/project/amiga/ixemul.library/48.2/ixemul-src.lha
+IXEMUL_ARCHIVE=ixemul-src.lha
 
 # INIT Terminal
 clear
@@ -79,7 +82,7 @@ rm -f -r $SOURCES $BUILDS $LOGFILES $PREFIX
 echo "   * Create Directories" 
 mkdir -p $SOURCES $BUILDS $LOGFILES $PREFIX $PREFIX/$TARGET
 mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/lib
-mkdir -p $PREFIX/$TARGET/sys-include
+mkdir -p $PREFIX/$TARGET/sys-include $PREFIX/$TARGET/sys-include/sys
 
 cd $SOURCES
 
@@ -95,6 +98,7 @@ cd $ARCHIVES
 echo -e "\e[1m\e[37m4. Unpack Source Archives\e[0m\e[36m"
 for f in *.tar*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
 for f in *.tgz*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
+lha -xw=$SOURCES $IXEMUL_ARCHIVE >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log
 cd $SOURCES
 
 # Part 5: Compile BinUtils
@@ -146,6 +150,9 @@ for p in `ls $WORKSPACE/_install/recipes/patches/gcc/*.p`; do patch -d $WORKSPAC
 patch $WORKSPACE/_sources/$GCC_NAME/gcc/collect2.c $WORKSPACE/_install/recipes/patches.wd/collect2.c.p >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
 echo -e "\e[0m\e[36m   * Customise GCC\e[0m"
 cp -r $WORKSPACE/_install/recipes/files/gcc/* $GCC_NAME >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
+#TEST
+mv ixemul $IXEMUL_NAME
+cp -r $IXEMUL_NAME/include/* $PREFIX/$TARGET/sys-include/ >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
 
 # Part 8: Compile GCC (Phase #1)
 echo -e "\e[1m\e[37m8. Compile $GCC_NAME (Phase #1)"
@@ -161,14 +168,13 @@ AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$
 	--enable-c99 --with-cross-host \
 	--disable-multilib --without-x \
 	--enable-maintainer-mode --disable-shared \
-	--without-headers \
+    --without-headers \
     >>$LOGFILES/part8_gcc_configure.log 2>>$LOGFILES/part8_gcc_configure_err.log 
 echo -e "\e[0m\e[36m   * Build GCC (1 CPU)\e[0m"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 all-gcc >>$LOGFILES/part8_gcc_make.log 2>>$LOGFILES/part8_gcc_make_err.log
 echo -e "\e[0m\e[36m   * Install GCC (1 CPU)\e[0m"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 install-gcc >>$LOGFILES/part8_gcc_make.log 2>>$LOGFILES/part8_gcc_make_err.log
 cd $SOURCES
-cp -r $BUILDS/build-$GCC_NAME/gcc/include/* $PREFIX/$TARGET/sys-include/ >>$LOGFILES/part8_gcc_include.log 2>>$LOGFILES/part8_gcc_include_err.log
 
 # PART 9: Amiga NDK's
 echo -e "\e[1m\e[37m9. Amiga NDK's"
@@ -209,7 +215,7 @@ echo -e "\e[1m\e[37m10. Amiga Libraries"
 echo -e "\e[0m\e[36m   * Configure clib2\e[0m"
 mkdir -p $BUILDS/build-$CLIB2_NAME
 cd $BUILDS/build-$CLIB2_NAME
-cp -r $SOURCES/clib2/library/* $SOURCES/build-$CLIB2_NAME
+cp -r $SOURCES/clib2/library/* $BUILDS/build-$CLIB2_NAME
 echo -e "\e[0m\e[36m   * Patch clib2\e[0m"
 for p in `ls $WORKSPACE/_install/recipes/patches/clib2/*.p`; do patch -d $BUILDS/build-$CLIB2_NAME <$p -p0 >>$LOGFILES/part10_clib2_patch.log 2>>$LOGFILES/part10_clib2_patch_err.log; done 
 echo -e "\e[0m\e[36m   * Customise clib2\e[0m"
