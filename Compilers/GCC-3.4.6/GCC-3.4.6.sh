@@ -91,15 +91,18 @@ echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
 sudo apt -y update >>$LOGFILES/part2_update_linux.log 2>>$LOGFILES/part2_update_linux_err.log
 sudo apt -y install build-essential m4 gawk autoconf automake flex bison expect dejagnu texinfo lhasa git subversion \
      make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev rsync libreadline-dev rename gperf gcc-multilib \
+     autoconf2.64 \
      >>$LOGFILES/part2_linux_updates.log 2>>$LOGFILES/part2_linux_updates_err.log
 
 # PART 3: Unpack Archives
 cd $ARCHIVES
-echo -e "\e[1m\e[37m4. Unpack Source Archives\e[0m\e[36m"
+echo -e "\e[1m\e[37m3. Unpack Source Archives\e[0m\e[36m"
 for f in *.tar*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
-for f in *.tgz*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
 lha -xw=$SOURCES $IXEMUL_ARCHIVE >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log
 cd $SOURCES
+
+# PART 4: Tools
+echo -e "\e[1m\e[37m4. Install Tools\e[0m\e[36m"
 
 # Part 5: Compile BinUtils
 echo -e "\e[1m\e[37m5. Compile $BINUTILS_NAME"
@@ -125,14 +128,14 @@ cd $SOURCES
 echo -e "\e[1m\e[37m5. Compile $BISON_NAME\e[0m\e[36m"
 echo -e "\e[0m\e[36m   * Patch Bison\e[0m"
 for p in `ls $WORKSPACE/_install/recipes/patches/bison/*.p`; do patch -d $WORKSPACE/_sources/$BISON_NAME <$p -p0 >>$LOGFILES/part6_bison_patch.log 2>>$LOGFILES/part6_bison_patch_err.log; done 
-echo -e "\e[0m\e[36m   * Configure Bison ($CPU)\e[0m"
+echo -e "\e[0m\e[36m   * Configure Bisons\e[0m"
 mkdir -p $BUILDS/build-$BISON_NAME
 cd $BUILDS/build-$BISON_NAME
 $SOURCES/$BISON_NAME/configure \
     --prefix="$PREFIX" >>$LOGFILES/part6_bison_configure.log 2>>$LOGFILES/part6_bison_configure_err.log
-echo -e "\e[0m\e[36m   * Build Bison ($CPU)\e[0m"
+echo -e "\e[0m\e[36m   * Build Bisons\e[0m"
 make $CPU >>$LOGFILES/part6_bison_make.log 2>>$LOGFILES/part6_bison_make_err.log
-echo -e "\e[0m\e[36m   * Install Bison ($CPU)\e[0m"
+echo -e "\e[0m\e[36m   * Install Bison\e[0m"
 make $CPU install >>$LOGFILES/part6_bison_make.log 2>>$LOGFILES/part6_bison_make_err.log
 cd $SOURCES
 
@@ -158,7 +161,8 @@ echo -e "\e[1m\e[37m8. Compile $GCC_NAME (Phase #1)"
 mkdir -p $BUILDS/build-$GCC_NAME
 cd $BUILDS/build-$GCC_NAME
 echo -e "\e[0m\e[36m   * Configure GCC\e[0m"
-AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" $SOURCES/$GCC_NAME/configure \
+AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
+$SOURCES/$GCC_NAME/configure \
 	--prefix=$PREFIX \
 	--target=$TARGET \
 	--disable-threads \
@@ -170,9 +174,11 @@ AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$
     --without-headers \
     >>$LOGFILES/part8_gcc_configure.log 2>>$LOGFILES/part8_gcc_configure_err.log 
 echo -e "\e[0m\e[36m   * Build GCC (1 CPU)\e[0m"
-AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 all-gcc >>$LOGFILES/part8_gcc_make.log 2>>$LOGFILES/part8_gcc_make_err.log
+AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
+make -j1 all-gcc >>$LOGFILES/part8_gcc_make.log 2>>$LOGFILES/part8_gcc_make_err.log
 echo -e "\e[0m\e[36m   * Install GCC (1 CPU)\e[0m"
-AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" make -j1 install-gcc >>$LOGFILES/part8_gcc_make.log 2>>$LOGFILES/part8_gcc_make_err.log
+AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
+make -j1 install-gcc >>$LOGFILES/part8_gcc_make.log 2>>$LOGFILES/part8_gcc_make_err.log
 cd $SOURCES
 
 # PART 9: Amiga NDK's
