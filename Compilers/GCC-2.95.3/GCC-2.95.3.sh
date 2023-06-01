@@ -11,7 +11,7 @@
 
 EDITION=GNU-2.95.3
 VERSION=1.0
-CPU=-j1
+CPU=-j4
 GCCVERSION=2.95.3
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
 
@@ -104,7 +104,7 @@ $SOURCES/$FD2SFD_NAME/configure \
     >>$LOGFILES/part4_tools_fd2sfd.log 2>>$LOGFILES/part4_tools_fd2sfd_err.log
 make $CPU >>$LOGFILES/part4_tools_fd2sfd.log 2>>$LOGFILES/part4_tools_fd2sfd_err.log
 cp fd2sfd $PREFIX/bin >>$LOGFILES/part4_tools_fd2sfd.log 2>>$LOGFILES/part4_tools_fd2sfd_err.log
-cp cross/share/$TARGET/alib.h $PREFIX/$TARGET/ndk/include/inline >>$LOGFILES/part4_tools_fd2sfd.log 2>>$LOGFILES/part4_tools_fd2sfd_err.log
+cp $SOURCES/$FD2SFD_NAME/cross/share/$TARGET/alib.h $PREFIX/$TARGET/ndk/include/inline >>$LOGFILES/part4_tools_fd2sfd.log 2>>$LOGFILES/part4_tools_fd2sfd_err.log
 cd $SOURCES
 
 echo "   * $FD2PRAGMA_NAME" 
@@ -198,6 +198,8 @@ for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/utils/*.diff`; do patch -d
 
 mkdir -p $BUILDS/build-$GCC_NAME
 cd $BUILDS/build-$GCC_NAME
+rm -r $SOURCES/$GCC_NAME/texinfo 
+cp -f $WORKSPACE/_install/patches/install.texi $SOURCES/$GCC_NAME/gcc/install.texi  
 echo -e "\e[0m\e[36m   * Configure GCC\e[0m"
 CC=$CC32 CXX=$CXX32 \
 CFLAGS=$FLAGS CXXFLAGS=$FLAGS \
@@ -210,8 +212,6 @@ $SOURCES/$GCC_NAME/configure \
     --enable-version-specific-runtime-libs \
     --with-headers=$SOURCES/$IXEMUL_NAME/include \
     >>$LOGFILES/part7_gcc_configure.log 2>>$LOGFILES/part7_gcc_configure_err.log
-rm $BUILDS/build-$GCC_NAME/texinfo/makeinfo/Makefile  
-cp -f $WORKSPACE/_install/patches/install.texi $SOURCES/$GCC_NAME/gcc/install.texi  
 echo -e "\e[0m\e[36m   * Build GCC - Run #1\e[0m"
 MAKEINFO="makeinfo" \
 CFLAGS_FOR_TARGET="-noixemul" \
@@ -220,6 +220,7 @@ echo -e "\e[0m\e[36m   * Install GCC - Run #1\e[0m"
 MAKEINFO="makeinfo" \
 CFLAGS_FOR_TARGET="-noixemul" \
 make -j1 install-gcc >>$LOGFILES/part7_gcc_make.log 2>>$LOGFILES/part7_gcc_make_err.log
+
 echo -e "\e[0m\e[36m   * Install ixemul Headers\e[0m"
 cp -r $SOURCES/$IXEMUL_NAME/include $PREFIX/$TARGET/libnix/include >>$LOGFILES/part7_ixemul_headers.log 2>>$LOGFILES/part7_ixemul_headers_err.log
 cd $SOURCES
@@ -319,7 +320,7 @@ make -j all-target >>$LOGFILES/part9_gcc_make.log 2>>$LOGFILES/part9_gcc_make_er
 echo -e "\e[0m\e[36m   * Install GCC - Run #2\e[0m"
 MAKEINFO="makeinfo" \
 CFLAGS_FOR_TARGET="-noixemul" \
-make -j1 install-target >>$LOGFILES/part9_gcc_make.log 2>>$LOGFILES/part9_gcc_make_err.log
+make -j1 install-target >>$LOGFILES/part9_gcc_install.log 2>>$LOGFILES/part9_gcc_install_err.log
 cd $SOURCES
 
 # PART 10: Additional Amiga NDK's
