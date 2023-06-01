@@ -11,7 +11,7 @@
 
 EDITION=GNU-2.95.3
 VERSION=1.0
-CPU=-j4
+CPU=-j1
 GCCVERSION=2.95.3
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
 
