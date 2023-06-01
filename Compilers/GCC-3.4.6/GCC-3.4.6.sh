@@ -90,8 +90,8 @@ cd $SOURCES
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
 sudo apt -y update >>$LOGFILES/part2_update_linux.log 2>>$LOGFILES/part2_update_linux_err.log
 sudo apt -y install build-essential m4 gawk autoconf automake flex bison expect dejagnu texinfo lhasa git subversion \
-     make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev rsync libreadline-dev rename \
-    >>$LOGFILES/part2_update_linux.log 2>>$LOGFILES/part2_update_linux_err.log
+     make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev rsync libreadline-dev rename gperf gcc-multilib \
+     >>$LOGFILES/part2_linux_updates.log 2>>$LOGFILES/part2_linux_updates_err.log
 
 # PART 3: Unpack Archives
 cd $ARCHIVES
@@ -104,21 +104,20 @@ cd $SOURCES
 # Part 5: Compile BinUtils
 echo -e "\e[1m\e[37m5. Compile $BINUTILS_NAME"
 echo -e "\e[0m\e[36m   * Patch Binutils\e[0m"
-for p in `ls $WORKSPACE/_install/recipes/patches/binutils/*.p`; do patch -d $WORKSPACE/_sources/$BINUTILS_NAME <$p -p0 >>$LOGFILES/part5_binutils_patch.log 2>>$LOGFILES/part5_binutils_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/binutils/*.p`; do patch -d $SOURCES/$BINUTILS_NAME <$p -p0 >>$LOGFILES/part5_binutils_patch.log 2>>$LOGFILES/part5_binutils_patch_err.log; done 
 echo -e "\e[0m\e[36m   * Configure Binutils\e[0m"
 mkdir -p $BUILDS/build-$BINUTILS_NAME
 cd $BUILDS/build-$BINUTILS_NAME
-CFLAGS="-m32" \
-LDFLAGS="-m32" \
+CFLAGS="-m32" LDFLAGS="-m32" \
 $SOURCES/$BINUTILS_NAME/configure \
     --prefix=$PREFIX \
     --target=$TARGET \
     --disable-nls \
     --disable-werror \
     >>$LOGFILES/part5_binutils_configure.log 2>>$LOGFILES/part5_binutils_configure_err.log
-echo -e "\e[0m\e[36m   * Build Binutils ($CPU)\e[0m"
+echo -e "\e[0m\e[36m   * Build Binutils\e[0m"
 make $CPU >>$LOGFILES/part5_binutils_make.log 2>>$LOGFILES/part5_binutils_make_err.log
-echo -e "\e[0m\e[36m   * Install Binutils ($CPU)\e[0m"
+echo -e "\e[0m\e[36m   * Install Binutils\e[0m"
 make $CPU install >>$LOGFILES/part5_binutils_make.log 2>>$LOGFILES/part5_binutils_make_err.log
 cd $SOURCES
 

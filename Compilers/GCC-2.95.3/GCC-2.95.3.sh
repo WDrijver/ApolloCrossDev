@@ -11,7 +11,7 @@
 
 EDITION=GNU-2.95.3
 VERSION=1.0
-CPU=-j1
+CPU=-j4
 GCCVERSION=2.95.3
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
 
@@ -82,7 +82,7 @@ echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
 echo -e "\e[36m   * On first run: please be patient"
 sudo apt -y update >>$LOGFILES/part2_linux_updates.log 2>>$LOGFILES/part2_linux_updates_err.log
 sudo apt -y install build-essential m4 gawk autoconf automake flex bison expect dejagnu texinfo lhasa git subversion \
-     make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev rsync libreadline-dev rename \
+     make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev rsync libreadline-dev rename gperf gcc-multilib \
      >>$LOGFILES/part2_linux_updates.log 2>>$LOGFILES/part2_linux_updates_err.log
 
 # PART 3: Unpack Archives
@@ -102,7 +102,7 @@ cd $BUILDS/build-$FD2SFD_NAME
 $SOURCES/$FD2SFD_NAME/configure \
     --prefix=$PREFIX \
     >>$LOGFILES/part4_tools_fd2sfd.log 2>>$LOGFILES/part4_tools_fd2sfd_err.log
-make >>$LOGFILES/part4_tools_fd2sfd.log 2>>$LOGFILES/part4_tools_fd2sfd_err.log
+make $CPU >>$LOGFILES/part4_tools_fd2sfd.log 2>>$LOGFILES/part4_tools_fd2sfd_err.log
 cp fd2sfd $PREFIX/bin >>$LOGFILES/part4_tools_fd2sfd.log 2>>$LOGFILES/part4_tools_fd2sfd_err.log
 cp cross/share/$TARGET/alib.h $PREFIX/$TARGET/ndk/include/inline >>$LOGFILES/part4_tools_fd2sfd.log 2>>$LOGFILES/part4_tools_fd2sfd_err.log
 cd $SOURCES
@@ -111,7 +111,7 @@ echo "   * $FD2PRAGMA_NAME"
 cp -r $SOURCES/$FD2PRAGMA_NAME $BUILDS/build-$FD2PRAGMA_NAME
 cd $BUILDS/build-$FD2PRAGMA_NAME
     >>$LOGFILES/part4_tools_fd2pragma.log 2>>$LOGFILES/part4_tools_fd2pragma_err.log
-make >>$LOGFILES/part4_tools_fd2pragma.log 2>>$LOGFILES/part4_tools_fd2pragma_err.log
+make $CPU >>$LOGFILES/part4_tools_fd2pragma.log 2>>$LOGFILES/part4_tools_fd2pragma_err.log
 cp fd2pragma $PREFIX/bin 
 cp Include/inline/* $PREFIX/$TARGET/ndk/include/inline 
 cd $SOURCES
@@ -122,8 +122,8 @@ cd $BUILDS/build-$SFDC_NAME
 ./configure \
     --prefix=$PREFIX \
     >>$LOGFILES/part4_tools_sfdc.log 2>>$LOGFILES/part4_tools_sfdc_err.log
-make >>$LOGFILES/part4_tools_sfdc.log 2>>$LOGFILES/part4_tools_sfdc_err.log
-make install >>$LOGFILES/part4_tools_sfdc.log 2>>$LOGFILES/part4_tools_sfdc_err.log
+make $CPU >>$LOGFILES/part4_tools_sfdc.log 2>>$LOGFILES/part4_tools_sfdc_err.log
+make $CPU install >>$LOGFILES/part4_tools_sfdc.log 2>>$LOGFILES/part4_tools_sfdc_err.log
 cd $SOURCES
 
 # PART 5: AmigaOS 3.9 NDK
@@ -203,15 +203,15 @@ CC=$CC32 CXX=$CXX32 \
 CFLAGS=$FLAGS CXXFLAGS=$FLAGS \
 $SOURCES/$GCC_NAME/configure \
     --prefix="$PREFIX" \
-    --infodir="$PREFIX/$TARGET/info" \
-    --mandir="$PREFIX/share/man" \
     --host=i686-linux-gnu \
     --build=i686-linux-gnu \
     --target="$TARGET" \
-    --enable-languages=c,c++ \
+    --enable-languages=c \
     --enable-version-specific-runtime-libs \
     --with-headers=$SOURCES/$IXEMUL_NAME/include \
     >>$LOGFILES/part7_gcc_configure.log 2>>$LOGFILES/part7_gcc_configure_err.log
+rm $BUILDS/build-$GCC_NAME/texinfo/makeinfo/Makefile  
+cp -f $WORKSPACE/_install/patches/install.texi $SOURCES/$GCC_NAME/gcc/install.texi  
 echo -e "\e[0m\e[36m   * Build GCC - Run #1\e[0m"
 MAKEINFO="makeinfo" \
 CFLAGS_FOR_TARGET="-noixemul" \
@@ -252,9 +252,9 @@ AR="$PREFIX/bin/$TARGET-ar" \
 AS="$PREFIX/bin/$TARGET-as" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 LD="$PREFIX/bin/$TARGET-ld" \
-make -j1 >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
+make $CPU >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
 echo -e "install\e[0m"
-make -j1 install >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
+make $CPU install >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
 cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/libnix/include
 cd $SOURCES
 
@@ -274,9 +274,9 @@ $SOURCES/$LIBM_NAME/configure \
     --target=$TARGET \
     >>$LOGFILES/part8_libm_configure.log 2>>$LOGFILES/part8_libm_configure_err.log  
 echo -e -n "make | "
-make -j1 >>$LOGFILES/part8_libm_make.log 2>>$LOGFILES/part8_libm_make_err.log
+make $CPU >>$LOGFILES/part8_libm_make.log 2>>$LOGFILES/part8_libm_make_err.log
 echo -e "install\e[0m"
-make -j1 install >>$LOGFILES/part8_libm_make.log 2>>$LOGFILES/part8_libm_make_err.log
+make $CPU install >>$LOGFILES/part8_libm_make.log 2>>$LOGFILES/part8_libm_make_err.log
 cd $SOURCES
 
 echo -e -n "\e[0m\e[36m   * libdebug:\e[30m configure | "
@@ -292,15 +292,15 @@ $SOURCES/$LIBDEBUG_NAME/configure \
     --target=$TARGET \
     >>$LOGFILES/part8_libdebug_configure.log 2>>$LOGFILES/part8_libdebug_configure_err.log  
 echo -e -n "make | "
-make -j1 >>$LOGFILES/part8_libdebug_make.log 2>>$LOGFILES/part8_libdebug_make_err.log 
+make $CPU >>$LOGFILES/part8_libdebug_make.log 2>>$LOGFILES/part8_libdebug_make_err.log 
 echo -e "install\e[0m"
-make -j1 install >>$LOGFILES/part8_libdebug_make.log 2>>$LOGFILES/part8_libdebug_make_err.log 
+make $CPU install >>$LOGFILES/part8_libdebug_make.log 2>>$LOGFILES/part8_libdebug_make_err.log 
 cd $SOURCES
 
 echo -e -n "\e[0m\e[36m   * clib2:\e[30m make | "
 cp -r clib2 $BUILDS/build-$CLIB2_NAME
 cd $BUILDS/build-$CLIB2_NAME/library
-PATH=$PREFIX/bin:$PATH make -f GNUmakefile.68k >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
+PATH=$PREFIX/bin:$PATH make $CPU -f GNUmakefile.68k >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
 echo -e "install\e[0m"
 mkdir -p $PREFIX/$TARGET/include
 mkdir -p $PREFIX/$TARGET/lib
@@ -315,7 +315,7 @@ cd $BUILDS/build-$GCC_NAME
 echo -e "\e[0m\e[36m   * Build GCC - Run #2\e[0m"
 MAKEINFO="makeinfo" \
 CFLAGS_FOR_TARGET="-noixemul" \
-make $CPU all-target >>$LOGFILES/part9_gcc_make.log 2>>$LOGFILES/part9_gcc_make_err.log
+make -j all-target >>$LOGFILES/part9_gcc_make.log 2>>$LOGFILES/part9_gcc_make_err.log
 echo -e "\e[0m\e[36m   * Install GCC - Run #2\e[0m"
 MAKEINFO="makeinfo" \
 CFLAGS_FOR_TARGET="-noixemul" \
@@ -374,7 +374,7 @@ wget -nc $NDK39_DOWNLOAD -a $LOGFILES/part3_sources.log
 mv download.php?id=3 $NDK39_ARCHIVE
 
 
-
-
+    --infodir="$PREFIX/$TARGET/info" \
+    --mandir="$PREFIX/share/man" \
 
 

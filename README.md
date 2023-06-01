@@ -1,5 +1,4 @@
-ApolloCrossDev will help (future) Amiga/Apollo developers to setup Cross Compilers on Linux (Debian/Ubunto 64-bits),
-offering selection of the best toolchains created by skilled Amiga developers in the past 20 years.
+ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup Cross Compilers on Linux (Debian/Ubunto 64-bits), offering a selection of the best toolchains created by skilled Amiga developers in the past 20 years.
 
 * GCC-2.95.3        : Krystian Bacławski (cahirwpz)
 * GCC-3.4.6         : NetSurf Development Team
@@ -23,4 +22,4 @@ Installation:
 Instructions:
 1. Create Projects/mysource directory for your *.c and *.s sourcefiles (example: Projects/hello)
 2. Copy your choice of make-xxxyyy makefile(s) (example: Projects/hello/make-gcc295 to use GCC 2.95.3)
-3. Type "make -f make-xxxyyy" or read make-xxxyyy file for further Compile instructions
+3. Type "make -f make-xxxyyy" or read make-xxxyyy file for further Compile instructions (example: make -f make-gcc346)
