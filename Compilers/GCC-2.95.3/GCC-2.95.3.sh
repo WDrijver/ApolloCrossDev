@@ -230,7 +230,7 @@ echo -e "\e[1m\e[37m8. Compile Libraries\e[0m"
 
 echo -e "\e[0m\e[36m   * libamiga:\e[30m install\e[0m"
 mv lib $LIBAMIGA_NAME >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
-cp -r $LIBAMIGA_NAME/* $PREFIX/$TARGET/libnix/lib >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
+#cp -r $LIBAMIGA_NAME/* $PREFIX/$TARGET/libnix/lib >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
 
 echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
 mkdir -p $BUILDS/build-$LIBNIX_NAME

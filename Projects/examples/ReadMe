@@ -4,15 +4,8 @@ Additional information on Cross Compiler Setup and Options
 A. Libraries 
 GCC 2.x / 6.x (m68k-amigaos) can be compiled using different run-time and/or static libraries:
 
-0. base
-    bin/ar|as|gcc|ld|nm|ranlib|strip
-    lib/ldscripts/amiga*.*
-
 1. ixemul (no arguments)
-    lib/crt0
-    lib/libc
-    lib/libamiga
-    lib/libstubs
+    Dynamic ixemul libraries (LIBS:ixemul.library / LIBS:ixnet.library)
 
 2. libnix (-noixemul|-mcrt=nix13|-mcrt=nix20) 
     lib/libamiga
@@ -22,6 +15,16 @@ GCC 2.x / 6.x (m68k-amigaos) can be compiled using different run-time and/or sta
     libnix/lib/libnixmain
     libnix/lib/libnix
 
+Libnix link order:
+* ncrt0*.0      : Startup codes (open shared libraries, stdin/out, etc)
+* libnixmain.a  : Commandline parser (calculates argc and argv)
+  libm.a        : Math library (external original)
+* libstack.a    : Stack extension code (optional).
+* libnix.a      : Main library
+* libamiga.a    : Amiga library (original preferred / internal libnix version = subset)
+* detach.o      : Auto detaching
+* libstubs.a    : Library bases
+
 3. clib2 (-mcrt=clib2) = 
     clib2/ncrt0
     clib2/libc
@@ -30,6 +33,9 @@ GCC 2.x / 6.x (m68k-amigaos) can be compiled using different run-time and/or sta
 
 4. libamiga 
     lib/libamiga.a
+
+
+
 
 GCC 
 
@@ -109,39 +115,30 @@ libnix
     
     clib2/lib   : libamiga.a    libc.a      libdebug.a      libm.a      libnet.a    libunix.a   nb32crt0.o  nbcrt0.0    ncrt0.o     nr32crt0.o  nrcrt0.o
     
-Library Types:
-    lib         = default                           
-    lib/libb    = -fbaserel -DSMALL_DATA
-    lib/libb32  = 
-    lib/libm020 = -m68020
-    lib/libm060 = 
-    libb/libm020 = -fbaserel -DSMALL_DATA -m68020
-    libm020/libm881 = -m68020 -m68881
-    libb/libm020/libm881 = -fbaserel -DSMALL_DAT -m68020 -m68881
-    libb32/libm020 = -fbaserel32 -DMSALL_DATA -m68020
+Target Library Directories for C-Libraries (CLib2/Libnix):
+    lib         = default  
+    lib/libm020 = DSMALL_DATA -m68020
+    lib/libm020/libm881 = -DSMALL_DATA -m68020 -m68881
+    
+    lib/libb    = -fbaserel -DSMALL_DATA (small data model)
+    lib/libb/libm020 = -fbaserel -DSMALL_DATA -m68020
+    lib/libb/libm020/libm881 = -fbaserel -DSMALL_DATA -m68020 -m68881
 
-	cd lib; 	$(MAK2) libamiga CFLAGS="-O3 -fomit-frame-pointer"
-	cd libb;	$(MAK2) libamiga CFLAGS="-O3 -fomit-frame-pointer -fbaserel"
-	cd libb32;	$(MAK2) libamiga CFLAGS="-O3 -fomit-frame-pointer -fbaserel32 -m68020"
-#   -fbaserel -DSMALL_DATA	for small data model
-#   -fbaserel32			for large baserel model
-#   -m68020			for 68020 specific code
-#   -m68060			for 68060 specific code
-#   -m68881			for 68881 specific code (FPU)
-
+    lib/libb32  = -fbaserel32 -m68020 (large data model)
+    lib/libb32/libm020 = -fbaserel32 -DMSALL_DATA -m68020
+    lib/libb32/libm020/libm881 = -fbaserel32 -DSMALL_DATA -m68020 -m68881
+   
+Target Library Directories: 
     lib/fd          =  
     lib/sfd         =
-    lib/ldscripts   =
+    lib/ldscripts   = amiga_bss.* and amiga.x* files (no idea???)
 
-
-Naming COnventions:
-
-libc        = Standard C Library, based on glibc (which does not compile for m68k) or newlib (?) or specific other C-libs made for Amiga (libnix/clib2)
-libiberty   = Software library with a collection of subroutines used by various GNU programs
-liby        = Yacc library containing implementations of Yacc-compatible yyerror and main functions
-libm        = Provides math library implementation for non-FPU Amigas
-libdebug    = Clib2 debug library
-
-libamiga    = AmigaOS link library
-
-crt0.o      = crt0 (or ncrt/nbcrt/etc) is a set of execution startup routines linked into a C program that performs any initialization work required before calling the program's main function. 
+Library Collections:
+libc.a        = Standard C Library, based on glibc (which does not compile for m68k)
+                or newlib or specific other C-libs made for Amiga (libnix/clib2)
+libiberty.a   = Software library with subroutines used by various GNU programs
+libm.a        = Math library for non-FPU Amigas
+libdebug.a    = Debug library
+libamiga.a    = AmigaOS link library (gcc version of original amiga.lib)
+crt0.o        = crt0 (or ncrt/nbcrt/etc) is a set of execution startup routines linked
+                into a C program that performs any initialization work required before calling the program's main function. 
