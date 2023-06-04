@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-2.95.3 Install Script v1.1
+# ApolloCrossDev GCC-2.95.3 Install Script v1.3
 # 
 # Installation:
 # 1. Enter Compilers/GCC-2.95.3 directory
@@ -10,7 +10,7 @@
 # 3. Read make-gcc2953 for compile instructions
 
 EDITION=GNU-2.95.3
-VERSION=1.1
+VERSION=1.3
 CPU=-j4
 GCCVERSION=2.95.3
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
@@ -73,9 +73,9 @@ echo "   * Clean the House"
 rm -f -r $SOURCES $BUILDS $LOGFILES $PREFIX
 echo "   * Create Directories" 
 mkdir -p $SOURCES $BUILDS $LOGFILES $PREFIX $PREFIX/$TARGET
-mkdir -p $PREFIX/bin $PREFIX/etc  $PREFIX/$TARGET/bin $PREFIX/$TARGET/ndk $PREFIX/$TARGET/ndk/include $PREFIX/$TARGET/ndk/lib
+mkdir -p $PREFIX/bin $PREFIX/etc $PREFIX/$TARGET/bin $PREFIX/$TARGET/ndk $PREFIX/$TARGET/ndk/include $PREFIX/$TARGET/ndk/lib
 mkdir -p $PREFIX/$TARGET/ndk/include/inline $PREFIX/$TARGET/ndk/include/lvo  $PREFIX/$TARGET/ndk/lib/fd $PREFIX/$TARGET/ndk/lib/sfd
-mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/lib $PREFIX/$TARGET/clib2
+#mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/lib
 
 # PART 2: Update Linux Packages 
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
@@ -172,6 +172,7 @@ $SOURCES/$BINUTILS_NAME/configure \
     --infodir="$PREFIX/$TARGET/info" \
     --mandir="$PREFIX/share/man" \
     >>$LOGFILES/part6_binutils_configure.log 2>>$LOGFILES/part6_binutils_configure_err.log
+
 echo -e "\e[0m\e[36m   * Build Binutils ($CPU)\e[0m"
 make $CPU >>$LOGFILES/part6_binutils_make.log 2>>$LOGFILES/part6_binutils_make_err.log
 echo -e "\e[0m\e[36m   * Install Binutils ($CPU)\e[0m"
@@ -183,34 +184,24 @@ cd $SOURCES
 
 # Part 7: Compile GCC Run #1
 echo -e "\e[1m\e[37m7. Compile $GCC_NAME\e[0m"
-
-mv ixemul $IXEMUL_NAME
-echo -e "\e[0m\e[36m   * Patch ixemul\e[0m"
-for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done  
-for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/general/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/general <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/glue/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/glue <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/ixnet/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/ixnet <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/library/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/library <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/stdio/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/stdio <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/stdlib/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/stdlib <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/string/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/string <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/utils/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/utils <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-
 mkdir -p $BUILDS/build-$GCC_NAME
 cd $BUILDS/build-$GCC_NAME
+echo -e "\e[0m\e[36m   * Patch GCC\e[0m"
 rm -r $SOURCES/$GCC_NAME/texinfo 
-cp -f $WORKSPACE/_install/patches/install.texi $SOURCES/$GCC_NAME/gcc/install.texi  
+cp -f $WORKSPACE/_install/patches/install.texi $SOURCES/$GCC_NAME/gcc/install.texi
 echo -e "\e[0m\e[36m   * Configure GCC\e[0m"
 CC=$CC32 CXX=$CXX32 \
 CFLAGS=$FLAGS CXXFLAGS=$FLAGS \
 $SOURCES/$GCC_NAME/configure \
     --prefix="$PREFIX" \
+    --target="$TARGET" \
     --host=i686-linux-gnu \
     --build=i686-linux-gnu \
-    --target="$TARGET" \
+    --infodir="$PREFIX/$TARGET/info" \
+    --mandir="$PREFIX/share/man" \
     --enable-languages=c \
     --enable-version-specific-runtime-libs \
-    --with-headers=$SOURCES/$IXEMUL_NAME/include \
+    --without-headers \
     >>$LOGFILES/part7_gcc_configure.log 2>>$LOGFILES/part7_gcc_configure_err.log
 echo -e "\e[0m\e[36m   * Build GCC - Run #1\e[0m"
 MAKEINFO="makeinfo" \
@@ -220,17 +211,55 @@ echo -e "\e[0m\e[36m   * Install GCC - Run #1\e[0m"
 MAKEINFO="makeinfo" \
 CFLAGS_FOR_TARGET="-noixemul" \
 make -j1 install-gcc >>$LOGFILES/part7_gcc_make.log 2>>$LOGFILES/part7_gcc_make_err.log
-
-echo -e "\e[0m\e[36m   * Install ixemul Headers\e[0m"
-cp -r $SOURCES/$IXEMUL_NAME/include $PREFIX/$TARGET/libnix/include >>$LOGFILES/part7_ixemul_headers.log 2>>$LOGFILES/part7_ixemul_headers_err.log
 cd $SOURCES
 
 # Part 8: Libraries
 echo -e "\e[1m\e[37m8. Compile Libraries\e[0m"
+echo -e "\e[0m\e[36m   * Configure clib2\e[0m"
+mkdir -p $BUILDS/build-$CLIB2_NAME
+cd $BUILDS/build-$CLIB2_NAME
+cp -r $SOURCES/clib2/library/* $BUILDS/build-$CLIB2_NAME
+echo -e "\e[0m\e[36m   * Patch clib2\e[0m"
+for p in `ls $WORKSPACE/_install/recipes/patches/clib2/*.p`; do patch -d $BUILDS/build-$CLIB2_NAME <$p -p0 >>$LOGFILES/part10_clib2_patch.log 2>>$LOGFILES/part10_clib2_patch_err.log; done 
+echo -e "\e[0m\e[36m   * Customise clib2\e[0m"
+cp -r $WORKSPACE/_install/recipes/files/clib2/* $BUILDS/build-$CLIB2_NAME >>$LOGFILES/part10_clib2_patch.log 2>>$LOGFILES/part10_clib2_patch_err.log
+echo -e "\e[0m\e[36m   * Build clib2 ($CPU)\e[0m"
+PATH=$PREFIX/bin:$PATH make -f GNUmakefile.68k >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
+cp -r $BUILDS/build-$CLIB2_NAME/include $PREFIX/$TARGET >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
+cp -r $BUILDS/build-$CLIB2_NAME/lib $PREFIX/$TARGET >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
+ln -sf $PREFIX/$TARGET/lib/ncrt0.o $PREFIX/$TARGET/lib/crt0.o >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
+cd $SOURCES
+
+# Part 9: Compile GCC Run #2
+echo -e "\e[1m\e[37m9. Compile $GCC_NAME (Continued)\e[0m"
+cd $BUILDS/build-$GCC_NAME
+echo -e "\e[0m\e[36m   * Build GCC - Run #2\e[0m"
+MAKEINFO="makeinfo" \
+CFLAGS_FOR_TARGET="-noixemul" \
+make -j all-target >>$LOGFILES/part9_gcc_make.log 2>>$LOGFILES/part9_gcc_make_err.log
+echo -e "\e[0m\e[36m   * Install GCC - Run #2\e[0m"
+MAKEINFO="makeinfo" \
+CFLAGS_FOR_TARGET="-noixemul" \
+make -j1 install-target >>$LOGFILES/part9_gcc_make.log 2>>$LOGFILES/part9_gcc_make_err.log
+cd $SOURCES
+
+# PART 10: Cleanup
+echo -e "\e[1m\e[37m10. Cleanup\e[0m\e[36m"
+cd $PREFIX
+rm -rf info
+rm -rf man
+
+# FINISH
+echo " "
+echo -e "\e[1m\e[32mFINISHED\e[0m"
+echo " "
+exit
+
+#LIBNIX + Additional Libnix Libs
 
 echo -e "\e[0m\e[36m   * libamiga:\e[30m install\e[0m"
 mv lib $LIBAMIGA_NAME >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
-#cp -r $LIBAMIGA_NAME/* $PREFIX/$TARGET/libnix/lib >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
+cp -r $LIBAMIGA_NAME/* $PREFIX/$TARGET/libnix/lib >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
 
 echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
 mkdir -p $BUILDS/build-$LIBNIX_NAME
@@ -298,52 +327,7 @@ echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part8_libdebug_make.log 2>>$LOGFILES/part8_libdebug_make_err.log 
 cd $SOURCES
 
-echo -e -n "\e[0m\e[36m   * clib2:\e[30m make | "
-cp -r clib2 $BUILDS/build-$CLIB2_NAME
-cd $BUILDS/build-$CLIB2_NAME/library
-PATH=$PREFIX/bin:$PATH make $CPU -f GNUmakefile.68k >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
-echo -e "install\e[0m"
-mkdir -p $PREFIX/$TARGET/include
-mkdir -p $PREFIX/$TARGET/lib
-cp -r $BUILDS/build-$CLIB2_NAME/library/include $PREFIX/$TARGET/clib2 >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
-cp -r $BUILDS/build-$CLIB2_NAME/library/lib $PREFIX/$TARGET/clib2 >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
-ln -sf $PREFIX/$TARGET/clib2/lib/ncrt0.o $PREFIX/$TARGET/clib2/lib/crt0.o >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
-cd $SOURCES
-
-# Part 9: Compile GCC Run #2
-echo -e "\e[1m\e[37m9. Compile $GCC_NAME (Continued)\e[0m"
-cd $BUILDS/build-$GCC_NAME
-echo -e "\e[0m\e[36m   * Build GCC - Run #2\e[0m"
-MAKEINFO="makeinfo" \
-CFLAGS_FOR_TARGET="-noixemul" \
-make -j all-target >>$LOGFILES/part9_gcc_make.log 2>>$LOGFILES/part9_gcc_make_err.log
-echo -e "\e[0m\e[36m   * Install GCC - Run #2\e[0m"
-MAKEINFO="makeinfo" \
-CFLAGS_FOR_TARGET="-noixemul" \
-make -j1 install-target >>$LOGFILES/part9_gcc_make.log 2>>$LOGFILES/part9_gcc_make_err.log
-cd $SOURCES
-
-# PART 10: Additional Amiga NDK's
-echo -e "\e[1m\e[37m10. Additional Amiga NDK's"
-mkdir -p NDK3.2
-cd NDK3.2
-echo -e "\e[0m\e[36m   * NDK 3.2\e[0m"
-wget -nc $NDK32_DOWNLOAD -a $LOGFILES/part10_additional_ndk.log
-lha -xw=$PREFIX/include/NDK3.2 NDK3.2.lha >>$LOGFILES/part10_additional_ndk.log 2>>$LOGFILES/part10_additional_ndk_err.log
-
-# PART 11: Cleanup
-echo -e "\e[1m\e[37m11. Cleanup\e[0m\e[36m"
-cd $PREFIX
-rm -rf info
-rm -rf man
-
-# FINISH
-echo " "
-echo -e "\e[1m\e[32mFINISHED\e[0m"
-echo " "
-exit
-
-# SCRAPBOOK
+####################################################################
 
 # PART 3: Prepare Sources (Sources moved locally in ApolloCrossDev Git Repo)
 echo -e "\e[1m\e[37m3. Download Sources\e[0m\e[36m"
@@ -374,8 +358,22 @@ echo -e "\e[0m\e[36m   * NDKS's:\e[30m $NDK39_NAME |"
 wget -nc $NDK39_DOWNLOAD -a $LOGFILES/part3_sources.log
 mv download.php?id=3 $NDK39_ARCHIVE
 
+#IXEMUL removed
+mv ixemul $IXEMUL_NAME
+echo -e "\e[0m\e[36m   * Patch ixemul\e[0m"
+for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done  
+for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/general/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/general <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/glue/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/glue <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/ixnet/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/ixnet <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/library/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/library <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/stdio/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/stdio <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/stdlib/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/stdlib <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/string/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/string <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/patches/$IXEMUL_NAME/utils/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/utils <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
 
-    --infodir="$PREFIX/$TARGET/info" \
-    --mandir="$PREFIX/share/man" \
+echo -e "\e[0m\e[36m   * Install ixemul Headers\e[0m"
+cp -r $SOURCES/$IXEMUL_NAME/include $PREFIX/$TARGET/libnix/include >>$LOGFILES/part7_ixemul_headers.log 2>>$LOGFILES/part7_ixemul_headers_err.log
+cd $SOURCES
+
 
 
