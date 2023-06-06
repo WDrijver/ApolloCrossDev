@@ -332,8 +332,9 @@ cd $SOURCES
 # PART 10: Cleanup
 echo -e "\e[1m\e[37m10. Cleanup\e[0m\e[36m"
 cd $PREFIX
-rm -rf info
-rm -rf man
+rm -rf etc include share
+cd $TARGET
+rm -rf include
 
 # FINISH
 echo " "

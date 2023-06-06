@@ -172,9 +172,9 @@ $SOURCES/$BINUTILS_NAME/configure \
     --disable-nls \
     --host=i686-linux-gnu \
     >>$LOGFILES/part6_binutils_configure.log 2>>$LOGFILES/part6_binutils_configure_err.log
-echo -e "\e[0m\e[36m   * Build Binutils ($CPU)\e[0m"
+echo -e "\e[0m\e[36m   * Build Binutils\e[0m"
 make $CPU >>$LOGFILES/part6_binutils_make.log 2>>$LOGFILES/part6_binutils_make_err.log
-echo -e "\e[0m\e[36m   * Install Binutils ($CPU)\e[0m"
+echo -e "\e[0m\e[36m   * Install Binutils\e[0m"
 make $CPU install-binutils >>$LOGFILES/part6_binutils_make.log 2>>$LOGFILES/part6_binutils_make_err.log
 make $CPU install-gas >>$LOGFILES/part6_binutils_make.log 2>>$LOGFILES/part6_binutils_make_err.log
 make $CPU install-ld >>$LOGFILES/part6_binutils_make.log 2>>$LOGFILES/part6_binutils_make_err.log
@@ -216,10 +216,10 @@ echo -e "\e[0m\e[36m   * Configure clib2\e[0m"
 mkdir -p $BUILDS/build-$CLIB2_NAME
 cd $BUILDS/build-$CLIB2_NAME
 cp -r $SOURCES/clib2/library/* $BUILDS/build-$CLIB2_NAME
-echo -e "\e[0m\e[36m   * Patch clib2\e[0m"
-for p in `ls $WORKSPACE/_install/patches/clib2/*.p`; do patch -d $BUILDS/build-$CLIB2_NAME <$p -p0 >>$LOGFILES/part8_clib2_patch.log 2>>$LOGFILES/part8_clib2_patch_err.log; done 
-echo -e "\e[0m\e[36m   * Customise clib2\e[0m"
-cp -r $WORKSPACE/_install/files/clib2/* $BUILDS/build-$CLIB2_NAME >>$LOGFILES/part8_clib2_patch.log 2>>$LOGFILES/part8_clib2_patch_err.log
+#echo -e "\e[0m\e[36m   * Patch clib2\e[0m"
+#for p in `ls $WORKSPACE/_install/patches/clib2/*.p`; do patch -d $BUILDS/build-$CLIB2_NAME <$p -p0 >>$LOGFILES/part8_clib2_patch.log 2>>$LOGFILES/part8_clib2_patch_err.log; done 
+#echo -e "\e[0m\e[36m   * Customise clib2\e[0m"
+#cp -r $WORKSPACE/_install/files/clib2/* $BUILDS/build-$CLIB2_NAME >>$LOGFILES/part8_clib2_patch.log 2>>$LOGFILES/part8_clib2_patch_err.log
 echo -e "\e[0m\e[36m   * Build clib2\e[0m"
 PATH=$PREFIX/bin:$PATH make -f GNUmakefile.68k >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
 cp -r $BUILDS/build-$CLIB2_NAME/include/* $PREFIX/$TARGET/sys-include >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
