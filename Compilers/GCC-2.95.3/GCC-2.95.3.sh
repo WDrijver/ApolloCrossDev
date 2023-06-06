@@ -73,8 +73,10 @@ echo "   * Clean the House"
 rm -f -r $SOURCES $BUILDS $LOGFILES $PREFIX
 echo "   * Create Directories" 
 mkdir -p $SOURCES $BUILDS $LOGFILES $PREFIX $PREFIX/$TARGET
-mkdir -p $PREFIX/bin $PREFIX/etc $PREFIX/$TARGET/bin $PREFIX/$TARGET/ndk $PREFIX/$TARGET/ndk/include $PREFIX/$TARGET/ndk/lib
-mkdir -p $PREFIX/$TARGET/ndk/include/inline $PREFIX/$TARGET/ndk/include/lvo  $PREFIX/$TARGET/ndk/lib/fd $PREFIX/$TARGET/ndk/lib/sfd
+mkdir -p $PREFIX/bin $PREFIX/etc $PREFIX/$TARGET/bin $PREFIX/$TARGET/ndk $PREFIX/$TARGET/sys-include
+mkdir -p $PREFIX/$TARGET/ndk/include $PREFIX/$TARGET/ndk/lib $PREFIX/$TARGET/ndk/include/inline
+mkdir -p $PREFIX/$TARGET/ndk/include/lvo  $PREFIX/$TARGET/ndk/lib/fd $PREFIX/$TARGET/ndk/lib/sfd
+
 #mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/lib
 
 # PART 2: Update Linux Packages 
@@ -169,10 +171,7 @@ $SOURCES/$BINUTILS_NAME/configure \
     --target="$TARGET" \
     --disable-nls \
     --host=i686-linux-gnu \
-    --infodir="$PREFIX/$TARGET/info" \
-    --mandir="$PREFIX/share/man" \
     >>$LOGFILES/part6_binutils_configure.log 2>>$LOGFILES/part6_binutils_configure_err.log
-
 echo -e "\e[0m\e[36m   * Build Binutils ($CPU)\e[0m"
 make $CPU >>$LOGFILES/part6_binutils_make.log 2>>$LOGFILES/part6_binutils_make_err.log
 echo -e "\e[0m\e[36m   * Install Binutils ($CPU)\e[0m"
@@ -187,8 +186,8 @@ echo -e "\e[1m\e[37m7. Compile $GCC_NAME\e[0m"
 mkdir -p $BUILDS/build-$GCC_NAME
 cd $BUILDS/build-$GCC_NAME
 echo -e "\e[0m\e[36m   * Patch GCC\e[0m"
-rm -r $SOURCES/$GCC_NAME/texinfo 
-cp -f $WORKSPACE/_install/patches/install.texi $SOURCES/$GCC_NAME/gcc/install.texi
+rm -r $SOURCES/$GCC_NAME/texinfo >>$LOGFILES/part7_patch_gcc.log 2>>$LOGFILES/part7_patch_gcc_err.log
+cp -rf $WORKSPACE/_install/files.wd/gcc/* $SOURCES/$GCC_NAME >>$LOGFILES/part7_patch_gcc.log 2>>$LOGFILES/part7_patch_gcc_err.log
 echo -e "\e[0m\e[36m   * Configure GCC\e[0m"
 CC=$CC32 CXX=$CXX32 \
 CFLAGS=$FLAGS CXXFLAGS=$FLAGS \
@@ -197,8 +196,6 @@ $SOURCES/$GCC_NAME/configure \
     --target="$TARGET" \
     --host=i686-linux-gnu \
     --build=i686-linux-gnu \
-    --infodir="$PREFIX/$TARGET/info" \
-    --mandir="$PREFIX/share/man" \
     --enable-languages=c \
     --enable-version-specific-runtime-libs \
     --without-headers \
@@ -209,7 +206,7 @@ CFLAGS_FOR_TARGET="-noixemul" \
 make -j1 all-gcc >>$LOGFILES/part7_gcc_make.log 2>>$LOGFILES/part7_gcc_make_err.log
 echo -e "\e[0m\e[36m   * Install GCC - Run #1\e[0m"
 MAKEINFO="makeinfo" \
-CFLAGS_FOR_TARGET="-noixemul" \
+FLAGS_FOR_TARGET="-noixemul" \
 make -j1 install-gcc >>$LOGFILES/part7_gcc_make.log 2>>$LOGFILES/part7_gcc_make_err.log
 cd $SOURCES
 
@@ -220,14 +217,14 @@ mkdir -p $BUILDS/build-$CLIB2_NAME
 cd $BUILDS/build-$CLIB2_NAME
 cp -r $SOURCES/clib2/library/* $BUILDS/build-$CLIB2_NAME
 echo -e "\e[0m\e[36m   * Patch clib2\e[0m"
-for p in `ls $WORKSPACE/_install/recipes/patches/clib2/*.p`; do patch -d $BUILDS/build-$CLIB2_NAME <$p -p0 >>$LOGFILES/part10_clib2_patch.log 2>>$LOGFILES/part10_clib2_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/patches/clib2/*.p`; do patch -d $BUILDS/build-$CLIB2_NAME <$p -p0 >>$LOGFILES/part8_clib2_patch.log 2>>$LOGFILES/part8_clib2_patch_err.log; done 
 echo -e "\e[0m\e[36m   * Customise clib2\e[0m"
-cp -r $WORKSPACE/_install/recipes/files/clib2/* $BUILDS/build-$CLIB2_NAME >>$LOGFILES/part10_clib2_patch.log 2>>$LOGFILES/part10_clib2_patch_err.log
-echo -e "\e[0m\e[36m   * Build clib2 ($CPU)\e[0m"
-PATH=$PREFIX/bin:$PATH make -f GNUmakefile.68k >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
-cp -r $BUILDS/build-$CLIB2_NAME/include $PREFIX/$TARGET >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
-cp -r $BUILDS/build-$CLIB2_NAME/lib $PREFIX/$TARGET >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
-ln -sf $PREFIX/$TARGET/lib/ncrt0.o $PREFIX/$TARGET/lib/crt0.o >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
+cp -r $WORKSPACE/_install/files/clib2/* $BUILDS/build-$CLIB2_NAME >>$LOGFILES/part8_clib2_patch.log 2>>$LOGFILES/part8_clib2_patch_err.log
+echo -e "\e[0m\e[36m   * Build clib2\e[0m"
+PATH=$PREFIX/bin:$PATH make -f GNUmakefile.68k >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
+cp -r $BUILDS/build-$CLIB2_NAME/include/* $PREFIX/$TARGET/sys-include >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
+cp -r $BUILDS/build-$CLIB2_NAME/lib $PREFIX/$TARGET >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
+ln -sf $PREFIX/$TARGET/lib/ncrt0.o $PREFIX/$TARGET/lib/crt0.o >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
 cd $SOURCES
 
 # Part 9: Compile GCC Run #2
@@ -245,6 +242,9 @@ cd $SOURCES
 
 # PART 10: Cleanup
 echo -e "\e[1m\e[37m10. Cleanup\e[0m\e[36m"
+rm -rf $TARGET/etc
+rm -rf $TARGET/include
+rm -rf $TARGET/$PREFIX/include
 cd $PREFIX
 rm -rf info
 rm -rf man

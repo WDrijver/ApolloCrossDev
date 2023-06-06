@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-3.4.6 Install Script v1.1
+# ApolloCrossDev GCC-3.4.6 Install Script v1.2
 # 
 # Installation:
 # 1. Enter Compilers/GCC-3.4.6 directory
@@ -10,7 +10,7 @@
 # 3. Read make-gcc346 for compile instructions
 
 EDITION=GNU-3.4.6
-VERSION=1.1
+VERSION=1.2
 CPU=-j4
 GCCVERSION=3.4.6
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
@@ -78,7 +78,7 @@ echo "   * Clean the House"
 rm -f -r $SOURCES $BUILDS $LOGFILES $PREFIX
 echo "   * Create Directories" 
 mkdir -p $SOURCES $BUILDS $LOGFILES $PREFIX $PREFIX/$TARGET
-mkdir -p $PREFIX/$TARGET/sys-include
+mkdir -p $PREFIX/$TARGET/sys-include $PREFIX/$TARGET/sys-include/sys
 
 cd $SOURCES
 
@@ -166,7 +166,7 @@ $SOURCES/$GCC_NAME/configure \
 	--disable-nls --disable-c-mbchar \
 	--enable-languages=c --enable-checking=no \
 	--enable-c99 --with-cross-host \
-    --without-x \
+	--disable-multilib --without-x \
 	--enable-maintainer-mode --disable-shared \
     --without-headers \
     >>$LOGFILES/part8_gcc_configure.log 2>>$LOGFILES/part8_gcc_configure_err.log 
@@ -177,7 +177,7 @@ echo -e "\e[0m\e[36m   * Install GCC (1 CPU)\e[0m"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
 make -j1 install-gcc >>$LOGFILES/part8_gcc_make.log 2>>$LOGFILES/part8_gcc_make_err.log
 cd $SOURCES
-
+_builds
 # PART 9: Amiga NDK's
 echo -e "\e[1m\e[37m9. Amiga NDK's"
 
@@ -247,6 +247,42 @@ echo " "
 exit
 
 ########################################################################################
+
+BINUTILS_NAME=amigaos-binutils-2.14
+BINUTILS_DOWNLOAD=https://github.com/adtools/$BINUTILS_NAME
+GCC_NAME=gcc-3.4.6
+GCC_DOWNLOAD=https://ftp.gnu.org/gnu/gcc/$GCC_NAME/$GCC_NAME.tar.gz
+GMP_NAME=gmp-4.3.2
+GMP_DOWNLOAD=https://ftp.gnu.org/gnu/gmp/$GMP_NAME.tar.gz
+MPFR_NAME=mpfr-2.4.2
+MPFR_DOWNLOAD=http://www.mpfr.org/$MPFR_NAME/$MPFR_NAME.tar.gz
+MPC_NAME=mpc-0.8.2
+MPC_DOWNLOAD=http://www.multiprecision.org/downloads/$MPC_NAME.tar.gz
+BISON_NAME=bison-2.7.1
+BISON_DOWNLOAD=https://ftp.gnu.org/gnu/bison/$BISON_NAME.tar.gz
+CLIB2_NAME=clib2
+CLIB2_DOWNLOAD=https://github.com/adtools/clib2
+NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
+NDK39_DOWNLOAD=https://os.amigaworld.de/download.php?id=3
+NDK_NAME=3.9
+NDK_ARCHIVE=ndk-$NDK_NAME-includes.tar.bz2
+NDK_DOWNLOAD=http://kas1e.mikendezign.com/zerohero_crosscompilers_backup/files/m68k-amigaos/$NDK_ARCHIVE
+OPENURL_NAME=7.16
+OPENURL_ARCHIVE=OpenURL-$OPENURL_NAME.lha
+OPENURL_DOWNLOAD=https://github.com/jens-maus/libopenurl/releases/download/$OPENURL_NAME/$OPENURL_ARCHIVE
+AMISSL_NAME=4.4
+AMISSL_ARCHIVE=AmiSSL-$AMISSL_NAME.lha 
+AMISSL_DOWNLOAD=https://github.com/jens-maus/amissl/releases/download/$AMISSL_NAME/$AMISSL_ARCHIVE
+GUIGFX_ARCHIVE=guigfxlib.lha
+GUIGFX_DOWNLOAD=http://neoscientists.org/~bifat/binarydistillery/$GUIGFX_ARCHIVE
+RENDER_ARCHIVE=renderlib.lha
+RENDER_DOWNLOAD=http://neoscientists.org/~bifat/binarydistillery/$RENDER_ARCHIVE
+CODESETS_NAME=6.20
+CODESETS_ARCHIVE=codesets-$CODESETS_NAME.lha
+CODESETS_DOWNLOAD=https://github.com/jens-maus/libcodesets/releases/download/$CODESETS_NAME/$CODESETS_ARCHIVE
+IXEMUL_NAME=ixemul-48.2
+IXEMUL_DOWNLOAD=http://downloads.sf.net/project/amiga/ixemul.library/48.2/ixemul-src.lha
+IXEMUL_ARCHIVE=ixemul-src.lha
 
 wget -nc $NDK_DOWNLOAD -a $LOGFILES/part9_NDK_Amiga.log 
 wget -nc $OPENURL_DOWNLOAD -a $LOGFILES/part9_NDK_Amiga.log 
