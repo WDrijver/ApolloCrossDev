@@ -166,7 +166,7 @@ $SOURCES/$GCC_NAME/configure \
 	--disable-nls --disable-c-mbchar \
 	--enable-languages=c --enable-checking=no \
 	--enable-c99 --with-cross-host \
-    --without-x \
+    --without-x --enable-multilib \
 	--enable-maintainer-mode --disable-shared \
     --without-headers \
     >>$LOGFILES/part8_gcc_configure.log 2>>$LOGFILES/part8_gcc_configure_err.log 
