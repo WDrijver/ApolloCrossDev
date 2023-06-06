@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-2.95.3 Install Script v1.3
+# ApolloCrossDev GCC-2.95.3 Install Script v1.4
 # 
 # Installation:
 # 1. Enter Compilers/GCC-2.95.3 directory
@@ -10,7 +10,7 @@
 # 3. Read make-gcc2953 for compile instructions
 
 EDITION=GNU-2.95.3
-VERSION=1.3
+VERSION=1.4
 CPU=-j4
 GCCVERSION=2.95.3
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
@@ -230,6 +230,7 @@ cd $SOURCES
 # Part 9: Compile GCC Run #2
 echo -e "\e[1m\e[37m9. Compile $GCC_NAME (Continued)\e[0m"
 cd $BUILDS/build-$GCC_NAME
+mkdir -p $TARGET/libb32 #workaround for bug in libiberty make process
 echo -e "\e[0m\e[36m   * Build GCC - Run #2\e[0m"
 MAKEINFO="makeinfo" \
 CFLAGS_FOR_TARGET="-noixemul" \
