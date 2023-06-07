@@ -23,11 +23,11 @@ S_INCLUDE_DEVPAC=$(NDK)/DevPac
 C_LIBS_NDK32=$(NDK)/NDK3.2/lib
 C_LIBS_NDK39=$(NDK)/NDK3.9/Include/linker_libs
 
-# default (no arguments) = clib2 
+# default (no arguments) = clib2 | -noixemul = libnix
 
 C_FLAGS= -c $(O_FLAGS)
 S_FLAGS= $(C_FLAGS)
-O_FLAGS= -fomit-frame-pointer -m68040 -o
+O_FLAGS= -noixemul -fomit-frame-pointer -m68040 -o
 
 C_SOURCEDIR=.
 S_SOURCEDIR=.
