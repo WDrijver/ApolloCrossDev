@@ -34,7 +34,7 @@ the executable file might be covered by the GNU General Public License. */
 #if defined _IOSTRG && defined _IOWRT
 
 int
-vsprintf (char *buf, const char *format, va_list ap)
+vsprintf (char *buf, const char *format, _BSD_VA_LIST_ ap)
 {
   FILE b;
   int ret;

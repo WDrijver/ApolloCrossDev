@@ -1,4 +1,10 @@
 GCC 2.95.3 To-Do List:
 
-1. Optimise Libiberty Functions
+1. Optimise Libiberty Functions (lib/libiberty.a)
     - cross check all functions with source
+
+2. Restore lib/clib2  
+
+3. Restore ixemul includes
+
+4. Libnix

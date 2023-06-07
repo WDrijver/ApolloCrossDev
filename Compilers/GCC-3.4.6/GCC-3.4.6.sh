@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-3.4.6 Install Script v1.1
+# ApolloCrossDev GCC-3.4.6 Install Script v1.2
 # 
 # Installation:
 # 1. Enter Compilers/GCC-3.4.6 directory
@@ -9,8 +9,8 @@
 # 2. Copy Projects/make-gcc346 into <mysource> 
 # 3. Read make-gcc346 for compile instructions
 
-EDITION=GNU-3.4.6
-VERSION=1.1
+EDITION=GCC-3.4.6
+VERSION=1.2
 CPU=-j4
 GCCVERSION=3.4.6
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
