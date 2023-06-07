@@ -39,24 +39,24 @@ BINUTILS_NAME=amigaos-binutils-2.14
 BINUTILS_DOWNLOAD=https://github.com/adtools/amigaos-binutils-2.14
 GCC_NAME=amigaos-gcc-2.95.3
 GCC_DOWNLOAD=https://github.com/adtools/amigaos-gcc-2.95.3
+FD2SFD_NAME=fd2sfd
+FD2SFD_DOWNLOAD=https://github.com/adtools/fd2sfd
+FD2PRAGMA_NAME=fd2pragma
+FD2PRAGMA_DOWNLOAD=https://github.com/adtools/fd2pragma.git
+SFDC_NAME=sfdc
+SFDC_DOWNLOAD=https://github.com/adtools/sfdc
+IXEMUL_NAME=ixemul-48.2
+IXEMUL_DOWNLOAD=http://downloads.sf.net/project/amiga/ixemul.library/48.2/ixemul-src.lha
+IXEMUL_ARCHIVE=ixemul-src.lha
 CLIB2_NAME=clib2
 CLIB2_DOWNLOAD=https://github.com/adtools/clib2
 LIBNIX_NAME=libnix
 LIBNIX_DOWNLOAD=https://github.com/adtools/libnix
-FD2SFD_NAME=fd2sfd
-FD2SFD_DOWNLOAD=https://github.com/adtools/fd2sfd
-SFDC_NAME=sfdc
-SFDC_DOWNLOAD=https://github.com/adtools/sfdc
-LIBDEBUG_NAME=libdebug
-LIBDEBUG_DOWNLOAD=https://github.com/adtools/libdebug
-FD2PRAGMA_NAME=fd2pragma
-FD2PRAGMA_DOWNLOAD=https://github.com/adtools/fd2pragma.git
-IXEMUL_NAME=ixemul-48.2
-IXEMUL_DOWNLOAD=http://downloads.sf.net/project/amiga/ixemul.library/48.2/ixemul-src.lha
-IXEMUL_ARCHIVE=ixemul-src.lha
 LIBAMIGA_NAME=libamiga
 LIBAMIGA_DOWNLOAD=ftp://ftp.exotica.org.uk/mirrors/geekgadgets/amiga/m68k/snapshots/990529/bin/libamiga-bin.tgz
 LIBAMIGA_ARCHIVE=libamiga-bin.tgz
+LIBDEBUG_NAME=libdebug
+LIBDEBUG_DOWNLOAD=https://github.com/adtools/libdebug
 LIBM_NAME=libm-5.4
 LIBM_DOWNLOAD=ftp://ftp.exotica.org.uk/mirrors/geekgadgets/amiga/m68k/snapshots/990529/src/libm-5.4-src.tgz
 LIBM_ARCHIVE=libm-5.4-src.tgz
@@ -81,10 +81,11 @@ mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/include $PREFIX/$TARGET/l
 
 # PART 2: Update Linux Packages 
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
-echo -e "\e[36m   * On first run: please be patient"
-sudo apt -y update >>$LOGFILES/part2_linux_updates.log 2>>$LOGFILES/part2_linux_updates_err.log
+echo -e "\e[36m   * On first run:\e[30m please be patient"
+sudo apt -y update >>$LOGFILES/part2_update_linux.log 2>>$LOGFILES/part2_update_linux_err.log
 sudo apt -y install build-essential m4 gawk autoconf automake flex bison expect dejagnu texinfo lhasa git subversion \
      make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev rsync libreadline-dev rename gperf gcc-multilib \
+     autoconf2.64 \
      >>$LOGFILES/part2_linux_updates.log 2>>$LOGFILES/part2_linux_updates_err.log
 
 # PART 3: Unpack Archives
@@ -98,6 +99,7 @@ cd $SOURCES
 
 # PART 4: Tools
 echo -e "\e[1m\e[37m4. Install Tools\e[0m\e[36m"
+
 echo -e -n "\e[0m\e[36m   * $FD2SFD_NAME:\e[30m configure | " 
 mkdir -p $BUILDS/build-$FD2SFD_NAME
 cd $BUILDS/build-$FD2SFD_NAME
@@ -134,37 +136,6 @@ echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part4_tools_sfdc.log 2>>$LOGFILES/part4_tools_sfdc_err.log
 cd $SOURCES
 
-# PART 5: AmigaOS NDK
-echo -e "\e[1m\e[37m5. Amiga OS NDK\e[0m\e[36m"
-echo -e -n "\e[0m\e[36m   * amigaos ndk 3.9:\e[30m patch | " 
-for p in `ls $WORKSPACE/_install/patches/$NDK39_NAME/Include/include_h/devices/*.diff`; do patch -d $SOURCES/$NDK39_NAME/Include/include_h/devices <$p >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done 
-for p in `ls $WORKSPACE/_install/patches/$NDK39_NAME/Include/include_h/graphics/*.diff`; do patch -d $SOURCES/$NDK39_NAME/Include/include_h/graphics <$p >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done 
-for p in `ls $WORKSPACE/_install/patches/$NDK39_NAME/Include/sfd/*.diff`; do patch -d $SOURCES/$NDK39_NAME/Include/sfd <$p >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done 
-cp $WORKSPACE/_install/patches/$NDK39_NAME/Include/include_h/proto/* $SOURCES/$NDK39_NAME/Include/include_h/proto >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
-echo -e -n "headers | "
-cp -r  $SOURCES/NDK_3.9/Include/include_h/* $PREFIX/$TARGET/ndk/include >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
-cp -r  $SOURCES/NDK_3.9/Include/include_i/* $PREFIX/$TARGET/ndk/include >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
-cp -r  $SOURCES/NDK_3.9/Include/fd/* $PREFIX/$TARGET/ndk/lib/fd >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
-cp -r  $SOURCES/NDK_3.9/Include/sfd/* $PREFIX/$TARGET/ndk/lib/sfd >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
-cp -r  $SOURCES/NDK_3.9/Include/linker_libs/* $PREFIX/$TARGET/ndk/lib >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
-cp -r  $SOURCES/NDK_3.9/Documentation/Autodocs $PREFIX/$TARGET/ndk/doc >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
-echo -e -n "protos | "
-cd $PREFIX/$TARGET/ndk/lib/sfd
-for name in `ls *.sfd`; do $PREFIX/bin/sfdc $name --target=$TARGET --mode=proto --output=$PREFIX/$TARGET/ndk/include/proto/$name >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done
-cd $PREFIX/$TARGET/ndk/include/proto
-rename -f 's/_lib.sfd/.h/' ./*.sfd
-echo -e -n "inlines | "
-cd $PREFIX/$TARGET/ndk/lib/sfd
-for name in `ls *.sfd`; do $PREFIX/bin/sfdc $name --target=$TARGET --mode=macros --output=$PREFIX/$TARGET/ndk/include/inline/$name >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done
-cd $PREFIX/$TARGET/ndk/include/inline
-rename -f 's/_lib.sfd/.h/' ./*.sfd
-echo -e "lvo\e[0m"
-cd $PREFIX/$TARGET/ndk/lib/sfd
-for name in `ls *.sfd`; do $PREFIX/bin/sfdc $name --target=$TARGET --mode=lvo --output=$PREFIX/$TARGET/ndk/include/lvo/$name >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done
-cd $PREFIX/$TARGET/ndk/include/lvo
-rename -f 's/.sfd/.i/' ./*.sfd
-cd $SOURCES
-
 # Part 6: Compile BinUtils
 echo -e "\e[1m\e[37m6. Compile Binutils"
 echo -e -n "\e[0m\e[36m   * binutils:\e[30m configure | " 
@@ -187,7 +158,7 @@ make $CPU install-ld >>$LOGFILES/part6_binutils_make.log 2>>$LOGFILES/part6_binu
 make $CPU install-info >>$LOGFILES/part6_binutils_make.log 2>>$LOGFILES/part6_binutils_make_err.log
 cd $SOURCES
 
-# Part 7: Compile GCC Run #1
+# Part 7: Compile GCC Compiler
 echo -e "\e[1m\e[37m7. Compile GCC (Compiler)\e[0m"
 mv ixemul $IXEMUL_NAME
 echo -e -n "\e[0m\e[36m   * gcc:\e[30m patch | " 
@@ -226,7 +197,38 @@ FLAGS_FOR_TARGET="-noixemul" \
 make -j1 install-gcc >>$LOGFILES/part7_gcc_make.log 2>>$LOGFILES/part7_gcc_make_err.log
 cd $SOURCES
 
-# Part 8: Libraries
+# PART 5: AmigaOS NDK
+echo -e "\e[1m\e[37m5. AmigaOS NDK\e[0m\e[36m"
+echo -e -n "\e[0m\e[36m   * amigaos ndk 3.9:\e[30m patch | " 
+for p in `ls $WORKSPACE/_install/patches/$NDK39_NAME/Include/include_h/devices/*.diff`; do patch -d $SOURCES/$NDK39_NAME/Include/include_h/devices <$p >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done 
+for p in `ls $WORKSPACE/_install/patches/$NDK39_NAME/Include/include_h/graphics/*.diff`; do patch -d $SOURCES/$NDK39_NAME/Include/include_h/graphics <$p >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done 
+for p in `ls $WORKSPACE/_install/patches/$NDK39_NAME/Include/sfd/*.diff`; do patch -d $SOURCES/$NDK39_NAME/Include/sfd <$p >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done 
+cp $WORKSPACE/_install/patches/$NDK39_NAME/Include/include_h/proto/* $SOURCES/$NDK39_NAME/Include/include_h/proto >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
+echo -e -n "headers | "
+cp -r  $SOURCES/NDK_3.9/Include/include_h/* $PREFIX/$TARGET/ndk/include >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
+cp -r  $SOURCES/NDK_3.9/Include/include_i/* $PREFIX/$TARGET/ndk/include >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
+cp -r  $SOURCES/NDK_3.9/Include/fd/* $PREFIX/$TARGET/ndk/lib/fd >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
+cp -r  $SOURCES/NDK_3.9/Include/sfd/* $PREFIX/$TARGET/ndk/lib/sfd >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
+cp -r  $SOURCES/NDK_3.9/Include/linker_libs/* $PREFIX/$TARGET/ndk/lib >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
+cp -r  $SOURCES/NDK_3.9/Documentation/Autodocs $PREFIX/$TARGET/ndk/doc >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
+echo -e -n "protos | "
+cd $PREFIX/$TARGET/ndk/lib/sfd
+for name in `ls *.sfd`; do $PREFIX/bin/sfdc $name --target=$TARGET --mode=proto --output=$PREFIX/$TARGET/ndk/include/proto/$name >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done
+cd $PREFIX/$TARGET/ndk/include/proto
+rename -f 's/_lib.sfd/.h/' ./*.sfd
+echo -e -n "inlines | "
+cd $PREFIX/$TARGET/ndk/lib/sfd
+for name in `ls *.sfd`; do $PREFIX/bin/sfdc $name --target=$TARGET --mode=macros --output=$PREFIX/$TARGET/ndk/include/inline/$name >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done
+cd $PREFIX/$TARGET/ndk/include/inline
+rename -f 's/_lib.sfd/.h/' ./*.sfd
+echo -e "lvo\e[0m"
+cd $PREFIX/$TARGET/ndk/lib/sfd
+for name in `ls *.sfd`; do $PREFIX/bin/sfdc $name --target=$TARGET --mode=lvo --output=$PREFIX/$TARGET/ndk/include/lvo/$name >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done
+cd $PREFIX/$TARGET/ndk/include/lvo
+rename -f 's/.sfd/.i/' ./*.sfd
+cd $SOURCES
+
+# Part 8: Amiga Libraries
 echo -e "\e[1m\e[37m8. Compile Libraries\e[0m"
 
 echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
@@ -255,7 +257,6 @@ echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
 cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/libnix/include
 cd $SOURCES
-
 echo -e -n "\e[0m\e[36m   * libnix:\e[30m ixemul headers | "
 cp -r $SOURCES/$IXEMUL_NAME/include/* $PREFIX/$TARGET/libnix/include >>$LOGFILES/part7_ixemul_headers.log 2>>$LOGFILES/part7_ixemul_headers_err.log
 
@@ -308,7 +309,7 @@ cp -r $BUILDS/build-$CLIB2_NAME/include/* $PREFIX/$TARGET/clib2/include >>$LOGFI
 cp -r $BUILDS/build-$CLIB2_NAME/lib/* $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
 cd $SOURCES
 
-# Part 9: Compile GCC Run #2
+# Part 9: Compile GCC Targets
 echo -e "\e[1m\e[37m9. Compile GCC (Target Libs)\e[0m"
 cd $BUILDS/build-$GCC_NAME
 mkdir -p $TARGET/libb32 #workaround for bug in libiberty make process
@@ -327,6 +328,8 @@ echo -e "\e[1m\e[37m10. Cleanup\e[0m\e[36m"
 rm -rf $PREFIX/etc
 rm -rf $PREFIX/include
 rm -rf $PREFIX/share
+rm -rf $PREFIX/info
+rm -rf $PREFIX/man
 rm -rf $PREFIX/$TARGET/include
 
 # FINISH
