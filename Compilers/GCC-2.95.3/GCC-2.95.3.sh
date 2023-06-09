@@ -183,7 +183,7 @@ $SOURCES/$GCC_NAME/configure \
     --target="$TARGET" \
     --host=i686-linux-gnu \
     --build=i686-linux-gnu \
-    --enable-languages=c \
+    --enable-languages=c,c++ \
     --enable-version-specific-runtime-libs \
     --with-headers=$SOURCES/$IXEMUL_NAME/include \
     >>$LOGFILES/part7_gcc_configure.log 2>>$LOGFILES/part7_gcc_configure_err.log

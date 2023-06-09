@@ -9,25 +9,17 @@
 PWD=$(shell pwd)
 DIR=$(notdir $(shell pwd))
 BIN=$(PWD)/../../../Compilers/GCC-3.4.6/ApolloCrossDev/bin
-NDK=$(PWD)/../../../Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/sys-include
+NDK=$(PWD)/../../../Compilers/GCC-3.4.6/ApolloCrossDev/include
 
 C_COMPILER=$(BIN)/m68k-unknown-amigaos-gcc
 S_COMPILER=$(BIN)/m68k-unknown-amigaos-gcc
 O_LINKER=$(BIN)/m68k-unknown-amigaos-gcc
 
-C_INCLUDE_NDK32=$(NDK)/NDK3.2/Include_H
-C_INCLUDE_NDK39=$(NDK)/NDK3.9/Include/include_h #Empty dir: NDK3.9 is default and in $PREFIX/$TARGET/sys-include
-C_INCLUDE_NDKMUI=$(NDK)/NDKMUI/C/include
-S_INCLUDE_DEVPAC=$(NDK)/DevPac
-
-C_LIBS_NDK32=$(NDK)/NDK3.2/lib
-C_LIBS_NDK39=$(NDK)/NDK3.9/Include/linker_libs
-
 # default (no arguments) = clib2 | -noixemul = libnix
 
 C_FLAGS= -c $(O_FLAGS)
 S_FLAGS= $(C_FLAGS)
-O_FLAGS= -noixemul -fomit-frame-pointer -m68040 -o
+O_FLAGS= -fomit-frame-pointer -m68040 -o
 
 C_SOURCEDIR=.
 S_SOURCEDIR=.
