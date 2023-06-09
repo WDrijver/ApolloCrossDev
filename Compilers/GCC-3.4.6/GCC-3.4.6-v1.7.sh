@@ -98,7 +98,7 @@ mkdir -p $PREFIX/bin $PREFIX/etc $PREFIX/$TARGET/bin $PREFIX/$TARGET/sys-include
 mkdir -p $PREFIX/$TARGET/include $PREFIX/$TARGET/lib $PREFIX/$TARGET/include/inline
 mkdir -p $PREFIX/$TARGET/include/lvo  $PREFIX/$TARGET/lib/fd $PREFIX/$TARGET/lib/sfd
 #mkdir -p $PREFIX/$TARGET/clib2 $PREFIX/$TARGET/clib2/include $PREFIX/$TARGET/clib2/lib
-mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/include $PREFIX/$TARGET/libnix/lib
+mkdir -p $PREFIX/$TARGET/libnix
 
 # PART 2: Update Linux Packages 
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
@@ -332,10 +332,15 @@ LD="$PREFIX/bin/$TARGET-ld" \
 make $CPU >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
 echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
-cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/libnix/include
 cd $SOURCES
+
 echo -e -n "\e[0m\e[36m   * libnix:\e[30m ixemul headers | "
-cp -r $SOURCES/$IXEMUL_NAME/include/* $PREFIX/$TARGET/libnix/include >>$LOGFILES/part7_ixemul_headers.log 2>>$LOGFILES/part7_ixemul_headers_err.log
+mv $PREFIX/$TARGET/sys-include $PREFIX/$TARGET/libnix/include >>$LOGFILES/part7_ixemul_headers.log 2>>$LOGFILES/part7_ixemul_headers_err.log
+cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/libnix/include
+
+echo -e -n "specs update | "
+mv -f $PREFIX/lib/gcc/$TARGET/3.4.6/specs $PREFIX/lib/gcc/$TARGET/3.4.6/specs.original
+cp -f $WORKSPACE/_install/recipes/files.wd/specs.346 $PREFIX/lib/gcc/$TARGET/3.4.6/specs
 
 echo -e -n "libamiga | "
 mv lib $LIBAMIGA_NAME >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
@@ -378,12 +383,14 @@ cd $SOURCES
 # Part 9: Compile GCC Targets
 echo -e "\e[1m\e[37m9. Compile GCC (Target Libs)\e[0m"
 cd $BUILDS/build-$GCC_NAME
+mv -f $PREFIX/$TARGET/include $PREFIX/$TARGET/include.disabled
 echo -e -n "\e[0m\e[36m   * gcc:\e[30m make | " 
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
 make -j1 all-target-libiberty >>$LOGFILES/part11_gcc_make.log 2>>$LOGFILES/part11_gcc_make_err.log
 echo -e "install\e[0m"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
 make -j1 install-target-libiberty >>$LOGFILES/part11_gcc_make.log 2>>$LOGFILES/part11_gcc_make_err.log
+mv -f $PREFIX/$TARGET/include.disabled $PREFIX/$TARGET/include
 cd $SOURCES
 
 # PART 12: Cleanup
