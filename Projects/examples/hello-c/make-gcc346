@@ -19,7 +19,7 @@ O_LINKER=$(BIN)/m68k-unknown-amigaos-gcc
 
 C_FLAGS= -c $(O_FLAGS)
 S_FLAGS= $(C_FLAGS)
-O_FLAGS= -fomit-frame-pointer -m68040 -o
+O_FLAGS= -fomit-frame-pointer -o
 
 C_SOURCEDIR=.
 S_SOURCEDIR=.

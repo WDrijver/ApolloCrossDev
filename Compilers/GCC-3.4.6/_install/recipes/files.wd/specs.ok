@@ -48,7 +48,7 @@ cc1 -E %{traditional|ftraditional|traditional-cpp:-traditional-cpp}
 %{noixemul:-lstubs}
 
 *link:
-%{noixemul:-L%(target)/libnix/lib -fl libnix} %{resident*:-amiga-datadata-reloc} %{resident|fbaserel:-m amiga_bss -fl libb} %{resident32|fbaserel32:-m amiga_bss -fl libb32} %{g:-amiga-debug-hunk} %(link_cpu)
+%{noixemul:-L%(target)libnix/lib -fl libnix} %{resident*:-amiga-datadata-reloc} %{resident|fbaserel:-m amiga_bss -fl libb} %{resident32|fbaserel32:-m amiga_bss -fl libb32} %{g:-amiga-debug-hunk} %(link_cpu)
 
 *lib:
 %{!noixemul:%{p|pg:-lc_p}%{!p:%{!pg:-lc -lamiga -lc}}} %{noixemul:-lnixmain -lnix -lamiga %{mstackcheck|mstackextend:-lstack}}
@@ -57,7 +57,7 @@ cc1 -E %{traditional|ftraditional|traditional-cpp:-traditional-cpp}
 -lgcc
 
 *startfile:
-%{!noixemul:%{fbaserel:%{!resident:bcrt0.o%s}}%{resident:rcrt0.o%s}%{fbaserel32:%{!resident32:lcrt0.o%s}}%{resident32:scrt0.o%s}%{!resident:%{!fbaserel:%{!resident32:%{!fbaserel32:%{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}}}}}%{noixemul:%{resident:libnix/nrcrt0.o%s} %{!resident:%{fbaserel:libnix/nbcrt0.o%s}%{!fbaserel:libnix/ncrt0.o%s}}}
+%{!noixemul:%{fbaserel:%{!resident:bcrt0.o%s}}%{resident:rcrt0.o%s}%{fbaserel32:%{!resident32:lcrt0.o%s}}%{resident32:scrt0.o%s}%{!resident:%{!fbaserel:%{!resident32:%{!fbaserel32:%{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}}}}} %{noixemul:%{resident:%(target)libnix/lib/libnix/nrcrt0.o%s} %{!resident:%{fbaserel:%(target)libnix/lib/libnix/nbcrt0.o%s}%{!fbaserel:%(target)libnix/lib/libnix/ncrt0.o%s}}}
 
 *switches_need_spaces:
 

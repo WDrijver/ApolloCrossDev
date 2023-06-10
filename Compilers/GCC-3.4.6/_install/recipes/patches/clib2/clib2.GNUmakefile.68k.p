@@ -29,10 +29,10 @@
 -	lib/libb/libm.a \
 -	lib/libb/libm020/libm.a \
 -	lib/libb32/libm020/libm.a
-+	lib/libm.a
-+#	lib/libb/libm.a \
-+#	lib/libb/libm020/libm.a \
-+#	lib/libb32/libm020/libm.a
++	lib/libm.a \
++	lib/libb/libm.a \
++	lib/libb/libm020/libm.a \
++	lib/libb32/libm020/libm.a
  
  ##############################################################################
  

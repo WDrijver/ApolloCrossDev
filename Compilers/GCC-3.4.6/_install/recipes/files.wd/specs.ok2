@@ -60,7 +60,7 @@ cc1 -E %{traditional|ftraditional|traditional-cpp:-traditional-cpp}
 -lgcc
 
 *startfile:
-%{!noixemul:%(target)clib2/lib/%{fbaserel:%{!resident:bcrt0.o%s}}%{resident:rcrt0.o%s}%{fbaserel32:%{!resident32:lcrt0.o%s}}%{resident32:scrt0.o%s}%{!resident:%{!fbaserel:%{!resident32:%{!fbaserel32:%{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}}}}} %{noixemul:%{resident:%(target)libnix/lib/libnix/nrcrt0.o%s} %{!resident:%{fbaserel:%(target)libnix/lib/libnix/nbcrt0.o%s}%{!fbaserel:%(target)libnix/lib/libnix/ncrt0.o%s}}}
+%{!noixemul:%{fbaserel:%{!resident:bcrt0.o%s}}%{resident:rcrt0.o%s}%{fbaserel32:%{!resident32:lcrt0.o%s}}%{resident32:scrt0.o%s}%{!resident:%{!fbaserel:%{!resident32:%{!fbaserel32:%{pg:gcrt0.o%s}%{!pg:%{p:mcrt0.o%s}%{!p:crt0.o%s}}}}}}} %{noixemul:%{resident:%(target)libnix/lib/libnix/nrcrt0.o%s} %{!resident:%{fbaserel:%(target)libnix/lib/libnix/nbcrt0.o%s}%{!fbaserel:%(target)libnix/lib/libnix/ncrt0.o%s}}}
 
 *switches_need_spaces:
 
