@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-3.4.6 Install Script v1.6
+# ApolloCrossDev GCC-3.4.6 Install Script v2.0
 # 
 # Installation:
 # 1. Enter Compilers/GCC-3.4.6 directory
@@ -10,7 +10,7 @@
 # 3. Read make-gcc346 for compile instructions
 
 EDITION=GCC-3.4.6
-VERSION=1.5
+VERSION=2.0
 CPU=-j4
 GCCVERSION=3.4.6
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
@@ -112,8 +112,11 @@ sudo apt -y install build-essential m4 gawk autoconf automake flex bison expect 
 # PART 3: Unpack Archives
 cd $ARCHIVES
 echo -e "\e[1m\e[37m3. Unpack Source Archives\e[0m\e[36m"
+echo -e -n "\e[0m\e[36m   * tar | " 
 for f in *.tar*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
+echo -e -n "\e[0m\e[36m   * tgz | " 
 for f in *.tgz*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
+echo -e "lha\e[0m" 
 lha -xw=$SOURCES $IXEMUL_ARCHIVE >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log
 lha -xw=$SOURCES $NDK39_ARCHIVE >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log
 lha -xw=$SOURCES/OpenURL $OPENURL_ARCHIVE >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log
@@ -175,7 +178,7 @@ make $CPU install >>$LOGFILES/part4_tools_sfdc.log 2>>$LOGFILES/part4_tools_sfdc
 cd $SOURCES
 
 # Part 5: Compile BinUtils
-echo -e "\e[1m\e[37m6. Compile Binutils"
+echo -e "\e[1m\e[37m5. Compile Binutils"
 echo -e -n "\e[0m\e[36m   * binutils:\e[30m patch | " 
 for p in `ls $WORKSPACE/_install/recipes/patches/binutils/*.p`; do patch -d $SOURCES/$BINUTILS_NAME <$p -p0 >>$LOGFILES/part5_binutils_patch.log 2>>$LOGFILES/part5_binutils_patch_err.log; done 
 echo -e -n "configure | "
@@ -194,32 +197,31 @@ echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part5_binutils_make.log 2>>$LOGFILES/part5_binutils_make_err.log
 cd $SOURCES
 
-# Part 7 Compile GCC Compiler
-echo -e "\e[1m\e[37m7. Compile GCC (Compiler)\e[0m"
+# Part 6 Compile GCC Compiler
+echo -e "\e[1m\e[37m6. Compile GCC (Compiler)\e[0m"
 
 mv ixemul $IXEMUL_NAME
 echo -e -n "\e[0m\e[36m   * gcc:\e[30m patch | " 
-for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done  
-for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/general/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/general <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/glue/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/glue <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/ixnet/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/ixnet <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/library/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/library <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/stdio/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/stdio <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/stdlib/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/stdlib <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/string/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/string <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/utils/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/utils <$p >>$LOGFILES/part7_ixemul_patch.log 2>>$LOGFILES/part7_ixemul_patch_err.log; done 
-
-for p in `ls $WORKSPACE/_install/recipes/patches/gcc/*.p`; do patch -d $WORKSPACE/_sources/$GCC_NAME <$p -p0 >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done  
+for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/general/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/general <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/glue/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/glue <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/ixnet/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/ixnet <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/library/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/library <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/stdio/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/stdio <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/stdlib/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/stdlib <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/string/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/string <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/utils/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/utils <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done
+for p in `ls $WORKSPACE/_install/recipes/patches/gcc/*.p`; do patch -d $WORKSPACE/_sources/$GCC_NAME <$p -p0 >>$LOGFILES/part6_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log; done 
 echo -e -n "customise | "
-cp -r $WORKSPACE/_install/recipes/files/gcc/* $GCC_NAME >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
-cp -r $WORKSPACE/_install/recipes/files.wd/gcc/* $GCC_NAME >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
+cp -r $WORKSPACE/_install/recipes/files/gcc/* $GCC_NAME >>$LOGFILES/part6_prepare_gcc.log 2>>$LOGFILES/part6_prepare_gcc_err.log
+cp -r $WORKSPACE/_install/recipes/files.wd/gcc/* $GCC_NAME >>$LOGFILES/part6_prepare_gcc.log 2>>$LOGFILES/part6_prepare_gcc_err.log
 
 echo -e -n "gmp | "
-mv $GMP_NAME $GCC_NAME/gmp >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
+mv $GMP_NAME $GCC_NAME/gmp >>$LOGFILES/part6_prepare_gcc.log 2>>$LOGFILES/part6_prepare_gcc_err.log
 echo -e -n "mpfr | "
-mv $MPFR_NAME $GCC_NAME/mpfr >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
+mv $MPFR_NAME $GCC_NAME/mpfr >>$LOGFILES/part6_prepare_gcc.log 2>>$LOGFILES/part6_prepare_gcc_err.log
 echo -e -n "mpc | "
-mv $MPC_NAME $GCC_NAME/mpc >>$LOGFILES/part7_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log
+mv $MPC_NAME $GCC_NAME/mpc >>$LOGFILES/part6_prepare_gcc.log 2>>$LOGFILES/part6_prepare_gcc_err.log
 mkdir -p $BUILDS/build-$GCC_NAME
 cd $BUILDS/build-$GCC_NAME
 echo -e -n "configure | "
@@ -234,82 +236,86 @@ $SOURCES/$GCC_NAME/configure \
     --without-x \
 	--enable-maintainer-mode --disable-shared \
     --with-headers=$SOURCES/$IXEMUL_NAME/include \
-    >>$LOGFILES/part8_gcc_configure.log 2>>$LOGFILES/part8_gcc_configure_err.log 
+    >>$LOGFILES/part6_gcc_configure.log 2>>$LOGFILES/part6_gcc_configure_err.log 
 echo -e -n "make | "
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
-make -j1 all-gcc >>$LOGFILES/part8_gcc_make.log 2>>$LOGFILES/part8_gcc_make_err.log
+make -j1 all-gcc >>$LOGFILES/part6_gcc_make.log 2>>$LOGFILES/part6_gcc_make_err.log
 echo -e "install\e[0m"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
-make -j1 install-gcc >>$LOGFILES/part8_gcc_make.log 2>>$LOGFILES/part8_gcc_make_err.log
+make -j1 install-gcc >>$LOGFILES/part6_gcc_make.log 2>>$LOGFILES/part6_gcc_make_err.log
 cd $SOURCES
 
-# PART 5: AmigaOS NDK
-echo -e "\e[1m\e[37m5. AmigaOS NDK\e[0m\e[36m"
+# PART 7: AmigaOS NDK
+echo -e "\e[1m\e[37m7. AmigaOS NDK\e[0m\e[36m"
 echo -e -n "\e[0m\e[36m   * amigaos ndk 3.9:\e[30m patch | " 
-for p in `ls $WORKSPACE/_install/recipes/patches/$NDK39_NAME/Include/include_h/devices/*.diff`; do patch -d $SOURCES/$NDK39_NAME/Include/include_h/devices <$p >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done 
-for p in `ls $WORKSPACE/_install/recipes/patches/$NDK39_NAME/Include/include_h/graphics/*.diff`; do patch -d $SOURCES/$NDK39_NAME/Include/include_h/graphics <$p >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done 
-for p in `ls $WORKSPACE/_install/recipes/patches/$NDK39_NAME/Include/sfd/*.diff`; do patch -d $SOURCES/$NDK39_NAME/Include/sfd <$p >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done 
-cp $WORKSPACE/_install/recipes/patches/$NDK39_NAME/Include/include_h/proto/* $SOURCES/$NDK39_NAME/Include/include_h/proto >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
+for p in `ls $WORKSPACE/_install/recipes/patches/$NDK39_NAME/Include/include_h/devices/*.diff`; do patch -d $SOURCES/$NDK39_NAME/Include/include_h/devices <$p >>$LOGFILES/part7_amigaos_ndk.log 2>>$LOGFILES/part7_amigaos_ndk_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/$NDK39_NAME/Include/include_h/graphics/*.diff`; do patch -d $SOURCES/$NDK39_NAME/Include/include_h/graphics <$p >>$LOGFILES/part7_amigaos_ndk.log 2>>$LOGFILES/part7_amigaos_ndk_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/$NDK39_NAME/Include/sfd/*.diff`; do patch -d $SOURCES/$NDK39_NAME/Include/sfd <$p >>$LOGFILES/part7_amigaos_ndk.log 2>>$LOGFILES/part7_amigaos_ndk_err.log; done 
+cp $WORKSPACE/_install/recipes/patches/$NDK39_NAME/Include/include_h/proto/* $SOURCES/$NDK39_NAME/Include/include_h/proto >>$LOGFILES/part7_amigaos_ndk.log 2>>$LOGFILES/part7_amigaos_ndk_err.log
 echo -e -n "headers | "
-cp -r  $SOURCES/NDK_3.9/Include/include_h/* $PREFIX/$TARGET/include >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
-cp -r  $SOURCES/NDK_3.9/Include/include_i/* $PREFIX/$TARGET/include >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
-cp -r  $SOURCES/NDK_3.9/Include/fd/* $PREFIX/$TARGET/lib/fd >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
-cp -r  $SOURCES/NDK_3.9/Include/sfd/* $PREFIX/$TARGET/lib/sfd >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
-cp -r  $SOURCES/NDK_3.9/Include/linker_libs/* $PREFIX/$TARGET/lib >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
-cp -r  $SOURCES/NDK_3.9/Documentation/Autodocs $PREFIX/$TARGET/doc >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log
+cp -r  $SOURCES/NDK_3.9/Include/include_h/* $PREFIX/$TARGET/include >>$LOGFILES/part7_amigaos_ndk.log 2>>$LOGFILES/part7_amigaos_ndk_err.log
+cp -r  $SOURCES/NDK_3.9/Include/include_i/* $PREFIX/$TARGET/include >>$LOGFILES/part7_amigaos_ndk.log 2>>$LOGFILES/part7_amigaos_ndk_err.log
+cp -r  $SOURCES/NDK_3.9/Include/fd/* $PREFIX/$TARGET/lib/fd >>$LOGFILES/part7_amigaos_ndk.log 2>>$LOGFILES/part7_amigaos_ndk_err.log
+cp -r  $SOURCES/NDK_3.9/Include/sfd/* $PREFIX/$TARGET/lib/sfd >>$LOGFILES/part7_amigaos_ndk.log 2>>$LOGFILES/part7_amigaos_ndk_err.log
+cp -r  $SOURCES/NDK_3.9/Include/linker_libs/* $PREFIX/$TARGET/lib >>$LOGFILES/part7_amigaos_ndk.log 2>>$LOGFILES/part7_amigaos_ndk_err.log
+cp -r  $SOURCES/NDK_3.9/Documentation/Autodocs $PREFIX/$TARGET/doc >>$LOGFILES/part7_amigaos_ndk.log 2>>$LOGFILES/part7_amigaos_ndk_err.log
 echo -e -n "protos | "
 cd $PREFIX/$TARGET/lib/sfd
-for name in `ls *.sfd`; do $PREFIX/bin/sfdc $name --target=$TARGET --mode=proto --output=$PREFIX/$TARGET/include/proto/$name >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done
+for name in `ls *.sfd`; do $PREFIX/bin/sfdc $name --target=$TARGET --mode=proto --output=$PREFIX/$TARGET/include/proto/$name >>$LOGFILES/part7_amigaos_ndk.log 2>>$LOGFILES/part7_amigaos_ndk_err.log; done
 cd $PREFIX/$TARGET/include/proto
 rename -f 's/_lib.sfd/.h/' ./*.sfd
 echo -e -n "inlines | "
 cd $PREFIX/$TARGET/lib/sfd
-for name in `ls *.sfd`; do $PREFIX/bin/sfdc $name --target=$TARGET --mode=macros --output=$PREFIX/$TARGET/include/inline/$name >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done
+for name in `ls *.sfd`; do $PREFIX/bin/sfdc $name --target=$TARGET --mode=macros --output=$PREFIX/$TARGET/include/inline/$name >>$LOGFILES/part7_amigaos_ndk.log 2>>$LOGFILES/part7_amigaos_ndk_err.log; done
 cd $PREFIX/$TARGET/include/inline
 rename -f 's/_lib.sfd/.h/' ./*.sfd
 echo -e "lvo\e[0m"
 cd $PREFIX/$TARGET/lib/sfd
-for name in `ls *.sfd`; do $PREFIX/bin/sfdc $name --target=$TARGET --mode=lvo --output=$PREFIX/$TARGET/include/lvo/$name >>$LOGFILES/part5_amigaos_ndk.log 2>>$LOGFILES/part5_amigaos_ndk_err.log; done
+for name in `ls *.sfd`; do $PREFIX/bin/sfdc $name --target=$TARGET --mode=lvo --output=$PREFIX/$TARGET/include/lvo/$name >>$LOGFILES/part7_amigaos_ndk.log 2>>$LOGFILES/part7_amigaos_ndk_err.log; done
 cd $PREFIX/$TARGET/include/lvo
 rename -f 's/.sfd/.i/' ./*.sfd
 cd $SOURCES
 
-#Additional NDK
 echo -e -n "\e[0m\e[36m   * additional ndk:\e[30m "
 echo -e -n "openurl | "
-cp -r OpenURL/OpenURL/Developer/C/include/* $PREFIX/$TARGET/include/
+cp -r OpenURL/OpenURL/Developer/C/include/* $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
 echo -e -n "amissl | "
-cp -r AmiSSL/AmiSSL/Developer/include/* $PREFIX/$TARGET/include/
-cp -r AmiSSL/AmiSSL/Developer/lib/AmigaOS3/* $PREFIX/$TARGET/lib/
+cp -r AmiSSL/AmiSSL/Developer/include/* $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
+cp -r AmiSSL/AmiSSL/Developer/lib/AmigaOS3/* $PREFIX/$TARGET/lib/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
 echo -e -n "guigfxlib | "
-cp -r guigfxlib/include/* $PREFIX/$TARGET/include/
+cp -r guigfxlib/include/* $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
 echo -e -n "renderlib | "
-cp -r renderlib/renderlib/include/* $PREFIX/$TARGET/include/
+cp -r renderlib/renderlib/include/* $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
 echo -e "codesets\e[0m"
-cp -r codesets/codesets/Developer/include/* $PREFIX/$TARGET/include/
+cp -r codesets/codesets/Developer/include/* $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
 cd $SOURCES
 
-# PART 10: Amiga Libraries
+# Part 8: Compile GCC Targets
 echo -e "\e[1m\e[37m8. Compile Libraries\e[0m"
-
-echo -e "\e[0m\e[36m   * update gcc specs for clib2 and libnix\e[30m"
-mv -f $PREFIX/lib/gcc/$TARGET/3.4.6/specs $PREFIX/lib/gcc/$TARGET/3.4.6/specs.original
-cp -f $WORKSPACE/_install/recipes/files.wd/specs.346 $PREFIX/lib/gcc/$TARGET/3.4.6/specs
 
 echo -e -n "\e[0m\e[36m   * clib2:\e[30m copy | "
 mkdir -p $BUILDS/build-$CLIB2_NAME
 cd $BUILDS/build-$CLIB2_NAME
 cp -r $SOURCES/clib2/library/* $BUILDS/build-$CLIB2_NAME
 echo -e -n "patch | "
-for p in `ls $WORKSPACE/_install/recipes/patches/clib2/*.p`; do patch -d $BUILDS/build-$CLIB2_NAME <$p -p0 >>$LOGFILES/part10_clib2_patch.log 2>>$LOGFILES/part10_clib2_patch_err.log; done 
+for p in `ls $WORKSPACE/_install/recipes/patches/clib2/*.p`; do patch -d $BUILDS/build-$CLIB2_NAME <$p -p0 >>$LOGFILES/part8_clib2_patch.log 2>>$LOGFILES/part8_clib2_patch_err.log; done 
 echo -e -n "customise | "
-cp -r $WORKSPACE/_install/recipes/files/clib2/* $BUILDS/build-$CLIB2_NAME >>$LOGFILES/part10_clib2_patch.log 2>>$LOGFILES/part10_clib2_patch_err.log
+cp -r $WORKSPACE/_install/recipes/files/clib2/* $BUILDS/build-$CLIB2_NAME >>$LOGFILES/part8_clib2_patch.log 2>>$LOGFILES/part8_clib2_patch_err.log
 echo -e -n "make | "
-PATH=$PREFIX/bin:$PATH make -f GNUmakefile.68k >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
+PATH=$PREFIX/bin:$PATH make -f GNUmakefile.68k >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
 echo -e "install\e[0m"
-cp -r $BUILDS/build-$CLIB2_NAME/include/* $PREFIX/$TARGET/clib2/include >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
-cp -r $BUILDS/build-$CLIB2_NAME/lib/* $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
-ln -sf $PREFIX/$TARGET/clib2/lib/ncrt0.o $PREFIX/$TARGET/clib2/lib/crt0.o >>$LOGFILES/part10_clib2_make.log 2>>$LOGFILES/part10_clib2_make_err.log
+cp -r $BUILDS/build-$CLIB2_NAME/include/* $PREFIX/$TARGET/clib2/include >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
+cp -r $BUILDS/build-$CLIB2_NAME/lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
+ln -sf $PREFIX/$TARGET/lib/ncrt0.o $PREFIX/$TARGET/lib/crt0.o >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
+cd $SOURCES
+
+cd $BUILDS/build-$GCC_NAME
+echo -e -n "\e[0m\e[36m   * libiberty:\e[30m make | " 
+AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
+make -j1 all-target-libiberty >>$LOGFILES/part8_gcc_make.log 2>>$LOGFILES/part8_gcc_make_err.log
+echo -e "install\e[0m"
+AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
+make -j1 install-target-libiberty >>$LOGFILES8.log 2>>$LOGFILES8.log
 cd $SOURCES
 
 echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
@@ -339,8 +345,8 @@ make $CPU install >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_ma
 cd $SOURCES
 
 echo -e -n "\e[0m\e[36m   * libnix:\e[30m ixemul headers | "
-cp -r $PREFIX/$TARGET/sys-include/* $PREFIX/$TARGET/libnix/include >>$LOGFILES/part7_ixemul_headers.log 2>>$LOGFILES/part7_ixemul_headers_err.log
-cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/libnix/include
+cp -r $PREFIX/$TARGET/sys-include/* $PREFIX/$TARGET/libnix/include >>$LOGFILES/part8_ixemul_headers.log 2>>$LOGFILES/part8_ixemul_headers_err.log
+cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/libnix/include >>$LOGFILES/part8_ixemul_headers.log 2>>$LOGFILES/part8_ixemul_headers_err.log
 
 echo -e -n "libamiga | "
 mv lib $LIBAMIGA_NAME >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
@@ -380,27 +386,30 @@ make $CPU >>$LOGFILES/part8_libdebug_make.log 2>>$LOGFILES/part8_libdebug_make_e
 make $CPU install >>$LOGFILES/part8_libdebug_make.log 2>>$LOGFILES/part8_libdebug_make_err.log 
 cd $SOURCES
 
-# Part 9: Compile GCC Targets
-echo -e "\e[1m\e[37m9. Compile GCC (Target Libs)\e[0m"
-cd $BUILDS/build-$GCC_NAME
-mv -f $PREFIX/$TARGET/include $PREFIX/$TARGET/include.disabled
-echo -e -n "\e[0m\e[36m   * gcc:\e[30m make | " 
-AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
-make -j1 all-target-libiberty >>$LOGFILES/part11_gcc_make.log 2>>$LOGFILES/part11_gcc_make_err.log
-echo -e "install\e[0m"
-AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
-make -j1 install-target-libiberty >>$LOGFILES/part11_gcc_make.log 2>>$LOGFILES/part11_gcc_make_err.log
-mv -f $PREFIX/$TARGET/include.disabled $PREFIX/$TARGET/include
-cd $SOURCES
+echo -e "\e[0m\e[36m   * organise target directory for clib2 and libnix support\e[30m"
+mv $PREFIX/$TARGET/lib/libb $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
+mv $PREFIX/$TARGET/lib/libb32 $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
+mv $PREFIX/$TARGET/lib/libm020 $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
+mv $PREFIX/$TARGET/lib/libamiga.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
+mv $PREFIX/$TARGET/lib/libc.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
+mv $PREFIX/$TARGET/lib/libdebug.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
+mv $PREFIX/$TARGET/lib/libm.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
+mv $PREFIX/$TARGET/lib/libnet.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
+mv $PREFIX/$TARGET/lib/libunix.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
+mv $PREFIX/$TARGET/lib/n* $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
+ln -sf $PREFIX/$TARGET/lib/clib2/ncrt0.o $PREFIX/$TARGET/clib2/lib/crt0.o >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
+mv -f $PREFIX/lib/gcc/$TARGET/3.4.6/specs $PREFIX/lib/gcc/$TARGET/3.4.6/specs.original >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
+cp -f $WORKSPACE/_install/recipes/files.wd/specs.346 $PREFIX/lib/gcc/$TARGET/3.4.6/specs >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
 
-# PART 12: Cleanup
-echo -e "\e[1m\e[37m12. Cleanup\e[0m\e[36m"
+# PART 9: Cleanup
+echo -e "\e[1m\e[37m9. Cleanup\e[0m\e[36m"
 rm -rf $PREFIX/etc
 rm -rf $PREFIX/include
 rm -rf $PREFIX/share
 rm -rf $PREFIX/info
 rm -rf $PREFIX/man
 rm -rf $PREFIX/$TARGET/sys-include
+rm -rf $PREFIX/$TARGET/lib/crt0.o
 
 # FINISH
 echo " "
@@ -426,5 +435,10 @@ for p in `ls $WORKSPACE/_install/recipes/patches/ndk/*.p`; do patch -d $PREFIX/$
 echo -e "customise\e[0m"
 cp -r $WORKSPACE/_install/recipes/files/sys-include/* $PREFIX/$TARGET/sys-include/ >>$LOGFILES/part9_NDK_Amiga.log 2>>$LOGFILES/part9_NDK_Amiga_err.log
 cd $SOURCES
+
+
+
+##############
+
 
 

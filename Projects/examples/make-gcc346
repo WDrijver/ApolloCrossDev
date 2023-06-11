@@ -27,7 +27,7 @@ C_LIBS_NDK39=$(NDK)/NDK3.9/Include/linker_libs
 
 C_FLAGS= -c $(O_FLAGS)
 S_FLAGS= $(C_FLAGS)
-O_FLAGS= -fomit-frame-pointer -m68040 -o
+O_FLAGS= -noxiemul -fomit-frame-pointer -m68040 -o
 
 C_SOURCEDIR=.
 S_SOURCEDIR=.

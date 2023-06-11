@@ -1,1 +1,3 @@
-openscreen.c:30:6: warning: no newline at end of file
+openscreen.c: In function `main':
+openscreen.c:30: warning: initialization makes integer from pointer without a cast
+openscreen.c:38: warning: initialization from incompatible pointer type
