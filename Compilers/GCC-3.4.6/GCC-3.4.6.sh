@@ -114,7 +114,8 @@ cd $ARCHIVES
 echo -e "\e[1m\e[37m3. Unpack Source Archives\e[0m\e[36m"
 echo -e -n "\e[0m\e[36m   * tar | " 
 for f in *.tar*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
-echo -e -n "\e[0m\e[36m   * tgz | " 
+
+echo -e -n "tgz | " 
 for f in *.tgz*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
 echo -e "lha\e[0m" 
 lha -xw=$SOURCES $IXEMUL_ARCHIVE >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log
@@ -286,8 +287,12 @@ echo -e -n "guigfxlib | "
 cp -r guigfxlib/include/* $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
 echo -e -n "renderlib | "
 cp -r renderlib/renderlib/include/* $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
-echo -e "codesets\e[0m"
+echo -e -n "codesets | "
 cp -r codesets/codesets/Developer/include/* $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
+echo -e -n "apollo | "
+cp -r apollo $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
+echo -e "ahi\e[0m"
+cp -r ahi $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
 cd $SOURCES
 
 # Part 8: Compile GCC Targets
@@ -410,6 +415,12 @@ rm -rf $PREFIX/info
 rm -rf $PREFIX/man
 rm -rf $PREFIX/$TARGET/sys-include
 rm -rf $PREFIX/$TARGET/lib/crt0.o
+
+# PART 10: Bonus SDK
+echo -e "\e[1m\e[37m10. Bonus SDK\e[0m\e[36m"
+cd $SOURCES/libSDL12
+make >>$LOGFILES/part10_libSDL.log 2>>$LOGFILES/part10_libSDL_err.log
+cp libSDL.a $PREFIX/$TARGET/lib
 
 # FINISH
 echo " "

@@ -17,9 +17,9 @@ Installation:
 2. Clone ApolloCrossDev: Copy repository hyperlink | CTRL+Shift+P git clone | Paste repository hyperlink
 3. Click "Open in New Window" | Click "Compilers" + "ApolloCrossDev.code-workspace" + "Open Workspace"
 4. Open Terminal: Right-click "Compilers" | Select "Open in integrated Terminal"
-5. Enter each Compiler directory (example: "cd GCC-2.95") and start Install script (example: "./GCC-2.95.sh")
+5. Enter Compiler directory (example: "cd GCC-2.95.3") and start Install script (example: "./GCC-2.95.3.sh")
 
 Instructions:
 1. Create Projects/mysource directory for your *.c and *.s sourcefiles (example: Projects/hello)
-2. Copy your choice of make-xxxyyy makefile(s) (example: Projects/hello/make-gcc295 to use GCC 2.95.3)
-3. Type "make -f make-xxxyyy" or read make-xxxyyy file for further Compile instructions (example: make -f make-gcc346)
+2. Copy your choice of make-xxxyyy makefile(s) (example: Projects/hello/make-gcc2953 to use GCC 2.95.3)
+3. Type "make -f make-xxxyyy" or read make file for Compile instructions (example: make -f make-gcc346)
