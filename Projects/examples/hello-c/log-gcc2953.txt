@@ -1,2 +1,0 @@
-/home/willem/ApolloCrossDev/Compilers/GCC-2.95.3/ApolloCrossDev/m68k-amigaos/bin/ld: cannot find -lamiga
-collect2: ld returned 1 exit status

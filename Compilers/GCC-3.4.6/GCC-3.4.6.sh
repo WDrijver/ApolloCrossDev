@@ -234,8 +234,8 @@ $SOURCES/$GCC_NAME/configure \
 	--disable-nls --disable-c-mbchar \
 	--enable-languages=c,c++ --enable-checking=no \
 	--enable-c99 --with-cross-host \
-    --without-x \
-	--enable-maintainer-mode --disable-shared \
+    --without-x --enable-multilib \
+	--enable-maintainer-mode \
     --with-headers=$SOURCES/$IXEMUL_NAME/include \
     >>$LOGFILES/part6_gcc_configure.log 2>>$LOGFILES/part6_gcc_configure_err.log 
 echo -e -n "make | "
@@ -317,10 +317,17 @@ cd $SOURCES
 cd $BUILDS/build-$GCC_NAME
 echo -e -n "\e[0m\e[36m   * libiberty:\e[30m make | " 
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
-make -j1 all-target-libiberty >>$LOGFILES/part8_gcc_make.log 2>>$LOGFILES/part8_gcc_make_err.log
+make -j1 all-target-libiberty >>$LOGFILES/part8_libiberty_make.log 2>>$LOGFILES/part8_libiberty_make_err.log
 echo -e "install\e[0m"
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
-make -j1 install-target-libiberty >>$LOGFILES8.log 2>>$LOGFILES8.log
+make -j1 install-target-libiberty >>$LOGFILES/part8_libiberty_install.log 2>>$LOGFILES/part8_libiberty_install_err.log
+
+echo -e -n "\e[0m\e[36m   * libstdc++-v3:\e[30m make | " 
+AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
+make -j1 all-target-libstdc++-v3 >>$LOGFILES/part8_libstdc_make.log 2>>$LOGFILES/part8_libstdc_make_err.log
+echo -e "install\e[0m"
+AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
+make -j1 install-target-libstdc++-v3 >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
 cd $SOURCES
 
 echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
@@ -392,6 +399,7 @@ make $CPU install >>$LOGFILES/part8_libdebug_make.log 2>>$LOGFILES/part8_libdebu
 cd $SOURCES
 
 echo -e "\e[0m\e[36m   * organise target directory for clib2 and libnix support\e[30m"
+mv $PREFIX/$TARGET/libs* $PREFIX/$TARGET/lib
 mv $PREFIX/$TARGET/lib/libb $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
 mv $PREFIX/$TARGET/lib/libb32 $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
 mv $PREFIX/$TARGET/lib/libm020 $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
@@ -402,7 +410,7 @@ mv $PREFIX/$TARGET/lib/libm.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_
 mv $PREFIX/$TARGET/lib/libnet.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
 mv $PREFIX/$TARGET/lib/libunix.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
 mv $PREFIX/$TARGET/lib/n* $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
-ln -sf $PREFIX/$TARGET/lib/clib2/ncrt0.o $PREFIX/$TARGET/clib2/lib/crt0.o >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
+ln -sf $PREFIX/$TARGET/clib2/lib/ncrt0.o $PREFIX/$TARGET/clib2/lib/crt0.o >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
 mv -f $PREFIX/lib/gcc/$TARGET/3.4.6/specs $PREFIX/lib/gcc/$TARGET/3.4.6/specs.original >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
 cp -f $WORKSPACE/_install/recipes/files.wd/specs.346 $PREFIX/lib/gcc/$TARGET/3.4.6/specs >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
 

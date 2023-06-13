@@ -9,17 +9,18 @@
 PWD=$(shell pwd)
 DIR=$(notdir $(shell pwd))
 BIN=$(PWD)/../../../Compilers/GCC-3.4.6/ApolloCrossDev/bin
-NDK=$(PWD)/../../../Compilers/GCC-3.4.6/ApolloCrossDev/include
+NDK=$(PWD)/../../../Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/libnix/include
+LIB=$(PWD)/../../../Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/libnix/lib
 
-C_COMPILER=$(BIN)/m68k-unknown-amigaos-gcc
+C_COMPILER=$(BIN)/m68k-unknown-amigaos-g++
 S_COMPILER=$(BIN)/m68k-unknown-amigaos-gcc
-O_LINKER=$(BIN)/m68k-unknown-amigaos-gcc
+O_LINKER=$(BIN)/m68k-unknown-amigaos-g++
 
 # default (no arguments) = clib2 | -noixemul = libnix
 
 C_FLAGS= -c $(O_FLAGS)
 S_FLAGS= $(C_FLAGS)
-O_FLAGS= -fomit-frame-pointer -m68000 -o
+O_FLAGS= -noixemul -fomit-frame-pointer -m68040 -I$(NDK) -L$(LIB) -o
 
 C_SOURCEDIR=.
 S_SOURCEDIR=.
