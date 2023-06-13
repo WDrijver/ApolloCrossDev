@@ -1,2 +1,0 @@
-/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/lib/gcc/m68k-unknown-amigaos/3.4.6/../../../../m68k-unknown-amigaos/bin/ld: cannot open libnix/ncrt0.o: No such file or directory
-collect2: ld returned 1 exit status
