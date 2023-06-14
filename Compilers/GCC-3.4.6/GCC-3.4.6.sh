@@ -325,9 +325,18 @@ make -j1 install-target-libiberty >>$LOGFILES/part8_libiberty_install.log 2>>$LO
 echo -e -n "\e[0m\e[36m   * libstdc++-v3:\e[30m make | " 
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
 make -j1 all-target-libstdc++-v3 >>$LOGFILES/part8_libstdc_make.log 2>>$LOGFILES/part8_libstdc_make_err.log
-echo -e "install\e[0m"
+echo -e -n "install | "
 AUTOCONF=$GCC_AUTOCONF AUTOHEADER=$GCC_AUTOHEADER AUTOM4TE=$GCC_AUTOM4TE PATH="$PREFIX/bin:$PATH" \
 make -j1 install-target-libstdc++-v3 >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
+echo -e "includes\e[0m"
+mkdir -p $PREFIX/$TARGET/include/libstdc++ 
+cp -r -L $TARGET/libstdc++-v3/include/* $PREFIX/$TARGET/include/libstdc++ >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
+cp -r -L $TARGET/libstdc++-v3/include/$TARGET/bits/* $PREFIX/$TARGET/include/libstdc++/bits >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
+cp $SOURCES/$GCC_NAME/libstdc++-v3/libsupc++/*.h $PREFIX/$TARGET/include/libstdc++ >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
+cp $SOURCES/$GCC_NAME/libstdc++-v3/libsupc++/new $PREFIX/$TARGET/include/libstdc++ >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
+cp $SOURCES/$GCC_NAME/libstdc++-v3/libsupc++/exception $PREFIX/$TARGET/include/libstdc++ >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
+cp $SOURCES/$GCC_NAME/libstdc++-v3/libsupc++/typeinfo $PREFIX/$TARGET/include/libstdc++ >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
+
 cd $SOURCES
 
 echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
@@ -423,12 +432,16 @@ rm -rf $PREFIX/info
 rm -rf $PREFIX/man
 rm -rf $PREFIX/$TARGET/sys-include
 rm -rf $PREFIX/$TARGET/lib/crt0.o
+rm -rf $PREFIX/$TARGET/libstdc++/include/Makefile
+rm -rf $PREFIX/$TARGET/include/libstdc++/$TARGET >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
 
 # PART 10: Bonus SDK
 echo -e "\e[1m\e[37m10. Bonus SDK\e[0m\e[36m"
 cd $SOURCES/libSDL12
 make >>$LOGFILES/part10_libSDL.log 2>>$LOGFILES/part10_libSDL_err.log
 cp libSDL.a $PREFIX/$TARGET/lib
+mkdir -p $PREFIX/$TARGET/include/sdl
+cp include/SDL/* $PREFIX/$TARGET/include/sdl
 
 # FINISH
 echo " "
