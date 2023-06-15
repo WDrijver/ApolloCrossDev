@@ -212,6 +212,7 @@ for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/stdio/*.diff`; do 
 for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/stdlib/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/stdlib <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done 
 for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/string/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/string <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done 
 for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/utils/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/utils <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done
+cp -f $WORKSPACE/_install/recipes/files.wd/ixemul/* $SOURCES/$IXEMUL_NAME/include >>$LOGFILES/part6_prepare_gcc.log 2>>$LOGFILES/part6_prepare_gcc_err.log
 for p in `ls $WORKSPACE/_install/recipes/patches/gcc/*.p`; do patch -d $WORKSPACE/_sources/$GCC_NAME <$p -p0 >>$LOGFILES/part6_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log; done 
 echo -e -n "customise | "
 cp -r $WORKSPACE/_install/recipes/files/gcc/* $GCC_NAME >>$LOGFILES/part6_prepare_gcc.log 2>>$LOGFILES/part6_prepare_gcc_err.log
