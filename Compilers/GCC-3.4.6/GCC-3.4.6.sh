@@ -81,6 +81,11 @@ RENDER_DOWNLOAD=http://neoscientists.org/~bifat/binarydistillery/$RENDER_ARCHIVE
 CODESETS_NAME=6.20
 CODESETS_ARCHIVE=codesets-$CODESETS_NAME.lha
 CODESETS_DOWNLOAD=https://github.com/jens-maus/libcodesets/releases/download/$CODESETS_NAME/$CODESETS_ARCHIVE
+LIBSDL_NAME=libSDL12
+LIBVORBIS_NAME=libvorbis-1.3.7
+LIBOGG_NAME=libogg-1.3.5
+SDL_TTF_NAME=SDL2_ttf-2.20.2
+FREETYPE_NAME=freetype-master
 
 # INIT Terminal
 clear
@@ -410,19 +415,19 @@ cd $SOURCES
 
 echo -e "\e[0m\e[36m   * organise target directory for clib2 and libnix support\e[30m"
 mv $PREFIX/$TARGET/libs* $PREFIX/$TARGET/lib
-mv $PREFIX/$TARGET/lib/libb $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
-mv $PREFIX/$TARGET/lib/libb32 $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
-mv $PREFIX/$TARGET/lib/libm020 $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
-mv $PREFIX/$TARGET/lib/libamiga.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
-mv $PREFIX/$TARGET/lib/libc.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
-mv $PREFIX/$TARGET/lib/libdebug.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
-mv $PREFIX/$TARGET/lib/libm.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
-mv $PREFIX/$TARGET/lib/libnet.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
-mv $PREFIX/$TARGET/lib/libunix.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
-mv $PREFIX/$TARGET/lib/n* $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
-ln -sf $PREFIX/$TARGET/clib2/lib/ncrt0.o $PREFIX/$TARGET/clib2/lib/crt0.o >>$LOGFILES/part8_clib2_make.log 2>>$LOGFILES/part8_clib2_make_err.log
-mv -f $PREFIX/lib/gcc/$TARGET/3.4.6/specs $PREFIX/lib/gcc/$TARGET/3.4.6/specs.original >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
-cp -f $WORKSPACE/_install/recipes/files.wd/specs.346 $PREFIX/lib/gcc/$TARGET/3.4.6/specs >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_origanise_err.log
+mv $PREFIX/$TARGET/lib/libb $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/libb32 $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/libm020 $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/libamiga.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/libc.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/libdebug.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/libm.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/libnet.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/libunix.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/n* $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+ln -sf $PREFIX/$TARGET/clib2/lib/ncrt0.o $PREFIX/$TARGET/clib2/lib/crt0.o >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv -f $PREFIX/lib/gcc/$TARGET/3.4.6/specs $PREFIX/lib/gcc/$TARGET/3.4.6/specs.original >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+cp -f $WORKSPACE/_install/recipes/files.wd/specs.346 $PREFIX/lib/gcc/$TARGET/3.4.6/specs >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
 
 # PART 9: Cleanup
 echo -e "\e[1m\e[37m9. Cleanup\e[0m\e[36m"
@@ -434,15 +439,93 @@ rm -rf $PREFIX/man
 rm -rf $PREFIX/$TARGET/sys-include
 rm -rf $PREFIX/$TARGET/lib/crt0.o
 rm -rf $PREFIX/$TARGET/libstdc++/include/Makefile
-rm -rf $PREFIX/$TARGET/include/libstdc++/$TARGET >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
+rm -rf $PREFIX/$TARGET/include/libstdc++/$TARGET 
 
 # PART 10: Bonus SDK
 echo -e "\e[1m\e[37m10. Bonus SDK\e[0m\e[36m"
-cd $SOURCES/libSDL12
+
+echo -e -n "\e[0m\e[36m   * $LIBSDL_NAME:\e[30m make | "
+cd $SOURCES/$LIBSDL_NAME
 make >>$LOGFILES/part10_libSDL.log 2>>$LOGFILES/part10_libSDL_err.log
+echo -e "install\e[0m"
 cp libSDL.a $PREFIX/$TARGET/lib
 mkdir -p $PREFIX/$TARGET/include/sdl
 cp include/SDL/* $PREFIX/$TARGET/include/sdl
+cd $SOURCES
+
+echo -e -n "\e[0m\e[36m   * $LIBOGG_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$LIBOGG_NAME
+cd $BUILDS/build-$LIBOGG_NAME
+CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
+AR="$PREFIX/bin/$TARGET-ar" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+$SOURCES/$LIBOGG_NAME/configure \
+    --prefix=$PREFIX/$TARGET \
+    --host=i686-linux-gnu \
+    --build=i686-linux-gnu \
+    --target=$TARGET \
+    >>$LOGFILES/part10_libogg_configure.log 2>>$LOGFILES/part10_libogg_configure_err.log  
+echo -e -n "make | "
+make $CPU >>$LOGFILES/part10_libogg_make.log 2>>$LOGFILES/part10_libogg_make_err.log   
+echo -e "install\e[0m"
+make $CPU install >>$LOGFILES/part10_libogg_make.log 2>>$LOGFILES/part10_libogg_make_err.log   
+cd $SOURCES
+
+echo -e -n "\e[0m\e[36m   * $LIBVORBIS_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$LIBVORBIS_NAME
+cd $BUILDS/build-$LIBVORBIS_NAME
+CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
+AR="$PREFIX/bin/$TARGET-ar" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+$SOURCES/$LIBVORBIS_NAME/configure \
+    --prefix=$PREFIX/$TARGET \
+    --host=i686-linux-gnu \
+    --build=i686-linux-gnu \
+    --target=$TARGET \
+    --with-ogg-libraries=$PREFIX/$TARGET/lib \
+    --with-ogg-includes=$PREFIX/$TARGET/include/ogg \
+    >>$LOGFILES/part10_libvorbis_configure.log 2>>$LOGFILES/part10_libvorbis_configure_err.log  
+echo -e -n "make | "
+make $CPU >>$LOGFILES/part10_libvorbis_make.log 2>>$LOGFILES/part10_libvorbis_make_err.log   
+echo -e "install\e[0m"
+make $CPU install >>$LOGFILES/part10_libvorbis_make.log 2>>$LOGFILES/part10_libvorbis_make_err.log   
+cd $SOURCES
+
+echo -e -n "\e[0m\e[36m   * $SDL_TTF_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$SDL_TTF_NAME
+cd $BUILDS/build-$SDL_TTF_NAME
+CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
+AR="$PREFIX/bin/$TARGET-ar" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+$SOURCES/$SDL_TTF_NAME/configure \
+    --prefix=$PREFIX/$TARGET \
+    --host=i686-linux-gnu \
+    --build=i686-linux-gnu \
+    --target=$TARGET \
+    >>$LOGFILES/part10_sdl_ttf_configure.log 2>>$LOGFILES/part10_sdl_ttf_configure_err.log  
+echo -e -n "make | "
+make $CPU >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_err.log   
+echo -e "install\e[0m"
+make $CPU install >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_err.log
+cd $SOURCES
+
+echo -e -n "\e[0m\e[36m   * $FREETYPE_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$FREETYPE_NAME
+cd $BUILDS/build-$FREETYPE_NAME
+CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
+AR="$PREFIX/bin/$TARGET-ar" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+$SOURCES/$FREETYPE_NAME/configure \
+    --prefix=$PREFIX/$TARGET \
+    --host=i686-linux-gnu \
+    --build=i686-linux-gnu \
+    --target=$TARGET \
+    >>$LOGFILES/part10_freetype_configure.log 2>>$LOGFILES/part10_freetype_configure_err.log  
+echo -e -n "make | "
+make $CPU >>$LOGFILES/part10_freetype_make.log 2>>$LOGFILES/part10_freetype_make_err.log   
+echo -e "install\e[0m"
+make $CPU install >>$LOGFILES/part10_freetype_make.log 2>>$LOGFILES/part10_freetype_make_err.log 
+cd $SOURCES
 
 # FINISH
 echo " "
