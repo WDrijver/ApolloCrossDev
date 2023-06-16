@@ -84,49 +84,12 @@ CODESETS_DOWNLOAD=https://github.com/jens-maus/libcodesets/releases/download/$CO
 LIBSDL_NAME=libSDL12
 LIBVORBIS_NAME=libvorbis-1.3.7
 LIBOGG_NAME=libogg-1.3.5
-SDL_TTF_NAME=SDL2_ttf-2.20.2
-FREETYPE_NAME=freetype-master
+SDL_TTF_NAME=SDL_ttf-1.2.2
+FREETYPE_NAME=freetype-2.13.0
 
 
 # PART 10: Bonus SDK
 echo -e "\e[1m\e[37m10. Bonus Libs/SDK\e[0m\e[36m"
-
-echo -e -n "\e[0m\e[36m   * $LIBOGG_NAME:\e[30m configure | "
-mkdir -p $BUILDS/build-$LIBOGG_NAME
-cd $BUILDS/build-$LIBOGG_NAME
-CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
-AR="$PREFIX/bin/$TARGET-ar" \
-RANLIB="$PREFIX/bin/$TARGET-ranlib" \
-$SOURCES/$LIBOGG_NAME/configure \
-    --prefix=$PREFIX/$TARGET \
-    --host=$TARGET \
-    --build=i686-linux-gnu \
-    --target=$TARGET \
-    >>$LOGFILES/part10_libogg_configure.log 2>>$LOGFILES/part10_libogg_configure_err.log  
-echo -e -n "make | "
-make $CPU >>$LOGFILES/part10_libogg_make.log 2>>$LOGFILES/part10_libogg_make_err.log   
-echo -e "install\e[0m"
-make $CPU install >>$LOGFILES/part10_libogg_make.log 2>>$LOGFILES/part10_libogg_make_err.log   
-cd $SOURCES
-
-echo -e -n "\e[0m\e[36m   * $LIBVORBIS_NAME:\e[30m configure | "
-mkdir -p $BUILDS/build-$LIBVORBIS_NAME
-cd $BUILDS/build-$LIBVORBIS_NAME
-CFLAGS="-I$PREFIX/$TARGET/include" \
-LDFLAGS="-L$PREFIX/$TARGET/lib"  \
-CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
-$SOURCES/$LIBVORBIS_NAME/configure \
-    --prefix=$PREFIX/$TARGET \
-    --host=$TARGET \
-    --build=i686-linux-gnu \
-    --target=$TARGET \
-    >>$LOGFILES/part10_libvorbis_configure.log 2>>$LOGFILES/part10_libvorbis_configure_err.log  
-echo -e -n "make | "
-make $CPU >>$LOGFILES/part10_libvorbis_make.log 2>>$LOGFILES/part10_libvorbis_make_err.log   
-echo -e "install\e[0m"
-make $CPU install >>$LOGFILES/part10_libvorbis_make.log 2>>$LOGFILES/part10_libvorbis_make_err.log   
-cd $SOURCES
-exit
 
 echo -e -n "\e[0m\e[36m   * $FREETYPE_NAME:\e[30m configure | "
 mkdir -p $BUILDS/build-$FREETYPE_NAME

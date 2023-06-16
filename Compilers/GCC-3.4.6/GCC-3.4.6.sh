@@ -84,8 +84,8 @@ CODESETS_DOWNLOAD=https://github.com/jens-maus/libcodesets/releases/download/$CO
 LIBSDL_NAME=libSDL12
 LIBVORBIS_NAME=libvorbis-1.3.7
 LIBOGG_NAME=libogg-1.3.5
-SDL_TTF_NAME=SDL2_ttf-2.20.2
-FREETYPE_NAME=freetype-master
+SDL_TTF_NAME=SDL_ttf-1.2.2
+FREETYPE_NAME=freetype-2.13.0
 
 # INIT Terminal
 clear
@@ -461,7 +461,7 @@ cp -rf $WORKSPACE/_install/recipes/files.wd/$LIBOGG_NAME/* $SOURCES/$LIBOGG_NAME
 echo -e -n "make | "
 mkdir -p $BUILDS/build-$LIBOGG_NAME
 cd $BUILDS/build-$LIBOGG_NAME
-CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 $SOURCES/$LIBOGG_NAME/configure \
