@@ -442,18 +442,23 @@ rm -rf $PREFIX/$TARGET/libstdc++/include/Makefile
 rm -rf $PREFIX/$TARGET/include/libstdc++/$TARGET 
 
 # PART 10: Bonus SDK
-echo -e "\e[1m\e[37m10. Bonus SDK\e[0m\e[36m"
+echo -e "\e[1m\e[37m10. Bonus Libs/SDK\e[0m\e[36m"
 
-echo -e -n "\e[0m\e[36m   * $LIBSDL_NAME:\e[30m make | "
-cd $SOURCES/$LIBSDL_NAME
+echo -e -n "\e[0m\e[36m   * $LIBSDL_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$LIBSDL_NAME
+cd $BUILDS/build-$LIBSDL_NAME
+cp -r $SOURCES/$LIBSDL_NAME/* $BUILDS/build-$LIBSDL_NAME >>$LOGFILES/part10_libSDL.log 2>>$LOGFILES/part10_libSDL_err.log
+echo -e -n "make | "
 make >>$LOGFILES/part10_libSDL.log 2>>$LOGFILES/part10_libSDL_err.log
 echo -e "install\e[0m"
-cp libSDL.a $PREFIX/$TARGET/lib
+cp libSDL.a $PREFIX/$TARGET/lib >>$LOGFILES/part10_libSDL.log 2>>$LOGFILES/part10_libSDL_err.log
 mkdir -p $PREFIX/$TARGET/include/sdl
-cp include/SDL/* $PREFIX/$TARGET/include/sdl
+cp include/SDL/* $PREFIX/$TARGET/include/sdl >>$LOGFILES/part10_libSDL.log 2>>$LOGFILES/part10_libSDL_err.log
 cd $SOURCES
 
-echo -e -n "\e[0m\e[36m   * $LIBOGG_NAME:\e[30m configure | "
+echo -e -n "\e[0m\e[36m   * $LIBOGG_NAME:\e[30m patch | "
+cp -rf $WORKSPACE/_install/recipes/files.wd/$LIBOGG_NAME/* $SOURCES/$LIBOGG_NAME >>$LOGFILES/part10_libogg_patch.log 2>>$LOGFILES/part10_libogg_patch_err.log
+echo -e -n "make | "
 mkdir -p $BUILDS/build-$LIBOGG_NAME
 cd $BUILDS/build-$LIBOGG_NAME
 CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
@@ -461,7 +466,7 @@ AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 $SOURCES/$LIBOGG_NAME/configure \
     --prefix=$PREFIX/$TARGET \
-    --host=i686-linux-gnu \
+    --host=$TARGET \
     --build=i686-linux-gnu \
     --target=$TARGET \
     >>$LOGFILES/part10_libogg_configure.log 2>>$LOGFILES/part10_libogg_configure_err.log  
@@ -474,16 +479,14 @@ cd $SOURCES
 echo -e -n "\e[0m\e[36m   * $LIBVORBIS_NAME:\e[30m configure | "
 mkdir -p $BUILDS/build-$LIBVORBIS_NAME
 cd $BUILDS/build-$LIBVORBIS_NAME
-CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
-AR="$PREFIX/bin/$TARGET-ar" \
-RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+CFLAGS="-I$PREFIX/$TARGET/include" \
+LDFLAGS="-L$PREFIX/$TARGET/lib"  \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 $SOURCES/$LIBVORBIS_NAME/configure \
     --prefix=$PREFIX/$TARGET \
-    --host=i686-linux-gnu \
+    --host=$TARGET \
     --build=i686-linux-gnu \
     --target=$TARGET \
-    --with-ogg-libraries=$PREFIX/$TARGET/lib \
-    --with-ogg-includes=$PREFIX/$TARGET/include/ogg \
     >>$LOGFILES/part10_libvorbis_configure.log 2>>$LOGFILES/part10_libvorbis_configure_err.log  
 echo -e -n "make | "
 make $CPU >>$LOGFILES/part10_libvorbis_make.log 2>>$LOGFILES/part10_libvorbis_make_err.log   
@@ -491,33 +494,19 @@ echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part10_libvorbis_make.log 2>>$LOGFILES/part10_libvorbis_make_err.log   
 cd $SOURCES
 
-echo -e -n "\e[0m\e[36m   * $SDL_TTF_NAME:\e[30m configure | "
-mkdir -p $BUILDS/build-$SDL_TTF_NAME
-cd $BUILDS/build-$SDL_TTF_NAME
-CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
-AR="$PREFIX/bin/$TARGET-ar" \
-RANLIB="$PREFIX/bin/$TARGET-ranlib" \
-$SOURCES/$SDL_TTF_NAME/configure \
-    --prefix=$PREFIX/$TARGET \
-    --host=i686-linux-gnu \
-    --build=i686-linux-gnu \
-    --target=$TARGET \
-    >>$LOGFILES/part10_sdl_ttf_configure.log 2>>$LOGFILES/part10_sdl_ttf_configure_err.log  
-echo -e -n "make | "
-make $CPU >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_err.log   
-echo -e "install\e[0m"
-make $CPU install >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_err.log
-cd $SOURCES
-
 echo -e -n "\e[0m\e[36m   * $FREETYPE_NAME:\e[30m configure | "
 mkdir -p $BUILDS/build-$FREETYPE_NAME
 cd $BUILDS/build-$FREETYPE_NAME
-CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
-AR="$PREFIX/bin/$TARGET-ar" \
-RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+PATH="$PREFIX/bin:$PATH" \
+CFLAGS="-I$PREFIX/$TARGET/include" \
+LDFLAGS="-L$PREFIX/$TARGET/lib"  \
+LIBPNG="libpng-config --libs" \
+LIBPNG_CFLAGS="libpng-config --cflags" \
+LIBPNG_LDFLAGS="libpng-config --ldflags" \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 $SOURCES/$FREETYPE_NAME/configure \
     --prefix=$PREFIX/$TARGET \
-    --host=i686-linux-gnu \
+    --host=$TARGET \
     --build=i686-linux-gnu \
     --target=$TARGET \
     >>$LOGFILES/part10_freetype_configure.log 2>>$LOGFILES/part10_freetype_configure_err.log  
@@ -525,6 +514,28 @@ echo -e -n "make | "
 make $CPU >>$LOGFILES/part10_freetype_make.log 2>>$LOGFILES/part10_freetype_make_err.log   
 echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part10_freetype_make.log 2>>$LOGFILES/part10_freetype_make_err.log 
+cd $SOURCES
+
+echo -e -n "\e[0m\e[36m   * $SDL_TTF_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$SDL_TTF_NAME
+cd $BUILDS/build-$SDL_TTF_NAME
+PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
+PATH="$PREFIX/bin:$PATH" \
+CFLAGS="-I$PREFIX/$TARGET/include" \
+LDFLAGS="-L$PREFIX/$TARGET/lib"  \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
+AR="$PREFIX/bin/$TARGET-ar" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+$SOURCES/$SDL_TTF_NAME/configure \
+    --prefix=$PREFIX/$TARGET \
+    --host=$TARGET \
+    --build=i686-linux-gnu \
+    --target=$TARGET \
+    >>$LOGFILES/part10_sdl_ttf_configure.log 2>>$LOGFILES/part10_sdl_ttf_configure_err.log  
+echo -e -n "make | "
+make $CPU >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_err.log   
+echo -e "install\e[0m"
+make $CPU install >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_err.log
 cd $SOURCES
 
 # FINISH
@@ -553,5 +564,6 @@ echo -e "customise\e[0m"
 cp -r $WORKSPACE/_install/recipes/files/sys-include/* $PREFIX/$TARGET/sys-include/ >>$LOGFILES/part9_NDK_Amiga.log 2>>$LOGFILES/part9_NDK_Amiga_err.log
 cd $SOURCES
 
-
+#AR="$PREFIX/bin/$TARGET-ar" \
+#RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 
