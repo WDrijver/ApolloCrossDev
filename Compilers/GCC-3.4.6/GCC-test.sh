@@ -84,28 +84,29 @@ CODESETS_DOWNLOAD=https://github.com/jens-maus/libcodesets/releases/download/$CO
 LIBSDL_NAME=libSDL12
 LIBVORBIS_NAME=libvorbis-1.3.7
 LIBOGG_NAME=libogg-1.3.5
-SDL_TTF_NAME=SDL_ttf-1.2.2
+SDL_TTF_NAME=SDL_ttf-2.0.3
 FREETYPE_NAME=freetype-2.13.0
 
 
 # PART 10: Bonus SDK
 echo -e "\e[1m\e[37m10. Bonus Libs/SDK\e[0m\e[36m"
-
+rm $LOGFILES/*
 echo -e -n "\e[0m\e[36m   * $FREETYPE_NAME:\e[30m configure | "
 mkdir -p $BUILDS/build-$FREETYPE_NAME
 cd $BUILDS/build-$FREETYPE_NAME
 PATH="$PREFIX/bin:$PATH" \
 CFLAGS="-I$PREFIX/$TARGET/include" \
-LDFLAGS="-L$PREFIX/lib"  \
-LIBPNG="`libpng-config --libs`" \
-LIBPNG_CFLAGS="`libpng-config --cflags`" \
-LIBPNG_LDFLAGS="`libpng-config --ldflags`" \
-CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
+LDFLAGS="-L$PREFIX/$TARGET/lib"  \
+LIBPNG="libpng-config --libs" \
+LIBPNG_CFLAGS="libpng-config --cflags" \
+LIBPNG_LDFLAGS="libpng-config --ldflags" \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 $SOURCES/$FREETYPE_NAME/configure \
     --prefix=$PREFIX/$TARGET \
     --host=$TARGET \
     --build=i686-linux-gnu \
     --target=$TARGET \
+    --enable-freetype-config \
     >>$LOGFILES/part10_freetype_configure.log 2>>$LOGFILES/part10_freetype_configure_err.log  
 echo -e -n "make | "
 make $CPU >>$LOGFILES/part10_freetype_make.log 2>>$LOGFILES/part10_freetype_make_err.log   
@@ -119,8 +120,8 @@ cd $BUILDS/build-$SDL_TTF_NAME
 PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
 PATH="$PREFIX/bin:$PATH" \
 CFLAGS="-I$PREFIX/$TARGET/include" \
-LDFLAGS="-L$PREFIX/lib"  \
-CC="$PREFIX/bin/$TARGET-gcc -noixemul -static-libgcc" \
+LDFLAGS="-L$PREFIX/$TARGET/lib"  \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 $SOURCES/$SDL_TTF_NAME/configure \
@@ -128,6 +129,7 @@ $SOURCES/$SDL_TTF_NAME/configure \
     --host=$TARGET \
     --build=i686-linux-gnu \
     --target=$TARGET \
+    --with-freetype-prefix=$PREFIX/$TARGET \
     >>$LOGFILES/part10_sdl_ttf_configure.log 2>>$LOGFILES/part10_sdl_ttf_configure_err.log  
 echo -e -n "make | "
 make $CPU >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_err.log   
