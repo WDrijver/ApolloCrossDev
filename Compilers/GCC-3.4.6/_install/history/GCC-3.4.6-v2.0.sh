@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-3.4.6 Install Script v2.1
+# ApolloCrossDev GCC-3.4.6 Install Script v2.0
 # 
 # Installation:
 # 1. Enter Compilers/GCC-3.4.6 directory
@@ -10,7 +10,7 @@
 # 3. Read make-gcc346 for compile instructions
 
 EDITION=GCC-3.4.6
-VERSION=2.1
+VERSION=2.0
 CPU=-j4
 GCCVERSION=3.4.6
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
@@ -81,15 +81,11 @@ RENDER_DOWNLOAD=http://neoscientists.org/~bifat/binarydistillery/$RENDER_ARCHIVE
 CODESETS_NAME=6.20
 CODESETS_ARCHIVE=codesets-$CODESETS_NAME.lha
 CODESETS_DOWNLOAD=https://github.com/jens-maus/libcodesets/releases/download/$CODESETS_NAME/$CODESETS_ARCHIVE
-
-#SDL-Framework for ApolloCrossDev
-LIBSDL_NAME=SDL-1.2.15
-LIBSDL_APOLLO_NAME=libSDL12
-LIBSDL_IMAGE_NAME=SDL_image-1.2.12
-LIBOGG_NAME=libogg-1.3.5
+LIBSDL_NAME=libSDL12
 LIBVORBIS_NAME=libvorbis-1.3.7
-LIBFREETYPE_NAME=freetype-2.13.0
-LIBSDL_TTF_NAME=SDL_ttf-2.0.11
+LIBOGG_NAME=libogg-1.3.5
+SDL_TTF_NAME=SDL_ttf-1.2.2
+FREETYPE_NAME=freetype-2.13.0
 
 # INIT Terminal
 clear
@@ -301,9 +297,8 @@ echo -e -n "codesets | "
 cp -r codesets/codesets/Developer/include/* $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
 echo -e -n "apollo | "
 cp -r apollo $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
-ln -s $PREFIX/$TARGET/include/apollo/cybergraphics $PREFIX/$TARGET/include/apollo/cybergraphx >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
 echo -e "ahi\e[0m"
-cp -r ahi/* $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
+cp -r ahi $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
 cd $SOURCES
 
 # Part 8: Compile GCC Targets
@@ -347,6 +342,7 @@ cp $SOURCES/$GCC_NAME/libstdc++-v3/libsupc++/*.h $PREFIX/$TARGET/include/libstdc
 cp $SOURCES/$GCC_NAME/libstdc++-v3/libsupc++/new $PREFIX/$TARGET/include/libstdc++ >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
 cp $SOURCES/$GCC_NAME/libstdc++-v3/libsupc++/exception $PREFIX/$TARGET/include/libstdc++ >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
 cp $SOURCES/$GCC_NAME/libstdc++-v3/libsupc++/typeinfo $PREFIX/$TARGET/include/libstdc++ >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
+
 cd $SOURCES
 
 echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
@@ -445,23 +441,19 @@ rm -rf $PREFIX/$TARGET/lib/crt0.o
 rm -rf $PREFIX/$TARGET/libstdc++/include/Makefile
 rm -rf $PREFIX/$TARGET/include/libstdc++/$TARGET 
 
-# PART 10: Bonus
-echo -e "\e[1m\e[37m10. SDL Development Library\e[0m\e[36m"
+# PART 10: Bonus SDK
+echo -e "\e[1m\e[37m10. Bonus Libs/SDK\e[0m\e[36m"
 
-echo -e -n "\e[0m\e[36m   * $LIBSDL_APOLLO_NAME:\e[30m configure | "
-mkdir -p $BUILDS/build-$LIBSDL_APOLLO_NAME
-cd $BUILDS/build-$LIBSDL_APOLLO_NAME
-cp -rf $SOURCES/$LIBSDL_APOLLO_NAME/* $BUILDS/build-$LIBSDL_APOLLO_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
-cp -rf $WORKSPACE/_install/recipes/files.wd/SDL/Makefile $BUILDS/build-$LIBSDL_APOLLO_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
+echo -e -n "\e[0m\e[36m   * $LIBSDL_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$LIBSDL_NAME
+cd $BUILDS/build-$LIBSDL_NAME
+cp -r $SOURCES/$LIBSDL_NAME/* $BUILDS/build-$LIBSDL_NAME >>$LOGFILES/part10_libSDL.log 2>>$LOGFILES/part10_libSDL_err.log
 echo -e -n "make | "
-make $CPU clean >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
-make $CPU >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
+make >>$LOGFILES/part10_libSDL.log 2>>$LOGFILES/part10_libSDL_err.log
 echo -e "install\e[0m"
-cp libSDL*.a $PREFIX/$TARGET/lib >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+cp libSDL.a $PREFIX/$TARGET/lib >>$LOGFILES/part10_libSDL.log 2>>$LOGFILES/part10_libSDL_err.log
 mkdir -p $PREFIX/$TARGET/include/sdl
-cp include/SDL/* $PREFIX/$TARGET/include/sdl >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
-cp -rf $WORKSPACE/_install/recipes/files.wd/SDL/bin/sdl-config $PREFIX/bin >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
-chmod 744 $PREFIX/bin/sdl-config >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+cp include/SDL/* $PREFIX/$TARGET/include/sdl >>$LOGFILES/part10_libSDL.log 2>>$LOGFILES/part10_libSDL_err.log
 cd $SOURCES
 
 echo -e -n "\e[0m\e[36m   * $LIBOGG_NAME:\e[30m patch | "
@@ -469,8 +461,6 @@ cp -rf $WORKSPACE/_install/recipes/files.wd/$LIBOGG_NAME/* $SOURCES/$LIBOGG_NAME
 echo -e -n "make | "
 mkdir -p $BUILDS/build-$LIBOGG_NAME
 cd $BUILDS/build-$LIBOGG_NAME
-CFLAGS="-I$PREFIX/$TARGET/include" \
-LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
@@ -504,11 +494,9 @@ echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part10_libvorbis_make.log 2>>$LOGFILES/part10_libvorbis_make_err.log   
 cd $SOURCES
 
-echo -e -n "\e[0m\e[36m   * $LIBFREETYPE_NAME:\e[30m patch | "
-cp -rf $WORKSPACE/_install/recipes/files.wd/freetype/builds/unix/* $SOURCES/$LIBFREETYPE_NAME/builds/unix >>$LOGFILES/part10_sdl_ttf_patch.log 2>>$LOGFILES/part10_sdl_ttf_patch_err.log
-echo -e -n "configure | "
-mkdir -p $BUILDS/build-$LIBFREETYPE_NAME
-cd $BUILDS/build-$LIBFREETYPE_NAME
+echo -e -n "\e[0m\e[36m   * $FREETYPE_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$FREETYPE_NAME
+cd $BUILDS/build-$FREETYPE_NAME
 PATH="$PREFIX/bin:$PATH" \
 CFLAGS="-I$PREFIX/$TARGET/include" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
@@ -516,12 +504,11 @@ LIBPNG="libpng-config --libs" \
 LIBPNG_CFLAGS="libpng-config --cflags" \
 LIBPNG_LDFLAGS="libpng-config --ldflags" \
 CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
-$SOURCES/$LIBFREETYPE_NAME/configure \
+$SOURCES/$FREETYPE_NAME/configure \
     --prefix=$PREFIX/$TARGET \
     --host=$TARGET \
     --build=i686-linux-gnu \
     --target=$TARGET \
-    --enable-freetype-config \
     >>$LOGFILES/part10_freetype_configure.log 2>>$LOGFILES/part10_freetype_configure_err.log  
 echo -e -n "make | "
 make $CPU >>$LOGFILES/part10_freetype_make.log 2>>$LOGFILES/part10_freetype_make_err.log   
@@ -529,31 +516,26 @@ echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part10_freetype_make.log 2>>$LOGFILES/part10_freetype_make_err.log 
 cd $SOURCES
 
-echo -e -n "\e[0m\e[36m   * $LIBSDL_TTF_NAME:\e[30m configure | "
-mkdir -p $BUILDS/build-$LIBSDL_TTF_NAME
-cd $BUILDS/build-$LIBSDL_TTF_NAME
-SDL_CONFIG="$PREFIX/bin/sdl-config" \
-FREETYPE_CONFIG="$PREFIX/$TARGET/bin/freetype-config" \
+echo -e -n "\e[0m\e[36m   * $SDL_TTF_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$SDL_TTF_NAME
+cd $BUILDS/build-$SDL_TTF_NAME
 PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
 PATH="$PREFIX/bin:$PATH" \
-CFLAGS="-I$PREFIX/$TARGET/include/sdl" \
-LDFLAGS="-L$PREFIX/$TARGET/lib" \
-LIB="-lSDL -lSDL_Apollo -lm" \
-CC="$PREFIX/bin/$TARGET-gcc -noixemul -static-libgcc" \
+CFLAGS="-I$PREFIX/$TARGET/include" \
+LDFLAGS="-L$PREFIX/$TARGET/lib"  \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
-$SOURCES/$LIBSDL_TTF_NAME/configure \
+$SOURCES/$SDL_TTF_NAME/configure \
     --prefix=$PREFIX/$TARGET \
     --host=$TARGET \
     --build=i686-linux-gnu \
     --target=$TARGET \
     >>$LOGFILES/part10_sdl_ttf_configure.log 2>>$LOGFILES/part10_sdl_ttf_configure_err.log  
-echo -e -n "patch | "
-cp -rf $WORKSPACE/_install/recipes/files.wd/SDL_ttf/Makefile $BUILDS/build-$LIBSDL_TTF_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
 echo -e -n "make | "
-make $CPU >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_make_err.log   
+make $CPU >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_err.log   
 echo -e "install\e[0m"
-make $CPU install >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_make_err.log
+make $CPU install >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_err.log
 cd $SOURCES
 
 # FINISH
@@ -585,48 +567,3 @@ cd $SOURCES
 #AR="$PREFIX/bin/$TARGET-ar" \
 #RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 
-#SDL_ORIGINAL (replaced by Apollo version)
-echo -e -n "\e[0m\e[36m   * $LIBSDL_NAME:\e[30m configure | "
-mkdir -p $BUILDS/build-$LIBSDL_NAME
-cd $BUILDS/build-$LIBSDL_NAME
-CFLAGS="-I$PREFIX/$TARGET/include" \
-LDFLAGS="-L$PREFIX/$TARGET/lib"  \
-CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
-AR="$PREFIX/bin/$TARGET-ar" \
-RANLIB="$PREFIX/bin/$TARGET-ranlib" \
-$SOURCES/$LIBSDL_NAME/configure \
-    --prefix=$PREFIX/$TARGET \
-    --host=$TARGET \
-    --build=i686-linux-gnu \
-    --target=$TARGET \
-    >>$LOGFILES/part10_sdl_configure.log 2>>$LOGFILES/part10_sdl_configure_err.log
-echo -e -n "make | "
-make $CPU >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
-echo -e "install\e[0m"
-make $CPU install >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
-cd $SOURCES
-
-#SDL_IMAGE (make errors)
-echo -e -n "\e[0m\e[36m   * $LIBSDL_IMAGE_NAME:\e[30m configure | "
-mkdir -p $BUILDS/build-$LIBSDL_IMAGE_NAME
-cd $BUILDS/build-$LIBSDL_IMAGE_NAME
-PATH="$PREFIX/bin:$PATH" \
-SDL_CONFIG="$PREFIX/bin/sdl-config" \
-PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
-CFLAGS="-I$PREFIX/$TARGET/include/sdl" \
-LDFLAGS="-L$PREFIX/$TARGET/lib"  \
-CC="$PREFIX/bin/$TARGET-gcc -noixemul -static-libgcc" \
-AR="$PREFIX/bin/$TARGET-ar" \
-AS="$PREFIX/bin/$TARGET-as" \
-RANLIB="$PREFIX/bin/$TARGET-ranlib" \
-$SOURCES/$LIBSDL_IMAGE_NAME/configure \
-    --prefix=$PREFIX/$TARGET \
-    --host=$TARGET \
-    --build=i686-linux-gnu \
-    --target=$TARGET \
-    >>$LOGFILES/part10_sdl_image_configure.log 2>>$LOGFILES/part10_sdl_image_configure_err.log
-echo -e -n "make | "
-make $CPU >>$LOGFILES/part10_sdl_image_make.log 2>>$LOGFILES/part10_sdl_image_make_err.log
-echo -e "install\e[0m"
-make $CPU install >>$LOGFILES/part10_sdl_image_make.log 2>>$LOGFILES/part10_sdl_image_make_err.log
-cd $SOURCES

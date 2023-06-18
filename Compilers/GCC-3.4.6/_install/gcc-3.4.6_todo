@@ -15,3 +15,21 @@ GCC 3.4.6 To-Do List:
 - ApolloWHDSet
 - ApolloMap/Flash
 - ApolloControl
+
+=============
+
+SDL
+3) GCC/68k:
+- copy lib/#?.a gg:lib/
+- copy bin/sdl-config gg:bin
+- place the SDL includes in gg:os-include or in a custom directory and add it to
+your
+  include search path with -Idir.
+- link with -lSDL -ldebug -lpthread (-lSDLgl -lGL -ldebug -lpthread for gl
+apps). 
+  Pthread is required since ixemul libc is not multithread safe (you can omit it
+if
+  you are using a single thread).
+- you can both link it with or without ixemul, but libnix executables
+(-noixemul) has
+  better performances
