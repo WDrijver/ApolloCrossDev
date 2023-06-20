@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-3.4.6 Install Script v2.3
+# ApolloCrossDev GCC-3.4.6 Install Script v2.2
 # 
 # Installation:
 # 1. Enter Compilers/GCC-3.4.6 directory
@@ -10,7 +10,7 @@
 # 3. Read make-gcc346 for compile instructions
 
 EDITION=GCC-3.4.6
-VERSION=2.3
+VERSION=2.2
 CPU=-j4
 GCCVERSION=3.4.6
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
@@ -54,8 +54,6 @@ CLIB2_NAME=clib2
 CLIB2_DOWNLOAD=https://github.com/adtools/clib2
 LIBNIX_NAME=libnix
 LIBNIX_DOWNLOAD=https://github.com/adtools/libnix
-LIBNIX3_NAME=libnix3
-LIBNIX3_DOWNLOAD=https://github.com/diegocr/libnix
 LIBAMIGA_NAME=libamiga
 LIBAMIGA_DOWNLOAD=ftp://ftp.exotica.org.uk/mirrors/geekgadgets/amiga/m68k/snapshots/990529/bin/libamiga-bin.tgz
 LIBAMIGA_ARCHIVE=libamiga-bin.tgz
@@ -83,8 +81,6 @@ RENDER_DOWNLOAD=http://neoscientists.org/~bifat/binarydistillery/$RENDER_ARCHIVE
 CODESETS_NAME=6.20
 CODESETS_ARCHIVE=codesets-$CODESETS_NAME.lha
 CODESETS_DOWNLOAD=https://github.com/jens-maus/libcodesets/releases/download/$CODESETS_NAME/$CODESETS_ARCHIVE
-MUI5_NAME=MUI5.SDK
-MUI5_DOWNLOAD=https://github.com/amiga-mui/muidev
 
 #SDL-Framework for ApolloCrossDev
 LIBSDL_NAME=SDL-1.2.15
@@ -225,7 +221,7 @@ for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/stdio/*.diff`; do 
 for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/stdlib/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/stdlib <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done 
 for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/string/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/string <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done 
 for p in `ls $WORKSPACE/_install/recipes/patches/$IXEMUL_NAME/utils/*.diff`; do patch -d $SOURCES/$IXEMUL_NAME/utils <$p >>$LOGFILES/part6_ixemul_patch.log 2>>$LOGFILES/part6_ixemul_patch_err.log; done
-#cp -f $WORKSPACE/_install/recipes/files.wd/ixemul/* $SOURCES/$IXEMUL_NAME/include >>$LOGFILES/part6_prepare_gcc.log 2>>$LOGFILES/part6_prepare_gcc_err.log
+cp -f $WORKSPACE/_install/recipes/files.wd/ixemul/* $SOURCES/$IXEMUL_NAME/include >>$LOGFILES/part6_prepare_gcc.log 2>>$LOGFILES/part6_prepare_gcc_err.log
 for p in `ls $WORKSPACE/_install/recipes/patches/gcc/*.p`; do patch -d $WORKSPACE/_sources/$GCC_NAME <$p -p0 >>$LOGFILES/part6_prepare_gcc.log 2>>$LOGFILES/part7_prepare_gcc_err.log; done 
 echo -e -n "customise | "
 cp -r $WORKSPACE/_install/recipes/files/gcc/* $GCC_NAME >>$LOGFILES/part6_prepare_gcc.log 2>>$LOGFILES/part6_prepare_gcc_err.log
@@ -306,9 +302,6 @@ cp -r codesets/codesets/Developer/include/* $PREFIX/$TARGET/include/ >>$LOGFILES
 echo -e -n "apollo | "
 cp -r apollo $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
 ln -s $PREFIX/$TARGET/include/apollo/cybergraphics $PREFIX/$TARGET/include/apollo/cybergraphx >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
-echo -e -n "mui | "
-cp -r $MUI5_NAME/MUI/C/include/* $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
-cp -r $MUI5_NAME/MUI/C/lib/* $PREFIX/$TARGET/lib/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
 echo -e "ahi\e[0m"
 cp -r ahi/* $PREFIX/$TARGET/include/ >>$LOGFILES/part7_additional_ndk.log 2>>$LOGFILES/part7_additional_ndk_err.log
 cd $SOURCES
@@ -355,13 +348,10 @@ cp $SOURCES/$GCC_NAME/libstdc++-v3/libsupc++/new $PREFIX/$TARGET/include/libstdc
 cp $SOURCES/$GCC_NAME/libstdc++-v3/libsupc++/exception $PREFIX/$TARGET/include/libstdc++ >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
 cp $SOURCES/$GCC_NAME/libstdc++-v3/libsupc++/typeinfo $PREFIX/$TARGET/include/libstdc++ >>$LOGFILES/part8_libstdc_install.log 2>>$LOGFILES/part8_libstdc_install_err.log
 cd $SOURCES
-exit
-echo -e -n "\e[0m\e[36m   * libnix:\e[30m patch (2.1 -> 3.0) | "
+
+echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
 mkdir -p $BUILDS/build-$LIBNIX_NAME
 cd $BUILDS/build-$LIBNIX_NAME
-
-cp -rf $SOURCES/$LIBNIX3_NAME/* $SOURCES/$LIBNIX_NAME/sources/nix >>$LOGFILES/part8_libnix_patch.log 2>>$LOGFILES/part8_libnix_patch_err.log
-
 CC="$PREFIX/bin/$TARGET-gcc" \
 CPP="$PREFIX/bin/$TARGET-gcc -E" \
 AR="$PREFIX/bin/$TARGET-ar" \
@@ -385,10 +375,9 @@ echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
 cd $SOURCES
 
-echo -e -n "\e[0m\e[36m   * libnix:\e[30m headers | "
+echo -e -n "\e[0m\e[36m   * libnix:\e[30m ixemul headers | "
 cp -r $PREFIX/$TARGET/sys-include/* $PREFIX/$TARGET/libnix/include >>$LOGFILES/part8_ixemul_headers.log 2>>$LOGFILES/part8_ixemul_headers_err.log
-cp -r $SOURCES/$LIBNIX_NAME/sources/headers/*.h $PREFIX/$TARGET/libnix/include >>$LOGFILES/part8_ixemul_headers.log 2>>$LOGFILES/part8_ixemul_headers_err.log
-cp -r $SOURCES/$LIBNIX3_NAME/headers/*.h $PREFIX/$TARGET/libnix/include >>$LOGFILES/part8_ixemul_headers.log 2>>$LOGFILES/part8_ixemul_headers_err.log
+cp -r $SOURCES/$LIBNIX_NAME/sources/headers/stabs.h $PREFIX/$TARGET/libnix/include >>$LOGFILES/part8_ixemul_headers.log 2>>$LOGFILES/part8_ixemul_headers_err.log
 
 echo -e -n "libamiga | "
 mv lib $LIBAMIGA_NAME >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
@@ -482,7 +471,7 @@ mkdir -p $BUILDS/build-$LIBOGG_NAME
 cd $BUILDS/build-$LIBOGG_NAME
 CFLAGS="-I$PREFIX/$TARGET/include" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
-CC="$PREFIX/bin/$TARGET-gcc -noixemul -static-libgcc" \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 $SOURCES/$LIBOGG_NAME/configure \
@@ -502,7 +491,7 @@ mkdir -p $BUILDS/build-$LIBVORBIS_NAME
 cd $BUILDS/build-$LIBVORBIS_NAME
 CFLAGS="-I$PREFIX/$TARGET/include" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
-CC="$PREFIX/bin/$TARGET-gcc -noixemul -static-libgcc" \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 $SOURCES/$LIBVORBIS_NAME/configure \
     --prefix=$PREFIX/$TARGET \
     --host=$TARGET \
@@ -526,7 +515,7 @@ LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 LIBPNG="libpng-config --libs" \
 LIBPNG_CFLAGS="libpng-config --cflags" \
 LIBPNG_LDFLAGS="libpng-config --ldflags" \
-CC="$PREFIX/bin/$TARGET-gcc -noixemul -static-libgcc" \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 $SOURCES/$LIBFREETYPE_NAME/configure \
     --prefix=$PREFIX/$TARGET \
     --host=$TARGET \
