@@ -96,14 +96,16 @@ LIBFREETYPE_NAME=freetype-2.13.0
 LIBSDL_TTF_NAME=SDL_ttf-2.0.11
 
 rm -rf $LOGFILES/* $BUILDS/*
-
+rm -rf $PREFIX/$TARGET/libnix/*
+mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/include $PREFIX/$TARGET/libnix/lib
 cd $SOURCES
 
-echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
+echo -e -n "\e[0m\e[36m   * libnix:\e[30m headers | "
+cp -rf $SOURCES/$LIBNIX_NAME/sources/headers/*.h $PREFIX/$TARGET/sys-include >>$LOGFILES/part8_libnix_headers.log 2>>$LOGFILES/part8_libnix_headers_err.log
+echo -e -n "configure | "
 mkdir -p $BUILDS/build-$LIBNIX_NAME
 cp -rf $SOURCES/$LIBNIX_NAME/* $BUILDS/build-$LIBNIX_NAME 
 cd $BUILDS/build-$LIBNIX_NAME
-
 CC="$PREFIX/bin/$TARGET-gcc -Wall -m68020-60 -O2 -msoft-float -funroll-loops -fomit-frame-pointer" \
 CPP="$PREFIX/bin/$TARGET-gcc -E" \
 AR="$PREFIX/bin/$TARGET-ar" \
@@ -115,136 +117,13 @@ $BUILDS/build-$LIBNIX_NAME/configure \
     --host=i686-linux-gnu \
     --target=$TARGET \
     >>$LOGFILES/part8_libnix_configure.log 2>>$LOGFILES/part8_libnix_configure_err.log   
-
 echo -e -n "make | "
 make -j1 >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
-
-rm -rf $PREFIX/$TARGET/libnix/*
-mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/include $PREFIX/$TARGET/libnix/lib
-
 echo -e "install\e[0m"
 make -j1 install >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
 cd $SOURCES
 
-echo -e -n "\e[0m\e[36m   * libnix:\e[30m configure | "
-mkdir -p $BUILDS/build-$LIBNIX_NAME
-cp -rf $SOURCES/$LIBNIX_NAME/* $BUILDS/build-$LIBNIX_NAME 
-cd $BUILDS/build-$LIBNIX_NAME
 
-
-
-
-
-make clean >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
-rm -rf $BUILDS/build-$LIBNIX_NAME/config.cache
-rm -rf $BUILDS/build-$LIBNIX_NAME/config.status
-rm -rf $BUILDS/build-$LIBNIX_NAME/config.log
-
-CC="$PREFIX/bin/$TARGET-gcc -Wall -m68020-60 -O2 -msoft-float -funroll-loops -fomit-frame-pointer -noixemul" \
-CPP="$PREFIX/bin/$TARGET-gcc -E" \
-AR="$PREFIX/bin/$TARGET-ar" \
-AS="$PREFIX/bin/$TARGET-as" \
-RANLIB="$PREFIX/bin/$TARGET-ranlib" \
-LD="$PREFIX/bin/$TARGET-ld" \
-$BUILDS/build-$LIBNIX_NAME/configure \
-    --prefix=$PREFIX/$TARGET/libnix \
-    --host=i686-linux-gnu \
-    --target=$TARGET \
-    >>$LOGFILES/part8_libnix_configure.log 2>>$LOGFILES/part8_libnix_configure_err.log   
-
-echo -e -n "make | "
-make -j1 >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
-
-rm -rf $PREFIX/$TARGET/libnix/*
-mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/include $PREFIX/$TARGET/libnix/lib
-
-echo -e "install\e[0m"
-make -j1 install >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
-cd $SOURCES
-
-exit
-
-echo -e -n "\e[0m\e[36m   * libnix :\e[30m prepare | "
-mkdir -p $BUILDS/build-$LIBNIX_NAME
-cp -rf $SOURCES/$LIBNIX_NAME/* $BUILDS/build-$LIBNIX_NAME 
-echo -e "headers\e[0m"
-cp -rf $SOURCES/$LIBNIX_NAME/sources/headers/*.h $PREFIX/$TARGET/sys-include >>$LOGFILES/part8_libnix_patch.log 2>>$LOGFILES/part8_libnix_patch_err.log
-
-echo -e -n "configure | "
-cd $BUILDS/build-$LIBNIX_NAME
-CC="$PREFIX/bin/$TARGET-gcc" \
-CPP="$PREFIX/bin/$TARGET-gcc -E" \
-AR="$PREFIX/bin/$TARGET-ar" \
-AS="$PREFIX/bin/$TARGET-as" \
-RANLIB="$PREFIX/bin/$TARGET-ranlib" \
-LD="$PREFIX/bin/$TARGET-ld" \
-./configure \
-    --prefix=$PREFIX/$TARGET/libnix \
-    --host=i686-linux-gnu \
-    --target=$TARGET \
-    >>$LOGFILES/part8_libnix_configure.log 2>>$LOGFILES/part8_libnix_configure_err.log   
-
-echo -e -n "make | "
-CC="$PREFIX/bin/$TARGET-gcc" \
-CPP="$PREFIX/bin/$TARGET-gcc -E" \
-AR="$PREFIX/bin/$TARGET-ar" \
-AS="$PREFIX/bin/$TARGET-as" \
-RANLIB="$PREFIX/bin/$TARGET-ranlib" \
-LD="$PREFIX/bin/$TARGET-ld" \
-make -j1 >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
-
-echo -e -n "install | "
-make -j1 install >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
-
-exit
-
-cp -rf $SOURCES/$LIBNIX3_NAME/headers/*.h $PREFIX/$TARGET/sys-include >>$LOGFILES/part8_libnix_patch.log 2>>$LOGFILES/part8_libnix_patch_err.log
-echo -e -n "update 2.1 -> 3.0 | "
-rm -rf $BUILDS/build-$LIBNIX_NAME/sources/nix/*
-cp -rf $SOURCES/$LIBNIX3_NAME/* $BUILDS/build-$LIBNIX_NAME/sources/nix/
-
-
-
-
-
-
-echo -e -n "libamiga | "
-mv lib $LIBAMIGA_NAME >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
-cp -r $LIBAMIGA_NAME/* $PREFIX/$TARGET/libnix/lib >>$LOGFILES/part8_libamiga.log 2>>$LOGFILES/part8_libamiga_err.log
-
-echo -e -n "libm | "
-mv contrib/libm $LIBM_NAME
-rm -r contrib
-cp -f $WORKSPACE/_install/recipes/files/libm/config.* $LIBM_NAME
-mkdir -p $BUILDS/build-$LIBM_NAME
-cd $BUILDS/build-$LIBM_NAME
-CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
-AR="$PREFIX/bin/$TARGET-ar" \
-RANLIB="$PREFIX/bin/$TARGET-ranlib" \
-$SOURCES/$LIBM_NAME/configure \
-    --prefix=$PREFIX/$TARGET/libnix \
-    --host=i686-linux-gnu \
-    --target=$TARGET \
-    >>$LOGFILES/part8_libm_configure.log 2>>$LOGFILES/part8_libm_configure_err.log  
-make $CPU >>$LOGFILES/part8_libm_make.log 2>>$LOGFILES/part8_libm_make_err.log
-make $CPU install >>$LOGFILES/part8_libm_make.log 2>>$LOGFILES/part8_libm_make_err.log
-cd $SOURCES
-
-echo -e "libdebug\e[0m"
-mkdir -p $BUILDS/build-$LIBDEBUG_NAME
-cd $BUILDS/build-$LIBDEBUG_NAME
-touch $SOURCES/$LIBDEBUG_NAME/configure
-CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
-AR="$PREFIX/bin/$TARGET-ar" \
-RANLIB="$PREFIX/bin/$TARGET-ranlib" \
-$SOURCES/$LIBDEBUG_NAME/configure \
-    --prefix=$PREFIX/$TARGET/libnix \
-    --host=i686-linux-gnu \
-    --target=$TARGET \
-    >>$LOGFILES/part8_libdebug_configure.log 2>>$LOGFILES/part8_libdebug_configure_err.log  
-make $CPU >>$LOGFILES/part8_libdebug_make.log 2>>$LOGFILES/part8_libdebug_make_err.log 
-make $CPU install >>$LOGFILES/part8_libdebug_make.log 2>>$LOGFILES/part8_libdebug_make_err.log 
-cd $SOURCES
 
 echo -e "\e[0m\e[36m   * organise target directory for clib2 and libnix support\e[30m"
 cp -rf $PREFIX/$TARGET/sys-include/* $PREFIX/$TARGET/libnix/include 
@@ -252,9 +131,9 @@ mv $PREFIX/$TARGET/libs* $PREFIX/$TARGET/lib
 mv $PREFIX/$TARGET/lib/libb $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
 mv $PREFIX/$TARGET/lib/libb32 $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
 mv $PREFIX/$TARGET/lib/libm020 $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
-mv $PREFIX/$TARGET/lib/libamiga.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+#mv $PREFIX/$TARGET/lib/libamiga.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
 mv $PREFIX/$TARGET/lib/libc.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
-mv $PREFIX/$TARGET/lib/libdebug.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+#mv $PREFIX/$TARGET/lib/libdebug.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
 mv $PREFIX/$TARGET/lib/libm.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
 mv $PREFIX/$TARGET/lib/libnet.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
 mv $PREFIX/$TARGET/lib/libunix.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
@@ -274,6 +153,18 @@ rm -rf $PREFIX/$TARGET/sys-include
 rm -rf $PREFIX/$TARGET/lib/crt0.o
 rm -rf $PREFIX/$TARGET/libstdc++/include/Makefile
 rm -rf $PREFIX/$TARGET/include/libstdc++/$TARGET 
+
+exit
+
+
+
+echo -e -n "update 2.1 -> 3.0 | "
+
+cp -rf $SOURCES/$LIBNIX3_NAME/headers/*.h $PREFIX/$TARGET/sys-include >>$LOGFILES/part8_libnix_patch.log 2>>$LOGFILES/part8_libnix_patch_err.log
+rm -rf $BUILDS/build-$LIBNIX_NAME/sources/nix/*
+cp -rf $SOURCES/$LIBNIX3_NAME/* $BUILDS/build-$LIBNIX_NAME/sources/nix/
+
+
 
 # PART 10: Bonus
 echo -e "\e[1m\e[37m10. SDL Development Library\e[0m\e[36m"
@@ -464,3 +355,22 @@ cd $SOURCES
 #cp -rf $SOURCES/$LIBNIX3_NAME/* $SOURCES/$LIBNIX_NAME/sources/nix >>$LOGFILES/part8_libnix_patch.log 2>>$LOGFILES/part8_libnix_patch_err.log
 #rm -rf $SOURCES/$LIBNIX_NAME/sources/nix/headers
 #cp -rf $SOURCES/$LIBNIX3_NAME/headers/*.h $SOURCES/$LIBNIX_NAME/sources/headers >>$LOGFILES/part8_libnix_patch.log 2>>$LOGFILES/part8_libnix_patch_err.log
+
+#Libm
+echo -e -n "libm | "
+mv contrib/libm $LIBM_NAME
+rm -r contrib
+cp -f $WORKSPACE/_install/recipes/files/libm/config.* $LIBM_NAME
+mkdir -p $BUILDS/build-$LIBM_NAME
+cd $BUILDS/build-$LIBM_NAME
+CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
+AR="$PREFIX/bin/$TARGET-ar" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+$SOURCES/$LIBM_NAME/configure \
+    --prefix=$PREFIX/$TARGET/libnix \
+    --host=i686-linux-gnu \
+    --target=$TARGET \
+    >>$LOGFILES/part8_libm_configure.log 2>>$LOGFILES/part8_libm_configure_err.log  
+make $CPU >>$LOGFILES/part8_libm_make.log 2>>$LOGFILES/part8_libm_make_err.log
+make $CPU install >>$LOGFILES/part8_libm_make.log 2>>$LOGFILES/part8_libm_make_err.log
+cd $SOURCES
