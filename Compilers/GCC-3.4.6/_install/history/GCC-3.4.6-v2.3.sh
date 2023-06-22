@@ -438,40 +438,45 @@ rm -rf $PREFIX/$TARGET/lib/crt0.o
 rm -rf $PREFIX/$TARGET/libstdc++/include/Makefile
 rm -rf $PREFIX/$TARGET/include/libstdc++/$TARGET 
 
-#Libnix3 (test)
+
+#Libnix3 Update
 echo -e -n "\e[0m\e[36m   * libnix 2.1-> 3.0 Update:\e[30m headers | "
-#cp -rf $SOURCES/$LIBNIX3_NAME/headers/*.h $PREFIX/$TARGET/libnix/include >>$LOGFILES/part10_libnix3_headers.log 2>>$LOGFILES/part10_libnix3_headers_err.log
+cp -rf $SOURCES/$LIBNIX3_NAME/headers/*.h $PREFIX/$TARGET/libnix/include >>$LOGFILES/part10_libnix3_headers.log 2>>$LOGFILES/part10_libnix3_headers_err.log
 echo -e -n "configure | "
 mkdir -p $BUILDS/build-$LIBNIX3_NAME
 cp -rf $SOURCES/$LIBNIX_NAME/* $BUILDS/build-$LIBNIX3_NAME 
-rm -rf $BUILDS/$LIBNIX3_NAME/sources/headers/* $BUILDS/$LIBNIX3_NAME/sources/nix/*
+rm -rf $SOURCES/$LIBNIX3_NAME/sources/headers/* $SOURCES/$LIBNIX3_NAME/sources/nix/*
 rm -rf $SOURCES/$LIBNIX3_NAME/Makefile $SOURCES/$LIBNIX3_NAME/libnix.a
-cp -rf $SOURCES/$LIBNIX3_NAME/headers/*.h $BUILDS/build-$LIBNIX3_NAME/sources/headers
+cp -rf $SOURCES/$LIBNIX3_NAME/headers/* $BUILDS/build-$LIBNIX3_NAME/sources/headers
 cp -rf $SOURCES/$LIBNIX3_NAME/* $BUILDS/build-$LIBNIX3_NAME/sources/nix
-cp -rf $WORKSPACE/_install/recipes/files.wd/libnix3/filelist $BUILDS/build-$LIBNIX3_NAME/sources/nix
 rm -rf $SOURCES/$LIBNIX3_NAME/sources/nix/headers
-cd $BUILDS/build-$LIBNIX3_NAME
+
 CC="$PREFIX/bin/$TARGET-gcc -Wall -m68020-60 -O2 -msoft-float -funroll-loops -fomit-frame-pointer -noixemul" \
 CPP="$PREFIX/bin/$TARGET-gcc -E" \
 AR="$PREFIX/bin/$TARGET-ar" \
 AS="$PREFIX/bin/$TARGET-as" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 LD="$PREFIX/bin/$TARGET-ld" \
-$BUILDS/build-$LIBNIX3_NAME/configure \
+$BUILDS/build-$LIBNIX_NAME/configure \
     --prefix=$PREFIX/$TARGET/libnix \
     --host=i686-linux-gnu \
     --target=$TARGET \
     >>$LOGFILES/part10_libnix3_configure.log 2>>$LOGFILES/part10_libnix3_configure_err.log   
 echo -e -n "make | "
-make -j1 >>$LOGFILES/part10_libnix3_make.log 2>>$LOGFILES/part10_libnix3_make_err.l
+make -j1 >>$LOGFILES/part10_libnix3_make.log 2>>$LOGFILES/part10_libnix3_make_err.log
+
+
+exit
+
 echo -e -n "clean 2.1 | "
 rm -rf $PREFIX/$TARGET/libnix/*
 mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/include $PREFIX/$TARGET/libnix/lib
+
 echo -e "install 3.0\e[0m"
 make -j1 install >>$LOGFILES/part10_libnix3_make.log 2>>$LOGFILES/part10_libnix3_make_err.log
 cd $SOURCES
 
-exit
+
 
 # PART 10: Bonus
 echo -e "\e[1m\e[37m10. SDL Development Library\e[0m\e[36m"

@@ -96,40 +96,73 @@ LIBFREETYPE_NAME=freetype-2.13.0
 LIBSDL_TTF_NAME=SDL_ttf-2.0.11
 
 rm -rf $LOGFILES/* $BUILDS/*
+rm -rf $PREFIX/$TARGET/libnix/*
+mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/include $PREFIX/$TARGET/libnix/lib
+cd $SOURCES
 
-echo -e -n "\e[0m\e[36m   * libnix 2.1-> 3.0 Update:\e[30m headers | "
-#cp -rf $SOURCES/$LIBNIX3_NAME/headers/*.h $PREFIX/$TARGET/libnix/include >>$LOGFILES/part10_libnix3_headers.log 2>>$LOGFILES/part10_libnix3_headers_err.log
+echo -e -n "\e[0m\e[36m   * libnix:\e[30m headers | "
+cp -rf $SOURCES/$LIBNIX_NAME/sources/headers/*.h $PREFIX/$TARGET/sys-include >>$LOGFILES/part8_libnix_headers.log 2>>$LOGFILES/part8_libnix_headers_err.log
 echo -e -n "configure | "
-mkdir -p $BUILDS/build-$LIBNIX3_NAME
-cp -rf $SOURCES/$LIBNIX_NAME/* $BUILDS/build-$LIBNIX3_NAME 
-rm -rf $BUILDS/$LIBNIX3_NAME/sources/headers/* $BUILDS/$LIBNIX3_NAME/sources/nix/*
-rm -rf $SOURCES/$LIBNIX3_NAME/Makefile $SOURCES/$LIBNIX3_NAME/libnix.a
-cp -rf $SOURCES/$LIBNIX3_NAME/headers/*.h $BUILDS/build-$LIBNIX3_NAME/sources/headers
-cp -rf $SOURCES/$LIBNIX3_NAME/* $BUILDS/build-$LIBNIX3_NAME/sources/nix
-cp -rf $WORKSPACE/_install/recipes/files.wd/libnix3/filelist $BUILDS/build-$LIBNIX3_NAME/sources/nix
-rm -rf $SOURCES/$LIBNIX3_NAME/sources/nix/headers
-cd $BUILDS/build-$LIBNIX3_NAME
-CC="$PREFIX/bin/$TARGET-gcc -Wall -m68020-60 -O2 -msoft-float -funroll-loops -fomit-frame-pointer -noixemul" \
+mkdir -p $BUILDS/build-$LIBNIX_NAME
+cp -rf $SOURCES/$LIBNIX_NAME/* $BUILDS/build-$LIBNIX_NAME 
+cd $BUILDS/build-$LIBNIX_NAME
+CC="$PREFIX/bin/$TARGET-gcc -Wall -m68020-60 -O2 -msoft-float -funroll-loops -fomit-frame-pointer" \
 CPP="$PREFIX/bin/$TARGET-gcc -E" \
 AR="$PREFIX/bin/$TARGET-ar" \
 AS="$PREFIX/bin/$TARGET-as" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 LD="$PREFIX/bin/$TARGET-ld" \
-$BUILDS/build-$LIBNIX3_NAME/configure \
+$BUILDS/build-$LIBNIX_NAME/configure \
     --prefix=$PREFIX/$TARGET/libnix \
     --host=i686-linux-gnu \
     --target=$TARGET \
-    >>$LOGFILES/part10_libnix3_configure.log 2>>$LOGFILES/part10_libnix3_configure_err.log   
+    >>$LOGFILES/part8_libnix_configure.log 2>>$LOGFILES/part8_libnix_configure_err.log   
 echo -e -n "make | "
-make -j1 >>$LOGFILES/part10_libnix3_make.log 2>>$LOGFILES/part10_libnix3_make_err.l
-
-echo -e -n "clean 2.1 | "
-rm -rf $PREFIX/$TARGET/libnix/*
-mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/include $PREFIX/$TARGET/libnix/lib
-
-echo -e "install 3.0\e[0m"
-make -j1 install >>$LOGFILES/part10_libnix3_make.log 2>>$LOGFILES/part10_libnix3_make_err.log
+make -j1 >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
+echo -e "install\e[0m"
+make -j1 install >>$LOGFILES/part8_libnix_make.log 2>>$LOGFILES/part8_libnix_make_err.log
 cd $SOURCES
+
+
+
+echo -e "\e[0m\e[36m   * organise target directory for clib2 and libnix support\e[30m"
+cp -rf $PREFIX/$TARGET/sys-include/* $PREFIX/$TARGET/libnix/include 
+mv $PREFIX/$TARGET/libs* $PREFIX/$TARGET/lib
+mv $PREFIX/$TARGET/lib/libb $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/libb32 $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/libm020 $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+#mv $PREFIX/$TARGET/lib/libamiga.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/libc.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+#mv $PREFIX/$TARGET/lib/libdebug.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/libm.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/libnet.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/libunix.a $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv $PREFIX/$TARGET/lib/n* $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+ln -sf $PREFIX/$TARGET/clib2/lib/ncrt0.o $PREFIX/$TARGET/clib2/lib/crt0.o >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+mv -f $PREFIX/lib/gcc/$TARGET/3.4.6/specs $PREFIX/lib/gcc/$TARGET/3.4.6/specs.original >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+cp -f $WORKSPACE/_install/recipes/files.wd/specs.346 $PREFIX/lib/gcc/$TARGET/3.4.6/specs >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+
+# PART 9: Cleanup
+echo -e "\e[1m\e[37m9. Cleanup\e[0m\e[36m"
+rm -rf $PREFIX/etc
+rm -rf $PREFIX/include
+rm -rf $PREFIX/share
+rm -rf $PREFIX/info
+rm -rf $PREFIX/man
+rm -rf $PREFIX/$TARGET/sys-include
+rm -rf $PREFIX/$TARGET/lib/crt0.o
+rm -rf $PREFIX/$TARGET/libstdc++/include/Makefile
+rm -rf $PREFIX/$TARGET/include/libstdc++/$TARGET 
+
+exit
+
+
+
+echo -e -n "update 2.1 -> 3.0 | "
+
+cp -rf $SOURCES/$LIBNIX3_NAME/headers/*.h $PREFIX/$TARGET/sys-include >>$LOGFILES/part8_libnix_patch.log 2>>$LOGFILES/part8_libnix_patch_err.log
+rm -rf $BUILDS/build-$LIBNIX_NAME/sources/nix/*
+cp -rf $SOURCES/$LIBNIX3_NAME/* $BUILDS/build-$LIBNIX_NAME/sources/nix/
 
 
 
@@ -319,6 +352,10 @@ echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part10_sdl_image_make.log 2>>$LOGFILES/part10_sdl_image_make_err.log
 cd $SOURCES
 
+#cp -rf $SOURCES/$LIBNIX3_NAME/* $SOURCES/$LIBNIX_NAME/sources/nix >>$LOGFILES/part8_libnix_patch.log 2>>$LOGFILES/part8_libnix_patch_err.log
+#rm -rf $SOURCES/$LIBNIX_NAME/sources/nix/headers
+#cp -rf $SOURCES/$LIBNIX3_NAME/headers/*.h $SOURCES/$LIBNIX_NAME/sources/headers >>$LOGFILES/part8_libnix_patch.log 2>>$LOGFILES/part8_libnix_patch_err.log
+
 #Libm
 echo -e -n "libm | "
 mv contrib/libm $LIBM_NAME
@@ -337,14 +374,3 @@ $SOURCES/$LIBM_NAME/configure \
 make $CPU >>$LOGFILES/part8_libm_make.log 2>>$LOGFILES/part8_libm_make_err.log
 make $CPU install >>$LOGFILES/part8_libm_make.log 2>>$LOGFILES/part8_libm_make_err.log
 cd $SOURCES
-
-#Libnix3
-
-echo -e -n "\e[0m\e[36m   * libnix:\e[30m patch (2.1 -> 3.0) | "
-mkdir -p $BUILDS/build-$LIBNIX_NAME
-cd $BUILDS/build-$LIBNIX_NAME
-cp -rf $SOURCES/$LIBNIX3_NAME/* $SOURCES/$LIBNIX_NAME/sources/nix >>$LOGFILES/part8_libnix_patch.log 2>>$LOGFILES/part8_libnix_patch_err.log
-echo -e -n "\e[0m\e[36m   * libnix:\e[30m headers | "
-cp -r $PREFIX/$TARGET/sys-include/* $PREFIX/$TARGET/libnix/include >>$LOGFILES/part8_ixemul_headers.log 2>>$LOGFILES/part8_ixemul_headers_err.log
-cp -r $SOURCES/$LIBNIX_NAME/sources/headers/*.h $PREFIX/$TARGET/libnix/include >>$LOGFILES/part8_ixemul_headers.log 2>>$LOGFILES/part8_ixemul_headers_err.log
-cp -r $SOURCES/$LIBNIX3_NAME/headers/*.h $PREFIX/$TARGET/libnix/include >>$LOGFILES/part8_ixemul_headers.log 2>>$LOGFILES/part8_ixemul_headers_err.log
