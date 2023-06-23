@@ -122,6 +122,7 @@ math/gammaf.o \
 math/hypot.o \
 math/log10.o \
 math/log2.o \
+math/rint.o \
 math/round.o \
 math/sqrt.o \
 math/trunc.o \

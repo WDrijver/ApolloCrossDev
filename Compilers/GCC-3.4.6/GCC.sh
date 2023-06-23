@@ -95,8 +95,10 @@ LIBVORBIS_NAME=libvorbis-1.3.7
 LIBFREETYPE_NAME=freetype-2.13.0
 LIBSDL_TTF_NAME=SDL_ttf-2.0.11
 
-rm -rf $LOGFILES/* $BUILDS/*
+rm -rf $LOGFILES $BUILDS
 
+#Libnix3 (test)
+cd $SOURCES
 echo -e -n "\e[0m\e[36m   * libnix 2.1-> 3.0 Update:\e[30m headers | "
 #cp -rf $SOURCES/$LIBNIX3_NAME/headers/*.h $PREFIX/$TARGET/libnix/include >>$LOGFILES/part10_libnix3_headers.log 2>>$LOGFILES/part10_libnix3_headers_err.log
 echo -e -n "configure | "
@@ -121,17 +123,12 @@ $BUILDS/build-$LIBNIX3_NAME/configure \
     --target=$TARGET \
     >>$LOGFILES/part10_libnix3_configure.log 2>>$LOGFILES/part10_libnix3_configure_err.log   
 echo -e -n "make | "
-make -j1 >>$LOGFILES/part10_libnix3_make.log 2>>$LOGFILES/part10_libnix3_make_err.l
-
+make -j1 >>$LOGFILES/part10_libnix3_make.log 2>>$LOGFILES/part10_libnix3_make_err.log
 echo -e -n "clean 2.1 | "
-rm -rf $PREFIX/$TARGET/libnix/*
-mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/include $PREFIX/$TARGET/libnix/lib
-
+rm -rf $PREFIX/$TARGET/libnix/lib/libnix/*
 echo -e "install 3.0\e[0m"
 make -j1 install >>$LOGFILES/part10_libnix3_make.log 2>>$LOGFILES/part10_libnix3_make_err.log
 cd $SOURCES
-
-
 
 # PART 10: Bonus
 echo -e "\e[1m\e[37m10. SDL Development Library\e[0m\e[36m"
@@ -159,7 +156,7 @@ mkdir -p $BUILDS/build-$LIBOGG_NAME
 cd $BUILDS/build-$LIBOGG_NAME
 CFLAGS="-I$PREFIX/$TARGET/include" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
-CC="$PREFIX/bin/$TARGET-gcc -noixemul -static-libgcc" \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 $SOURCES/$LIBOGG_NAME/configure \
@@ -179,7 +176,7 @@ mkdir -p $BUILDS/build-$LIBVORBIS_NAME
 cd $BUILDS/build-$LIBVORBIS_NAME
 CFLAGS="-I$PREFIX/$TARGET/include" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
-CC="$PREFIX/bin/$TARGET-gcc -noixemul -static-libgcc" \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 $SOURCES/$LIBVORBIS_NAME/configure \
     --prefix=$PREFIX/$TARGET \
     --host=$TARGET \
@@ -203,7 +200,7 @@ LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 LIBPNG="libpng-config --libs" \
 LIBPNG_CFLAGS="libpng-config --cflags" \
 LIBPNG_LDFLAGS="libpng-config --ldflags" \
-CC="$PREFIX/bin/$TARGET-gcc -noixemul -static-libgcc" \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 $SOURCES/$LIBFREETYPE_NAME/configure \
     --prefix=$PREFIX/$TARGET \
     --host=$TARGET \
@@ -318,33 +315,3 @@ make $CPU >>$LOGFILES/part10_sdl_image_make.log 2>>$LOGFILES/part10_sdl_image_ma
 echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part10_sdl_image_make.log 2>>$LOGFILES/part10_sdl_image_make_err.log
 cd $SOURCES
-
-#Libm
-echo -e -n "libm | "
-mv contrib/libm $LIBM_NAME
-rm -r contrib
-cp -f $WORKSPACE/_install/recipes/files/libm/config.* $LIBM_NAME
-mkdir -p $BUILDS/build-$LIBM_NAME
-cd $BUILDS/build-$LIBM_NAME
-CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
-AR="$PREFIX/bin/$TARGET-ar" \
-RANLIB="$PREFIX/bin/$TARGET-ranlib" \
-$SOURCES/$LIBM_NAME/configure \
-    --prefix=$PREFIX/$TARGET/libnix \
-    --host=i686-linux-gnu \
-    --target=$TARGET \
-    >>$LOGFILES/part8_libm_configure.log 2>>$LOGFILES/part8_libm_configure_err.log  
-make $CPU >>$LOGFILES/part8_libm_make.log 2>>$LOGFILES/part8_libm_make_err.log
-make $CPU install >>$LOGFILES/part8_libm_make.log 2>>$LOGFILES/part8_libm_make_err.log
-cd $SOURCES
-
-#Libnix3
-
-echo -e -n "\e[0m\e[36m   * libnix:\e[30m patch (2.1 -> 3.0) | "
-mkdir -p $BUILDS/build-$LIBNIX_NAME
-cd $BUILDS/build-$LIBNIX_NAME
-cp -rf $SOURCES/$LIBNIX3_NAME/* $SOURCES/$LIBNIX_NAME/sources/nix >>$LOGFILES/part8_libnix_patch.log 2>>$LOGFILES/part8_libnix_patch_err.log
-echo -e -n "\e[0m\e[36m   * libnix:\e[30m headers | "
-cp -r $PREFIX/$TARGET/sys-include/* $PREFIX/$TARGET/libnix/include >>$LOGFILES/part8_ixemul_headers.log 2>>$LOGFILES/part8_ixemul_headers_err.log
-cp -r $SOURCES/$LIBNIX_NAME/sources/headers/*.h $PREFIX/$TARGET/libnix/include >>$LOGFILES/part8_ixemul_headers.log 2>>$LOGFILES/part8_ixemul_headers_err.log
-cp -r $SOURCES/$LIBNIX3_NAME/headers/*.h $PREFIX/$TARGET/libnix/include >>$LOGFILES/part8_ixemul_headers.log 2>>$LOGFILES/part8_ixemul_headers_err.log
