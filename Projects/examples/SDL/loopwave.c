@@ -16,7 +16,7 @@
 #include <pragmas/SDL_pragmas.h>
 #include <proto/exec.h>
 #else
-#include <inline/SDL.h>
+/*#include <inline/SDL.h>*/
 #include <exec/types.h>
 #include <inline/exec.h>
 #endif
@@ -26,11 +26,11 @@ struct Library *SDLBase=NULL;
 
 static int done = 0;
 
-void SDL_Quit(void)
+/* void SDL_Quit(void)
 {
-	SDL_RealQuit();
+	/* SDL_RealQuit(); */ /*
 	CloseLibrary(SDLBase);
-}
+} */
 
 struct {
 	SDL_AudioSpec spec;
@@ -80,19 +80,19 @@ int main(int argc, char *argv[])
 	char name[32];
 
 
-	SDLBase=OpenLibrary("SDL.library",0L);
+	/* SDLBase=OpenLibrary("SDL.library",0L);
 
 	if(!SDLBase) {
 		printf("Unable to open SDL.library\n");
 		exit(0);
-	}
+	} */
 
-	/* Load the SDL library */
+	/* Load the SDL library 
 	if ( SDL_RealInit(SDL_INIT_AUDIO) < 0 ) {
 		fprintf(stderr, "Couldn't initialize SDL: %s\n",SDL_GetError());
 		exit(1);
 	}
-	atexit(SDL_Quit);
+	atexit(SDL_Quit); */
 
 	if ( argc!=2  ) {
 		printf( "Usage: %s <wavefile>\n", argv[0]);

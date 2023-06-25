@@ -17,7 +17,7 @@
 
 #include <SDL.h>
 
-#include <inline/SDL.h>
+/* #include <inline/SDL.h> */
 
 /* screen size */
 #define SCRW 640

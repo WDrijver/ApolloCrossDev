@@ -8,37 +8,59 @@
 
 PWD=$(shell pwd)
 DIR=$(notdir $(shell pwd))
-BIN=$(PWD)/../../../Compilers/GCC-3.4.6/ApolloCrossDev/bin
-NDK=$(PWD)/../../../Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/include
-SDL=$(PWD)/../../../Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/include/SDL
+PREFIX=$(PWD)/../../../Compilers/GCC-3.4.6/ApolloCrossDev
+BIN=$(PREFIX)/bin
+TARGET=m68k-unknown-amigaos
 
 C_COMPILER=$(BIN)/m68k-unknown-amigaos-gcc
+CPP_COMPILER=$(BIN)/m68k-unknown-amigaos-g++
 S_COMPILER=$(BIN)/m68k-unknown-amigaos-gcc
 O_LINKER=$(BIN)/m68k-unknown-amigaos-gcc
+
+LIBNDK_INC=$(PREFIX)/$(TARGET)/include
+LIBNIX_INC=$(PREFIX)/$(TARGET)/libnix/include
+LIBSTD_INC=$(PREFIX)/$(TARGET)/include/libstdc++
+LIBSDL_INC=$(PREFIX)/$(TARGET)/include/SDL
+LIBNIX_LIB=$(PREFIX)/$(TARGET)/libnix/lib
 
 # default (no arguments) = clib2 | -noixemul = libnix
 
 C_FLAGS= -noixemul -fomit-frame-pointer -O2
 
-all: init testbitmap testsprite testwin testpalette loopwave exit
+all: init sdltest testbitmap testsprite testwin testpalette loopwave exit
 
 clean:
-	-rm -f testbitmap testsprite testwin testpalette loopwave
+	-rm -f testbitmap testsprite testwin testpalette loopwave log-*
+
+sdltest: sdltest.cpp
+	$(CPP_COMPILER) $(C_FLAGS) -I$(LIBNIX_INC) -I$(LIBNDK_INC) -I$(LIBSDL_INC) \
+	-o sdltest sdltest.cpp \
+	-lSDL -lSDL_Apollo >>log-sdltest.txt 2>>log-sdltest.txt
 
 testbitmap: testbitmap.c
-	$(C_COMPILER) $(C_FLAGS) -I$(NDK) -I$(SDL) -o testbitmap testbitmap.c -lSDL >>log-testbitmap.txt 2>>log-testbitmap.txt
+	$(C_COMPILER) $(C_FLAGS) -I$(LIBNDK_INC) -I$(LIBSDL_INC) \
+	-o testbitmap testbitmap.c \
+	-lSDL -lSDL_Apollo >>log-testbitmap.txt 2>>log-testbitmap.txt
 
 loopwave: loopwave.c
-	$(C_COMPILER) $(C_FLAGS) -I$(NDK) -I$(SDL) -o loopwave loopwave.c -lSDL >>log-loopwave.txt 2>>log-loopwave.txt
+	$(C_COMPILER) $(C_FLAGS) -I$(LIBNDK_INC) -I$(LIBSDL_INC) \
+	-o loopwave loopwave.c \
+	-lSDL -lSDL_Apollo >>log-loopwave.txt 2>>log-loopwave.txt
 
 testsprite: testsprite.c
-	$(C_COMPILER) $(C_FLAGS) -I$(NDK) -I$(SDL) -o testsprite testsprite.c -lSDL >>log-testsprite.txt 2>>log-testsprite.txt
+	$(C_COMPILER) $(C_FLAGS) -I$(LIBNDK_INC) -I$(LIBSDL_INC) \
+	-o testsprite testsprite.c \
+	-lSDL -lSDL_Apollo >>log-testsprite.txt 2>>log-testsprite.txt
 
 testpalette: testpalette.c
-	$(C_COMPILER) $(C_FLAGS) -I$(NDK) -I$(SDL) -o testpalette testpalette.c -lm -lSDL >>log-testpalette.txt 2>>log-testpalette.txt
+	$(C_COMPILER) $(C_FLAGS) -I$(LIBNDK_INC) -I$(LIBSDL_INC) \
+	-o testpalette testpalette.c \
+	-lm -lSDL -lSDL_Apollo >>log-testpalette.txt 2>>log-testpalette.txt
 
 testwin: testwin.c
-	$(C_COMPILER) $(C_FLAGS) -I$(NDK) -I$(SDL) -o testwin testwin.c -lSDL >>log-testwin.txt 2>>log-testwin.txt
+	$(C_COMPILER) $(C_FLAGS) -I$(LIBNDK_INC) -I$(LIBSDL_INC) \
+	-o testwin testwin.c \
+	-lSDL -lSDL_Apollo >>log-testwin.txt 2>>log-testwin.txt
 
 .phony: init
 

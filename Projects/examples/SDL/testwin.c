@@ -12,7 +12,7 @@
 
 #include "SDL.h"
 
-#include <inline/SDL.h>
+/* #include <inline/SDL.h> */
 
 void DrawPict(SDL_Surface *screen, char *bmpfile,
 					int speedy, int flip, int nofade)

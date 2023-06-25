@@ -9,7 +9,7 @@
 
 #include "SDL.h"
 
-#include <inline/SDL.h>
+/* #include <inline/SDL.h> */
 
 #define NUM_SPRITES	100
 #define MAX_SPEED 	1
