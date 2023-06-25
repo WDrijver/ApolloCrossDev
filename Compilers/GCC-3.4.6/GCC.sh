@@ -106,7 +106,6 @@ echo -e -n "\e[0m\e[36m   * $LIBSDL_UPDATE_NAME:\e[30m configure | "
 mkdir -p $BUILDS/build-$LIBSDL_UPDATE_NAME
 cd $BUILDS/build-$LIBSDL_UPDATE_NAME
 cp -rf $SOURCES/$LIBSDL_UPDATE_NAME/* $BUILDS/build-$LIBSDL_UPDATE_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
-cp -rf $WORKSPACE/_install/recipes/files.wd/$LIBSDL_UPDATE_NAME/Makefile $BUILDS/build-$LIBSDL_UPDATE_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
 echo -e -n "make | "
 make $CPU clean >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
 make $CPU >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
