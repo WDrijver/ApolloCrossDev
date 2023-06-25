@@ -89,6 +89,7 @@ LIBSDL_NAME=SDL-1.2.15
 LIBSDL_APOLLO_NAME=libSDL12
 LIBSDL_AGA_NAME=SDL-AGA
 LIBSDL_UPDATE_NAME=libSDL12-update
+LIBDSL_AMIGA68K_NAME=libSDL12_Amiga68k-master
 LIBOGG_NAME=libogg-1.3.5
 LIBVORBIS_NAME=libvorbis-1.3.7
 LIBFREETYPE_NAME=freetype-2.13.0
@@ -102,17 +103,17 @@ rm -rf $PREFIX/$TARGET/include/SDL/*
 # PART 10: Bonus
 echo -e "\e[1m\e[37m10. SDL Development Library\e[0m\e[36m"
 
-echo -e -n "\e[0m\e[36m   * $LIBSDL_UPDATE_NAME:\e[30m configure | "
-mkdir -p $BUILDS/build-$LIBSDL_UPDATE_NAME
-cd $BUILDS/build-$LIBSDL_UPDATE_NAME
-cp -rf $SOURCES/$LIBSDL_UPDATE_NAME/* $BUILDS/build-$LIBSDL_UPDATE_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
+echo -e -n "\e[0m\e[36m   * $LIBDSL_AMIGA68K_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$LIBDSL_AMIGA68K_NAME
+cd $BUILDS/build-$LIBDSL_AMIGA68K_NAME
+cp -rf $SOURCES/$LIBDSL_AMIGA68K_NAME/* $BUILDS/build-$LIBDSL_AMIGA68K_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
 echo -e -n "make | "
 make $CPU clean >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
 make $CPU >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
 echo -e "install\e[0m"
 cp libSDL*.a $PREFIX/$TARGET/lib >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 mkdir -p $PREFIX/$TARGET/include/SDL
-cp include/* $PREFIX/$TARGET/include/SDL >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+cp include/SDL/* $PREFIX/$TARGET/include/SDL >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 cp -rf $WORKSPACE/_install/recipes/files.wd/SDL/bin/sdl-config $PREFIX/bin >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 chmod 744 $PREFIX/bin/sdl-config >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 cd $SOURCES
@@ -312,5 +313,21 @@ mkdir -p $PREFIX/$TARGET/doc/SDL
 cp -rf $SOURCES/$LIBSDL_AGA_NAME/docs/* $PREFIX/$TARGET/doc/SDL >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 echo -e "sdl-config\e[0m"
 cp -rf $SOURCES/$LIBSDL_AGA_NAME/bin/sdl-config $PREFIX/bin >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+chmod 744 $PREFIX/bin/sdl-config >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+cd $SOURCES
+
+#LIBSDL_UPDATE (GitHub )
+echo -e -n "\e[0m\e[36m   * $LIBSDL_UPDATE_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$LIBSDL_UPDATE_NAME
+cd $BUILDS/build-$LIBSDL_UPDATE_NAME
+cp -rf $SOURCES/$LIBSDL_UPDATE_NAME/* $BUILDS/build-$LIBSDL_UPDATE_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
+echo -e -n "make | "
+make $CPU clean >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
+make $CPU >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
+echo -e "install\e[0m"
+cp libSDL*.a $PREFIX/$TARGET/lib >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+mkdir -p $PREFIX/$TARGET/include/SDL
+cp include/* $PREFIX/$TARGET/include/SDL >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+cp -rf $WORKSPACE/_install/recipes/files.wd/SDL/bin/sdl-config $PREFIX/bin >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 chmod 744 $PREFIX/bin/sdl-config >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 cd $SOURCES

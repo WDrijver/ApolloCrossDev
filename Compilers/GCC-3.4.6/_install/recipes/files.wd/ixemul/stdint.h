@@ -1,6 +1,10 @@
 #ifndef __STDINT_H
 #define __STDINT_H 1
 
+#ifndef _HAVE_STDINT_H
+#define _HAVE_STDINT_H
+#endif
+
 #include <limits.h>
 
 typedef signed char int8_t;

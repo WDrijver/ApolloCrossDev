@@ -128,7 +128,7 @@ CFLAGS = -I/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-u
 CPP = /home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/bin/m68k-unknown-amigaos-gcc -noixemul -static-libgcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
-DEFS = -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DLT_OBJDIR=\".libs/\" -DPACKAGE=\"SDL_ttf\" -DVERSION=\"2.0.11\" -DHAVE_ALLOCA=1 -DX_DISPLAY_MISSING=1
+DEFS = -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DSTDC_HEADERS=1 -DHAVE_SYS_TYPES_H=1 -DHAVE_SYS_STAT_H=1 -DHAVE_STDLIB_H=1 -DHAVE_STRING_H=1 -DHAVE_MEMORY_H=1 -DHAVE_STRINGS_H=1 -DHAVE_STDINT_H=1 -DHAVE_UNISTD_H=1 -DLT_OBJDIR=\".libs/\" -DPACKAGE=\"SDL_ttf\" -DVERSION=\"2.0.11\" -DHAVE_ALLOCA=1 -DX_DISPLAY_MISSING=1 -D_HAVE_STDINT_H
 DEPDIR = .deps
 DLLTOOL = dlltool
 DSYMUTIL = 
@@ -151,7 +151,7 @@ INTERFACE_AGE = 1
 LD = /home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/bin/ld
 LDFLAGS = -L/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/lib
 LIBOBJS = 
-LIBS =  -lm -L/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/lib -lfreetype -L/usr/local/lib -lSDL -lSDL_Apollo 
+LIBS =  -lm -L/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/lib -lfreetype -L/usr/local/lib -lSDL -lSDL_Apollo -ldebug
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s
