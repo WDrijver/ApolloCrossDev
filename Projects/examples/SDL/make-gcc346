@@ -1,0 +1,60 @@
+# ApolloCrossDev Makefile for GCC-3.4.6
+#
+# 1. Update BIN and NDK if you are not using Project/<dir> for sourcefiles
+# 2. Update C_FLAGS if you need alternate settings (example: C_INCLUDE_NDK32)
+# 3. All *.c and *.s files will be compiled and linked into <dir>-gcc346 executable
+# 4. Copy this makefile into <dir>, rename to makefile or use "make -f make-gcc346"
+# 5. Compile messages are recorded in <dir>/log-gcc346.txt
+
+PWD=$(shell pwd)
+DIR=$(notdir $(shell pwd))
+BIN=$(PWD)/../../../Compilers/GCC-3.4.6/ApolloCrossDev/bin
+NDK=$(PWD)/../../../Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/include
+SDL=$(PWD)/../../../Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/include/SDL
+
+C_COMPILER=$(BIN)/m68k-unknown-amigaos-gcc
+S_COMPILER=$(BIN)/m68k-unknown-amigaos-gcc
+O_LINKER=$(BIN)/m68k-unknown-amigaos-gcc
+
+# default (no arguments) = clib2 | -noixemul = libnix
+
+C_FLAGS= -noixemul -fomit-frame-pointer -O2
+
+all: init testbitmap testsprite testwin testpalette loopwave exit
+
+clean:
+	-rm -f testbitmap testsprite testwin testpalette loopwave
+
+testbitmap: testbitmap.c
+	$(C_COMPILER) $(C_FLAGS) -I$(NDK) -I$(SDL) -o testbitmap testbitmap.c -lSDL >>log-testbitmap.txt 2>>log-testbitmap.txt
+
+loopwave: loopwave.c
+	$(C_COMPILER) $(C_FLAGS) -I$(NDK) -I$(SDL) -o loopwave loopwave.c -lSDL >>log-loopwave.txt 2>>log-loopwave.txt
+
+testsprite: testsprite.c
+	$(C_COMPILER) $(C_FLAGS) -I$(NDK) -I$(SDL) -o testsprite testsprite.c -lSDL >>log-testsprite.txt 2>>log-testsprite.txt
+
+testpalette: testpalette.c
+	$(C_COMPILER) $(C_FLAGS) -I$(NDK) -I$(SDL) -o testpalette testpalette.c -lm -lSDL >>log-testpalette.txt 2>>log-testpalette.txt
+
+testwin: testwin.c
+	$(C_COMPILER) $(C_FLAGS) -I$(NDK) -I$(SDL) -o testwin testwin.c -lSDL >>log-testwin.txt 2>>log-testwin.txt
+
+.phony: init
+
+init:
+	rm -f testbitmap testsprite testwin testpalette loopwave log-*.txt
+	clear
+	@echo "\e[37m------------------------------------------------------------------\e[0m"
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-3.4.6 Edition v0.7\e[0m"    
+	@echo "\e[36mC-Sources : \e[37m$(C_FILES)\e[0m"
+	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
+	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"
+	@echo "\e[37m------------------------------------------------------------------\e[30m"
+		
+exit:
+	@echo "\e[37m------------------------------------------------------------------\e[0m"
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[32mCompile Successful\e[0m"
+	@echo "\e[37m------------------------------------------------------------------\e[0m"
+	@echo " "
+

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <SDL2/SDL.h>
+#include <SDL/SDL.h>
 
 
 void logSDLVersion(std::ostream &out,

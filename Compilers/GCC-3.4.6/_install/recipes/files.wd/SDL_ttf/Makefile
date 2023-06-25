@@ -124,7 +124,7 @@ AWK = gawk
 BINARY_AGE = 11
 CC = /home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/bin/m68k-unknown-amigaos-gcc -noixemul -static-libgcc
 CCDEPMODE = depmode=gcc3
-CFLAGS = -I/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/include/sdl -I/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/include/freetype2 -I/usr/local/include -I/usr/local/include/SDL
+CFLAGS = -I/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/include/SDL -I/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/include/freetype2 -I/usr/local/include -I/usr/local/include/SDL
 CPP = /home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/bin/m68k-unknown-amigaos-gcc -noixemul -static-libgcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -151,7 +151,7 @@ INTERFACE_AGE = 1
 LD = /home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/bin/ld
 LDFLAGS = -L/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/lib
 LIBOBJS = 
-LIBS =  -L/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/lib -lfreetype -L/usr/local/lib -lSDL -lSDL_Apollo -lm
+LIBS =  -lm -L/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/lib -lfreetype -L/usr/local/lib -lSDL -lSDL_Apollo 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool
 LIPO = 
 LN_S = ln -s

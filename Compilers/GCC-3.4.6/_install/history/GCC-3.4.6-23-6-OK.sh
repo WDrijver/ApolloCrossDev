@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-3.4.6 Install Script v2.5
+# ApolloCrossDev GCC-3.4.6 Install Script v2.2
 # 
 # Installation:
 # 1. Enter Compilers/GCC-3.4.6 directory
@@ -10,7 +10,7 @@
 # 3. Read make-gcc346 for compile instructions
 
 EDITION=GCC-3.4.6
-VERSION=2.5
+VERSION=2.2
 CPU=-j4
 GCCVERSION=3.4.6
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
@@ -87,7 +87,7 @@ CODESETS_DOWNLOAD=https://github.com/jens-maus/libcodesets/releases/download/$CO
 #SDL-Framework for ApolloCrossDev
 LIBSDL_NAME=SDL-1.2.15
 LIBSDL_APOLLO_NAME=libSDL12
-LIBSDL_AGA_NAME=SDL_AGA
+LIBSDL_IMAGE_NAME=SDL_image-1.2.12
 LIBOGG_NAME=libogg-1.3.5
 LIBVORBIS_NAME=libvorbis-1.3.7
 LIBFREETYPE_NAME=freetype-2.13.0
@@ -391,7 +391,7 @@ rm -r contrib
 cp -f $WORKSPACE/_install/recipes/files/libm/config.* $LIBM_NAME
 mkdir -p $BUILDS/build-$LIBM_NAME
 cd $BUILDS/build-$LIBM_NAME
-CC="$PREFIX/bin/$TARGET-gcc" \
+CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 $SOURCES/$LIBM_NAME/configure \
@@ -407,7 +407,7 @@ echo -e "libdebug\e[0m"
 mkdir -p $BUILDS/build-$LIBDEBUG_NAME
 cd $BUILDS/build-$LIBDEBUG_NAME
 touch $SOURCES/$LIBDEBUG_NAME/configure
-CC="$PREFIX/bin/$TARGET-gcc" \
+CC="$PREFIX/bin/$TARGET-gcc -noixemul" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 $SOURCES/$LIBDEBUG_NAME/configure \
@@ -483,16 +483,19 @@ cd $SOURCES
 # PART 10: Bonus
 echo -e "\e[1m\e[37m10. SDL Development Library\e[0m\e[36m"
 
-echo -e -n "\e[0m\e[36m   * $LIBSDL_AGA_NAME:\e[30m libs | "
-cp -rf $SOURCES/$LIBSDL_AGA_NAME/lib/libSDL* $PREFIX/$TARGET/lib
-echo -e -n "includes | "
-mkdir -p $PREFIX/$TARGET/include/SDL
-cp -rf $SOURCES/$LIBSDL_AGA_NAME/include/* $PREFIX/$TARGET/include/SDL >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
-echo -e -n "docs | "
-mkdir -p $PREFIX/$TARGET/doc/SDL
-cp -rf $SOURCES/$LIBSDL_AGA_NAME/docs/* $PREFIX/$TARGET/doc/SDL >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
-echo -e "sdl-config\e[0m"
-cp -rf $SOURCES/$LIBSDL_AGA_NAME/bin/sdl-config $PREFIX/bin >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+echo -e -n "\e[0m\e[36m   * $LIBSDL_APOLLO_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$LIBSDL_APOLLO_NAME
+cd $BUILDS/build-$LIBSDL_APOLLO_NAME
+cp -rf $SOURCES/$LIBSDL_APOLLO_NAME/* $BUILDS/build-$LIBSDL_APOLLO_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
+cp -rf $WORKSPACE/_install/recipes/files.wd/SDL/Makefile $BUILDS/build-$LIBSDL_APOLLO_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
+echo -e -n "make | "
+make $CPU clean >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
+make $CPU >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
+echo -e "install\e[0m"
+cp libSDL*.a $PREFIX/$TARGET/lib >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+mkdir -p $PREFIX/$TARGET/include/sdl
+cp include/SDL/* $PREFIX/$TARGET/include/sdl >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+cp -rf $WORKSPACE/_install/recipes/files.wd/SDL/bin/sdl-config $PREFIX/bin >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 chmod 744 $PREFIX/bin/sdl-config >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 cd $SOURCES
 
@@ -568,9 +571,9 @@ SDL_CONFIG="$PREFIX/bin/sdl-config" \
 FREETYPE_CONFIG="$PREFIX/$TARGET/bin/freetype-config" \
 PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
 PATH="$PREFIX/bin:$PATH" \
-CFLAGS="-I$PREFIX/$TARGET/include/SDL" \
+CFLAGS="-I$PREFIX/$TARGET/include/sdl" \
 LDFLAGS="-L$PREFIX/$TARGET/lib" \
-LIB="-lm -lSDL" \
+LIB="-lSDL -lSDL_Apollo -lm" \
 CC="$PREFIX/bin/$TARGET-gcc -noixemul -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
@@ -645,7 +648,7 @@ cd $BUILDS/build-$LIBSDL_IMAGE_NAME
 PATH="$PREFIX/bin:$PATH" \
 SDL_CONFIG="$PREFIX/bin/sdl-config" \
 PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
-CFLAGS="-I$PREFIX/$TARGET/include/SDL" \
+CFLAGS="-I$PREFIX/$TARGET/include/sdl" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 CC="$PREFIX/bin/$TARGET-gcc -noixemul -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
@@ -661,21 +664,4 @@ echo -e -n "make | "
 make $CPU >>$LOGFILES/part10_sdl_image_make.log 2>>$LOGFILES/part10_sdl_image_make_err.log
 echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part10_sdl_image_make.log 2>>$LOGFILES/part10_sdl_image_make_err.log
-cd $SOURCES
-
-#LIBSDL_APOLLO_VERSION (SVN)
-echo -e -n "\e[0m\e[36m   * $LIBSDL_APOLLO_NAME:\e[30m configure | "
-mkdir -p $BUILDS/build-$LIBSDL_APOLLO_NAME
-cd $BUILDS/build-$LIBSDL_APOLLO_NAME
-cp -rf $SOURCES/$LIBSDL_APOLLO_NAME/* $BUILDS/build-$LIBSDL_APOLLO_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
-cp -rf $WORKSPACE/_install/recipes/files.wd/SDL/Makefile $BUILDS/build-$LIBSDL_APOLLO_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
-echo -e -n "make | "
-make $CPU clean >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
-make $CPU >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
-echo -e "install\e[0m"
-cp libSDL*.a $PREFIX/$TARGET/lib >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
-mkdir -p $PREFIX/$TARGET/include/SDL
-cp include/SDL/* $PREFIX/$TARGET/include/SDL >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
-cp -rf $WORKSPACE/_install/recipes/files.wd/SDL/bin/sdl-config $PREFIX/bin >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
-chmod 744 $PREFIX/bin/sdl-config >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 cd $SOURCES

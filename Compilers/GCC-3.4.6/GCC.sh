@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-3.4.6 Install Script v2.3
+# ApolloCrossDev GCC-3.4.6 Install Script v2.5
 # 
 # Installation:
 # 1. Enter Compilers/GCC-3.4.6 directory
@@ -10,7 +10,7 @@
 # 3. Read make-gcc346 for compile instructions
 
 EDITION=GCC-3.4.6
-VERSION=2.3
+VERSION=2.5
 CPU=-j4
 GCCVERSION=3.4.6
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
@@ -83,68 +83,37 @@ RENDER_DOWNLOAD=http://neoscientists.org/~bifat/binarydistillery/$RENDER_ARCHIVE
 CODESETS_NAME=6.20
 CODESETS_ARCHIVE=codesets-$CODESETS_NAME.lha
 CODESETS_DOWNLOAD=https://github.com/jens-maus/libcodesets/releases/download/$CODESETS_NAME/$CODESETS_ARCHIVE
-MUI5_NAME=MUI5.SDK
-MUI5_DOWNLOAD=https://github.com/amiga-mui/muidev
 
 #SDL-Framework for ApolloCrossDev
 LIBSDL_NAME=SDL-1.2.15
 LIBSDL_APOLLO_NAME=libSDL12
-LIBSDL_IMAGE_NAME=SDL_image-1.2.12
+LIBSDL_AGA_NAME=SDL-AGA
+LIBSDL_UPDATE_NAME=libSDL12-update
 LIBOGG_NAME=libogg-1.3.5
 LIBVORBIS_NAME=libvorbis-1.3.7
 LIBFREETYPE_NAME=freetype-2.13.0
 LIBSDL_TTF_NAME=SDL_ttf-2.0.11
 
-rm -rf $LOGFILES $BUILDS
-
-#Libnix3 (test)
-cd $SOURCES
-echo -e -n "\e[0m\e[36m   * libnix 2.1-> 3.0 Update:\e[30m headers | "
-#cp -rf $SOURCES/$LIBNIX3_NAME/headers/*.h $PREFIX/$TARGET/libnix/include >>$LOGFILES/part10_libnix3_headers.log 2>>$LOGFILES/part10_libnix3_headers_err.log
-echo -e -n "configure | "
-mkdir -p $BUILDS/build-$LIBNIX3_NAME
-cp -rf $SOURCES/$LIBNIX_NAME/* $BUILDS/build-$LIBNIX3_NAME 
-rm -rf $BUILDS/$LIBNIX3_NAME/sources/headers/* $BUILDS/$LIBNIX3_NAME/sources/nix/*
-rm -rf $SOURCES/$LIBNIX3_NAME/Makefile $SOURCES/$LIBNIX3_NAME/libnix.a
-cp -rf $SOURCES/$LIBNIX3_NAME/headers/*.h $BUILDS/build-$LIBNIX3_NAME/sources/headers
-cp -rf $SOURCES/$LIBNIX3_NAME/* $BUILDS/build-$LIBNIX3_NAME/sources/nix
-cp -rf $WORKSPACE/_install/recipes/files.wd/libnix3/filelist $BUILDS/build-$LIBNIX3_NAME/sources/nix
-rm -rf $SOURCES/$LIBNIX3_NAME/sources/nix/headers
-cd $BUILDS/build-$LIBNIX3_NAME
-CC="$PREFIX/bin/$TARGET-gcc -Wall -m68020-60 -O2 -msoft-float -funroll-loops -fomit-frame-pointer -noixemul" \
-CPP="$PREFIX/bin/$TARGET-gcc -E" \
-AR="$PREFIX/bin/$TARGET-ar" \
-AS="$PREFIX/bin/$TARGET-as" \
-RANLIB="$PREFIX/bin/$TARGET-ranlib" \
-LD="$PREFIX/bin/$TARGET-ld" \
-$BUILDS/build-$LIBNIX3_NAME/configure \
-    --prefix=$PREFIX/$TARGET/libnix \
-    --host=i686-linux-gnu \
-    --target=$TARGET \
-    >>$LOGFILES/part10_libnix3_configure.log 2>>$LOGFILES/part10_libnix3_configure_err.log   
-echo -e -n "make | "
-make -j1 >>$LOGFILES/part10_libnix3_make.log 2>>$LOGFILES/part10_libnix3_make_err.log
-echo -e -n "clean 2.1 | "
-rm -rf $PREFIX/$TARGET/libnix/lib/libnix/*
-echo -e "install 3.0\e[0m"
-make -j1 install >>$LOGFILES/part10_libnix3_make.log 2>>$LOGFILES/part10_libnix3_make_err.log
-cd $SOURCES
+#Cleanup SDL/OGG/Vorbis
+rm -rf $LOGFILES/* $BUILDS/*
+rm -rf $PREFIX/$TARGET/lib/libSDL*  $PREFIX/$TARGET/lib/libogg* $PREFIX/$TARGET/lib/libvorbis* $PREFIX/$TARGET/lib/libfree*
+rm -rf $PREFIX/$TARGET/include/SDL/*
 
 # PART 10: Bonus
 echo -e "\e[1m\e[37m10. SDL Development Library\e[0m\e[36m"
 
-echo -e -n "\e[0m\e[36m   * $LIBSDL_APOLLO_NAME:\e[30m configure | "
-mkdir -p $BUILDS/build-$LIBSDL_APOLLO_NAME
-cd $BUILDS/build-$LIBSDL_APOLLO_NAME
-cp -rf $SOURCES/$LIBSDL_APOLLO_NAME/* $BUILDS/build-$LIBSDL_APOLLO_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
-cp -rf $WORKSPACE/_install/recipes/files.wd/SDL/Makefile $BUILDS/build-$LIBSDL_APOLLO_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
+echo -e -n "\e[0m\e[36m   * $LIBSDL_UPDATE_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$LIBSDL_UPDATE_NAME
+cd $BUILDS/build-$LIBSDL_UPDATE_NAME
+cp -rf $SOURCES/$LIBSDL_UPDATE_NAME/* $BUILDS/build-$LIBSDL_UPDATE_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
+cp -rf $WORKSPACE/_install/recipes/files.wd/$LIBSDL_UPDATE_NAME/Makefile $BUILDS/build-$LIBSDL_UPDATE_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
 echo -e -n "make | "
 make $CPU clean >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
 make $CPU >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
 echo -e "install\e[0m"
 cp libSDL*.a $PREFIX/$TARGET/lib >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
-mkdir -p $PREFIX/$TARGET/include/sdl
-cp include/SDL/* $PREFIX/$TARGET/include/sdl >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+mkdir -p $PREFIX/$TARGET/include/SDL
+cp include/* $PREFIX/$TARGET/include/SDL >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 cp -rf $WORKSPACE/_install/recipes/files.wd/SDL/bin/sdl-config $PREFIX/bin >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 chmod 744 $PREFIX/bin/sdl-config >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 cd $SOURCES
@@ -221,9 +190,9 @@ SDL_CONFIG="$PREFIX/bin/sdl-config" \
 FREETYPE_CONFIG="$PREFIX/$TARGET/bin/freetype-config" \
 PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
 PATH="$PREFIX/bin:$PATH" \
-CFLAGS="-I$PREFIX/$TARGET/include/sdl" \
+CFLAGS="-I$PREFIX/$TARGET/include/SDL" \
 LDFLAGS="-L$PREFIX/$TARGET/lib" \
-LIB="-lSDL -lSDL_Apollo -lm" \
+LIB="-lm -lSDL" \
 CC="$PREFIX/bin/$TARGET-gcc -noixemul -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
@@ -298,7 +267,7 @@ cd $BUILDS/build-$LIBSDL_IMAGE_NAME
 PATH="$PREFIX/bin:$PATH" \
 SDL_CONFIG="$PREFIX/bin/sdl-config" \
 PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
-CFLAGS="-I$PREFIX/$TARGET/include/sdl" \
+CFLAGS="-I$PREFIX/$TARGET/include/SDL" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 CC="$PREFIX/bin/$TARGET-gcc -noixemul -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
@@ -314,4 +283,35 @@ echo -e -n "make | "
 make $CPU >>$LOGFILES/part10_sdl_image_make.log 2>>$LOGFILES/part10_sdl_image_make_err.log
 echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part10_sdl_image_make.log 2>>$LOGFILES/part10_sdl_image_make_err.log
+cd $SOURCES
+
+#LIBSDL_APOLLO_VERSION (SVN)
+echo -e -n "\e[0m\e[36m   * $LIBSDL_UPDATE_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$LIBSDL_UPDATE_NAME
+cd $BUILDS/build-$LIBSDL_UPDATE_NAME
+cp -rf $SOURCES/$LIBSDL_UPDATE_NAME/* $BUILDS/build-$LIBSDL_UPDATE_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
+cp -rf $WORKSPACE/_install/recipes/files.wd/SDL/Makefile $BUILDS/build-$LIBSDL_UPDATE_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
+echo -e -n "make | "
+make $CPU clean >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
+make $CPU >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
+echo -e "install\e[0m"
+cp libSDL*.a $PREFIX/$TARGET/lib >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+mkdir -p $PREFIX/$TARGET/include/SDL
+cp include/SDL/* $PREFIX/$TARGET/include/SDL >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+cp -rf $WORKSPACE/_install/recipes/files.wd/SDL/bin/sdl-config $PREFIX/bin >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+chmod 744 $PREFIX/bin/sdl-config >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+cd $SOURCES
+
+#LIBSDL SDL-AGA version (Novacoder)
+echo -e -n "\e[0m\e[36m   * $LIBSDL_AGA_NAME:\e[30m libs | "
+cp -rf $SOURCES/$LIBSDL_AGA_NAME/bin/SDL_AGA_060.a $PREFIX/$TARGET/lib/libSDL.a
+echo -e -n "includes | "
+mkdir -p $PREFIX/$TARGET/include/SDL
+cp -rf $SOURCES/$LIBSDL_AGA_NAME/include/* $PREFIX/$TARGET/include/SDL >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+echo -e -n "docs | "
+mkdir -p $PREFIX/$TARGET/doc/SDL
+cp -rf $SOURCES/$LIBSDL_AGA_NAME/docs/* $PREFIX/$TARGET/doc/SDL >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+echo -e "sdl-config\e[0m"
+cp -rf $SOURCES/$LIBSDL_AGA_NAME/bin/sdl-config $PREFIX/bin >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+chmod 744 $PREFIX/bin/sdl-config >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 cd $SOURCES
