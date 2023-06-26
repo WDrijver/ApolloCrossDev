@@ -2,7 +2,6 @@
 /* Simple program:  Move N sprites around on the screen as fast as possible */
 
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>

@@ -3,9 +3,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdint.h>
 #include <string.h>
-
 
 #define BENCHMARK_SDL
 
