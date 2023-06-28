@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-3.4.6 Install Script v2.7
+# ApolloCrossDev GCC-3.4.6 Install Script v2.6
 # 
 # Installation:
 # 1. Enter Compilers/GCC-3.4.6 directory
@@ -10,7 +10,7 @@
 # 3. Read make-gcc346 for compile instructions
 
 EDITION=GCC-3.4.6
-VERSION=2.7
+VERSION=2.6
 CPU=-j4
 GCCVERSION=3.4.6
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
@@ -506,7 +506,7 @@ cp -rf $WORKSPACE/_install/recipes/files.wd/$LIBOGG_NAME/* $SOURCES/$LIBOGG_NAME
 echo -e -n "make | "
 mkdir -p $BUILDS/build-$LIBOGG_NAME
 cd $BUILDS/build-$LIBOGG_NAME
-CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
+CFLAGS="-I$PREFIX/$TARGET/include -O3 -fomit-frame-pointer -m68040 -m68881 -mnobitfield -noixemul" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
@@ -526,7 +526,7 @@ cd $SOURCES
 echo -e -n "\e[0m\e[36m   * $LIBVORBIS_NAME:\e[30m configure | "
 mkdir -p $BUILDS/build-$LIBVORBIS_NAME
 cd $BUILDS/build-$LIBVORBIS_NAME
-CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
+CFLAGS="-I$PREFIX/$TARGET/include -O3 -fomit-frame-pointer -m68040 -m68881 -mnobitfield -noixemul" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 $SOURCES/$LIBVORBIS_NAME/configure \
@@ -541,33 +541,13 @@ echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part10_libvorbis_make.log 2>>$LOGFILES/part10_libvorbis_make_err.log   
 cd $SOURCES
 
-echo -e -n "\e[0m\e[36m   * $LIBTHEORA_NAME:\e[30m patch | "
-cp -rf $WORKSPACE/_install/recipes/files.wd/$LIBTHEORA_NAME/* $SOURCES/$LIBTHEORA_NAME >>$LOGFILES/part10_libtheora_patch.log 2>>$LOGFILES/part10_libtheora_patch_err.log
-echo -e -n "make | "
-mkdir -p $BUILDS/build-$LIBTHEORA_NAME
-cd $BUILDS/build-$LIBTHEORA_NAME
-CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
-LDFLAGS="-L$PREFIX/$TARGET/lib"  \
-CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
-$SOURCES/$LIBTHEORA_NAME/configure \
-    --prefix=$PREFIX/$TARGET \
-    --host=$TARGET \
-    --build=i686-linux-gnu \
-    --target=$TARGET \
-    >>$LOGFILES/part10_libtheora_configure.log 2>>$LOGFILES/part10_libtheora_configure_err.log  
-echo -e -n "make | "
-make $CPU >>$LOGFILES/part10_libtheora_make.log 2>>$LOGFILES/part10_libtheora_make_err.log   
-echo -e "install\e[0m"
-make $CPU install >>$LOGFILES/part10_libtheora_make.log 2>>$LOGFILES/part10_libtheora_make_err.log   
-cd $SOURCES
-
 echo -e -n "\e[0m\e[36m   * $LIBFREETYPE_NAME:\e[30m patch | "
 cp -rf $WORKSPACE/_install/recipes/files.wd/freetype/builds/unix/* $SOURCES/$LIBFREETYPE_NAME/builds/unix >>$LOGFILES/part10_sdl_ttf_patch.log 2>>$LOGFILES/part10_sdl_ttf_patch_err.log
 echo -e -n "configure | "
 mkdir -p $BUILDS/build-$LIBFREETYPE_NAME
 cd $BUILDS/build-$LIBFREETYPE_NAME
 PATH="$PREFIX/bin:$PATH" \
-CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
+CFLAGS="-I$PREFIX/$TARGET/include -O3 -fomit-frame-pointer -m68040 -m68881 -mnobitfield -noixemul" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 LIBPNG="libpng-config --libs" \
 LIBPNG_CFLAGS="libpng-config --cflags" \
@@ -593,7 +573,7 @@ SDL_CONFIG="$PREFIX/bin/sdl-config" \
 FREETYPE_CONFIG="$PREFIX/$TARGET/bin/freetype-config" \
 PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
 PATH="$PREFIX/bin:$PATH" \
-CFLAGS="-I$PREFIX/$TARGET/include/SDL -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
+CFLAGS="-I$PREFIX/$TARGET/include/SDL -O3 -fomit-frame-pointer -m68040 -m68881 -mnobitfield -noixemul" \
 LDFLAGS="-L$PREFIX/$TARGET/lib" \
 LIB="-lm -lSDL" \
 CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \

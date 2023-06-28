@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-3.4.6 Install Script v2.5
+# ApolloCrossDev GCC-3.4.6 Install Script v2.7
 # 
 # Installation:
 # 1. Enter Compilers/GCC-3.4.6 directory
@@ -10,7 +10,7 @@
 # 3. Read make-gcc346 for compile instructions
 
 EDITION=GCC-3.4.6
-VERSION=2.5
+VERSION=2.7
 CPU=-j4
 GCCVERSION=3.4.6
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
@@ -85,20 +85,20 @@ CODESETS_ARCHIVE=codesets-$CODESETS_NAME.lha
 CODESETS_DOWNLOAD=https://github.com/jens-maus/libcodesets/releases/download/$CODESETS_NAME/$CODESETS_ARCHIVE
 
 #SDL-Framework for ApolloCrossDev
-LIBSDL_NAME=SDL-1.2.15
-LIBSDL_APOLLO_NAME=libSDL12
-LIBSDL_AGA_NAME=SDL-AGA
-LIBSDL_UPDATE_NAME=libSDL12-update
+#LIBSDL_NAME=SDL-1.2.15
+#LIBSDL_APOLLO_NAME=libSDL12
+#LIBSDL_AGA_NAME=SDL-AGA
+#LIBSDL_UPDATE_NAME=libSDL12-update
 LIBDSL_AMIGA68K_NAME=libSDL12_Amiga68k-master
 LIBOGG_NAME=libogg-1.3.5
 LIBVORBIS_NAME=libvorbis-1.3.7
+LIBTHEORA_NAME=libtheora-1.1.1
 LIBFREETYPE_NAME=freetype-2.13.0
 LIBSDL_TTF_NAME=SDL_ttf-2.0.11
 
-#Cleanup SDL/OGG/Vorbis
-rm -rf $LOGFILES/* $BUILDS/*
-rm -rf $PREFIX/$TARGET/lib/libSDL*  $PREFIX/$TARGET/lib/libogg* $PREFIX/$TARGET/lib/libvorbis* $PREFIX/$TARGET/lib/libfree*
-rm -rf $PREFIX/$TARGET/include/SDL/*
+rm -rf $LOGFILES/* $BUILDS/* $PREFIX/$TARGET/lib/libSDL* $PREFIX/$TARGET/lib/libvorbis* $PREFIX/$TARGET/lib/libogg* $PREFIX/$TARGET/lib/libtheora* $PREFIX/$TARGET/lib/libfreetype*
+cd $SOURCES
+
 
 # PART 10: Bonus
 echo -e "\e[1m\e[37m10. SDL Development Library\e[0m\e[36m"
@@ -123,7 +123,7 @@ cp -rf $WORKSPACE/_install/recipes/files.wd/$LIBOGG_NAME/* $SOURCES/$LIBOGG_NAME
 echo -e -n "make | "
 mkdir -p $BUILDS/build-$LIBOGG_NAME
 cd $BUILDS/build-$LIBOGG_NAME
-CFLAGS="-I$PREFIX/$TARGET/include" \
+CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
@@ -143,7 +143,7 @@ cd $SOURCES
 echo -e -n "\e[0m\e[36m   * $LIBVORBIS_NAME:\e[30m configure | "
 mkdir -p $BUILDS/build-$LIBVORBIS_NAME
 cd $BUILDS/build-$LIBVORBIS_NAME
-CFLAGS="-I$PREFIX/$TARGET/include" \
+CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 $SOURCES/$LIBVORBIS_NAME/configure \
@@ -158,13 +158,33 @@ echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part10_libvorbis_make.log 2>>$LOGFILES/part10_libvorbis_make_err.log   
 cd $SOURCES
 
+echo -e -n "\e[0m\e[36m   * $LIBTHEORA_NAME:\e[30m patch | "
+cp -rf $WORKSPACE/_install/recipes/files.wd/$LIBTHEORA_NAME/* $SOURCES/$LIBTHEORA_NAME >>$LOGFILES/part10_libtheora_patch.log 2>>$LOGFILES/part10_libtheora_patch_err.log
+echo -e -n "make | "
+mkdir -p $BUILDS/build-$LIBTHEORA_NAME
+cd $BUILDS/build-$LIBTHEORA_NAME
+CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
+LDFLAGS="-L$PREFIX/$TARGET/lib"  \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
+$SOURCES/$LIBTHEORA_NAME/configure \
+    --prefix=$PREFIX/$TARGET \
+    --host=$TARGET \
+    --build=i686-linux-gnu \
+    --target=$TARGET \
+    >>$LOGFILES/part10_libtheora_configure.log 2>>$LOGFILES/part10_libtheora_configure_err.log  
+echo -e -n "make | "
+make $CPU >>$LOGFILES/part10_libtheora_make.log 2>>$LOGFILES/part10_libtheora_make_err.log   
+echo -e "install\e[0m"
+make $CPU install >>$LOGFILES/part10_libtheora_make.log 2>>$LOGFILES/part10_libtheora_make_err.log   
+cd $SOURCES
+
 echo -e -n "\e[0m\e[36m   * $LIBFREETYPE_NAME:\e[30m patch | "
 cp -rf $WORKSPACE/_install/recipes/files.wd/freetype/builds/unix/* $SOURCES/$LIBFREETYPE_NAME/builds/unix >>$LOGFILES/part10_sdl_ttf_patch.log 2>>$LOGFILES/part10_sdl_ttf_patch_err.log
 echo -e -n "configure | "
 mkdir -p $BUILDS/build-$LIBFREETYPE_NAME
 cd $BUILDS/build-$LIBFREETYPE_NAME
 PATH="$PREFIX/bin:$PATH" \
-CFLAGS="-I$PREFIX/$TARGET/include" \
+CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 LIBPNG="libpng-config --libs" \
 LIBPNG_CFLAGS="libpng-config --cflags" \
@@ -190,10 +210,10 @@ SDL_CONFIG="$PREFIX/bin/sdl-config" \
 FREETYPE_CONFIG="$PREFIX/$TARGET/bin/freetype-config" \
 PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
 PATH="$PREFIX/bin:$PATH" \
-CFLAGS="-I$PREFIX/$TARGET/include/SDL" \
+CFLAGS="-I$PREFIX/$TARGET/include/SDL -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
 LDFLAGS="-L$PREFIX/$TARGET/lib" \
 LIB="-lm -lSDL" \
-CC="$PREFIX/bin/$TARGET-gcc -noixemul -static-libgcc" \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
 $SOURCES/$LIBSDL_TTF_NAME/configure \
