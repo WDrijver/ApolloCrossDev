@@ -611,6 +611,7 @@ echo -e -n "make | "
 make $CPU >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_make_err.log   
 echo -e "install\e[0m"
 make $CPU install >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_make_err.log
+cp -rf $SOURCES/$LIBSDL_TTF_NAME/SDL_ttf.h $PREFIX/$TARGET/include/SDL
 cd $SOURCES
 
 # FINISH
