@@ -118,7 +118,7 @@ mkdir -p $PREFIX/$TARGET/libnix $PREFIX/$TARGET/libnix/include $PREFIX/$TARGET/l
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
 echo -e "\e[36m   * On first run:\e[30m please be patient"
 sudo apt -y update >>$LOGFILES/part2_update_linux.log 2>>$LOGFILES/part2_update_linux_err.log
-sudo apt -y install build-essential m4 gawk autoconf automake flex bison expect dejagnu texinfo lhasa git subversion \
+sudo apt -y install build-essential libc6 m4 gawk autoconf automake flex bison expect dejagnu texinfo lhasa git subversion \
      make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev rsync libreadline-dev rename gperf gcc-multilib \
      autoconf2.64 \
      >>$LOGFILES/part2_linux_updates.log 2>>$LOGFILES/part2_linux_updates_err.log
