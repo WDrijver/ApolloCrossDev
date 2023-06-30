@@ -1,7 +1,20 @@
 {
 	"folders": [
 		{
+			"name": "ApolloSVN",
+			"path": "../ApolloSVN"
+		},
+		{
+			"name": "ApolloCrossDev",
 			"path": "."
 		}
-	]
+	],
+	"settings": {
+		"svn.delete.ignoredRulesForDeletedFiles": [
+			"RHLOS/robin"
+		],
+		"files.associations": {
+			"pr6713.C": "cpp"
+		}
+	}
 }
