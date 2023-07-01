@@ -506,7 +506,7 @@ cp -rf $WORKSPACE/_install/recipes/files.wd/$LIBOGG_NAME/* $SOURCES/$LIBOGG_NAME
 echo -e -n "make | "
 mkdir -p $BUILDS/build-$LIBOGG_NAME
 cd $BUILDS/build-$LIBOGG_NAME
-CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
+CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -noixemul" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
@@ -526,7 +526,7 @@ cd $SOURCES
 echo -e -n "\e[0m\e[36m   * $LIBVORBIS_NAME:\e[30m configure | "
 mkdir -p $BUILDS/build-$LIBVORBIS_NAME
 cd $BUILDS/build-$LIBVORBIS_NAME
-CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
+CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -noixemul" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 $SOURCES/$LIBVORBIS_NAME/configure \
@@ -546,7 +546,7 @@ cp -rf $WORKSPACE/_install/recipes/files.wd/$LIBTHEORA_NAME/* $SOURCES/$LIBTHEOR
 echo -e -n "make | "
 mkdir -p $BUILDS/build-$LIBTHEORA_NAME
 cd $BUILDS/build-$LIBTHEORA_NAME
-CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
+CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -noixemul" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 $SOURCES/$LIBTHEORA_NAME/configure \
@@ -567,7 +567,7 @@ echo -e -n "configure | "
 mkdir -p $BUILDS/build-$LIBFREETYPE_NAME
 cd $BUILDS/build-$LIBFREETYPE_NAME
 PATH="$PREFIX/bin:$PATH" \
-CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
+CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -noixemul" \
 LDFLAGS="-L$PREFIX/$TARGET/lib"  \
 LIBPNG="libpng-config --libs" \
 LIBPNG_CFLAGS="libpng-config --cflags" \
@@ -593,7 +593,7 @@ SDL_CONFIG="$PREFIX/bin/sdl-config" \
 FREETYPE_CONFIG="$PREFIX/$TARGET/bin/freetype-config" \
 PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
 PATH="$PREFIX/bin:$PATH" \
-CFLAGS="-I$PREFIX/$TARGET/include/SDL -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
+CFLAGS="-I$PREFIX/$TARGET/include/SDL -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -noixemul" \
 LDFLAGS="-L$PREFIX/$TARGET/lib" \
 LIB="-lm -lSDL" \
 CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \

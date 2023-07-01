@@ -11,7 +11,8 @@
 	],
 	"settings": {
 		"svn.delete.ignoredRulesForDeletedFiles": [
-			"RHLOS/robin"
+			"RHLOS/robin",
+			"RHLOS/mixer"
 		],
 		"files.associations": {
 			"pr6713.C": "cpp"
