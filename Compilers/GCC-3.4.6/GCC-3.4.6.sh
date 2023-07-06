@@ -85,10 +85,6 @@ CODESETS_ARCHIVE=codesets-$CODESETS_NAME.lha
 CODESETS_DOWNLOAD=https://github.com/jens-maus/libcodesets/releases/download/$CODESETS_NAME/$CODESETS_ARCHIVE
 
 #SDL-Framework for ApolloCrossDev
-#LIBSDL_NAME=SDL-1.2.15
-#LIBSDL_APOLLO_NAME=libSDL12
-#LIBSDL_AGA_NAME=SDL-AGA
-#LIBSDL_UPDATE_NAME=libSDL12-update
 LIBDSL_AMIGA68K_NAME=libSDL12_Amiga68k-master
 LIBOGG_NAME=libogg-1.3.5
 LIBVORBIS_NAME=libvorbis-1.3.7
@@ -127,8 +123,7 @@ sudo apt -y install build-essential libc6 m4 gawk autoconf automake flex bison e
 cd $ARCHIVES
 echo -e "\e[1m\e[37m3. Unpack Source Archives\e[0m\e[36m"
 echo -e -n "\e[0m\e[36m   * tar | " 
-for f in *.tar*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
-
+for f in *.tar*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done
 echo -e -n "tgz | " 
 for f in *.tgz*; do tar xfk $f --directory $SOURCES >>$LOGFILES/part3_unpack.log 2>>$LOGFILES/part3_unpack_err.log; done 
 echo -e "lha\e[0m" 
@@ -451,10 +446,9 @@ rm -rf $PREFIX/$TARGET/lib/crt0.o
 rm -rf $PREFIX/$TARGET/libstdc++/include/Makefile
 rm -rf $PREFIX/$TARGET/include/libstdc++/$TARGET 
 
-#Libnix3 (test)
+# PART 10: Libnix3 Update
 cd $SOURCES
 echo -e -n "\e[0m\e[36m   * libnix 2.1-> 3.0 Update:\e[30m headers | "
-#cp -rf $SOURCES/$LIBNIX3_NAME/headers/*.h $PREFIX/$TARGET/libnix/include >>$LOGFILES/part10_libnix3_headers.log 2>>$LOGFILES/part10_libnix3_headers_err.log
 echo -e -n "configure | "
 mkdir -p $BUILDS/build-$LIBNIX3_NAME
 cp -rf $SOURCES/$LIBNIX_NAME/* $BUILDS/build-$LIBNIX3_NAME 
@@ -484,9 +478,7 @@ echo -e "install 3.0\e[0m"
 make -j1 install >>$LOGFILES/part10_libnix3_make.log 2>>$LOGFILES/part10_libnix3_make_err.log
 cd $SOURCES
 
-
-
-# PART 10: Bonus
+# PART 11: SDL Framework
 echo -e "\e[1m\e[37m10. SDL Development Library\e[0m\e[36m"
 
 echo -e -n "\e[0m\e[36m   * $LIBDSL_AMIGA68K_NAME:\e[30m configure | "
