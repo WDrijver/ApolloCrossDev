@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-3.4.6 Install Script v2.7
+# ApolloCrossDev GCC-3.4.6 Install Script v2.8
 # 
 # Installation:
 # 1. Enter Compilers/GCC-3.4.6 directory
@@ -10,7 +10,7 @@
 # 3. Read make-gcc346 for compile instructions
 
 EDITION=GCC-3.4.6
-VERSION=2.7
+VERSION=2.8
 CPU=-j4
 GCCVERSION=3.4.6
 CFLAGS_FOR_TARGET="-O2 -fomit-frame-pointer"
@@ -437,6 +437,7 @@ mv $PREFIX/$TARGET/lib/n* $PREFIX/$TARGET/clib2/lib >>$LOGFILES/part8_clib2_orga
 ln -sf $PREFIX/$TARGET/clib2/lib/ncrt0.o $PREFIX/$TARGET/clib2/lib/crt0.o >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
 mv -f $PREFIX/lib/gcc/$TARGET/3.4.6/specs $PREFIX/lib/gcc/$TARGET/3.4.6/specs.original >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
 cp -f $WORKSPACE/_install/recipes/files.wd/specs.346 $PREFIX/lib/gcc/$TARGET/3.4.6/specs >>$LOGFILES/part8_clib2_organise.log 2>>$LOGFILES/part8_clib2_organise_err.log
+echo $PREFIX/$TARGET"/" >>$PREFIX/lib/gcc/$TARGET/3.4.6/specs
 
 # PART 9: Cleanup
 echo -e "\e[1m\e[37m9. Cleanup\e[0m\e[36m"
@@ -482,6 +483,8 @@ rm -rf $PREFIX/$TARGET/libnix/lib/libnix/*
 echo -e "install 3.0\e[0m"
 make -j1 install >>$LOGFILES/part10_libnix3_make.log 2>>$LOGFILES/part10_libnix3_make_err.log
 cd $SOURCES
+
+
 
 # PART 10: Bonus
 echo -e "\e[1m\e[37m10. SDL Development Library\e[0m\e[36m"
@@ -589,13 +592,14 @@ cd $SOURCES
 echo -e -n "\e[0m\e[36m   * $LIBSDL_TTF_NAME:\e[30m configure | "
 mkdir -p $BUILDS/build-$LIBSDL_TTF_NAME
 cd $BUILDS/build-$LIBSDL_TTF_NAME
+export LIBS="-L$PREFIX/$TARGET/lib -lm -lSDL -lSDL_Apollo -ldebug"
+PATH="$PREFIX/bin:$PATH" \
+PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
 SDL_CONFIG="$PREFIX/bin/sdl-config" \
 FREETYPE_CONFIG="$PREFIX/$TARGET/bin/freetype-config" \
-PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
-PATH="$PREFIX/bin:$PATH" \
-CFLAGS="-I$PREFIX/$TARGET/include/SDL -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -noixemul" \
+CFLAGS="-O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -noixemul -I$PREFIX/$TARGET/include/SDL" \
+DEFS="-D_HAVE_STDINT_H" \
 LDFLAGS="-L$PREFIX/$TARGET/lib" \
-LIB="-lm -lSDL" \
 CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
@@ -605,8 +609,6 @@ $SOURCES/$LIBSDL_TTF_NAME/configure \
     --build=i686-linux-gnu \
     --target=$TARGET \
     >>$LOGFILES/part10_sdl_ttf_configure.log 2>>$LOGFILES/part10_sdl_ttf_configure_err.log  
-echo -e -n "patch | "
-cp -rf $WORKSPACE/_install/recipes/files.wd/SDL_ttf/Makefile $BUILDS/build-$LIBSDL_TTF_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
 echo -e -n "make | "
 make $CPU >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_make_err.log   
 echo -e "install\e[0m"

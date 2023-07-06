@@ -16,6 +16,7 @@
 		],
 		"files.associations": {
 			"pr6713.C": "cpp"
-		}
+		},
+		"C_Cpp.intelliSenseCacheSize": 512
 	}
 }

@@ -96,21 +96,120 @@ LIBTHEORA_NAME=libtheora-1.1.1
 LIBFREETYPE_NAME=freetype-2.13.0
 LIBSDL_TTF_NAME=SDL_ttf-2.0.11
 
+rm -rf $BUILDS/* $LOGFILES/*
+
+# PART 10: Bonus
+echo -e "\e[1m\e[37m10. SDL Development Library\e[0m\e[36m"
+echo -e -n "\e[0m\e[36m   * $LIBDSL_AMIGA68K_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$LIBDSL_AMIGA68K_NAME
+cd $BUILDS/build-$LIBDSL_AMIGA68K_NAME
+cp -rf $SOURCES/$LIBDSL_AMIGA68K_NAME/* $BUILDS/build-$LIBDSL_AMIGA68K_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
+echo -e -n "make | "
+make $CPU clean >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
+make $CPU >>$LOGFILES/part10_sdl_make.log 2>>$LOGFILES/part10_sdl_make_err.log
+echo -e "install\e[0m"
+cp libSDL*.a $PREFIX/$TARGET/lib >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+mkdir -p $PREFIX/$TARGET/include/SDL
+cp include/SDL/* $PREFIX/$TARGET/include/SDL >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+cp -rf $WORKSPACE/_install/recipes/files.wd/SDL/bin/sdl-config $PREFIX/bin >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
+chmod 744 $PREFIX/bin/sdl-config >>$LOGFILES/part10_sdl_install.log 2>>$LOGFILES/part10_sdl_install_err.log
 cd $SOURCES
 
-rm -rf $LOGFILES/* $BUILDS/* $
+echo -e -n "\e[0m\e[36m   * $LIBOGG_NAME:\e[30m patch | "
+cp -rf $WORKSPACE/_install/recipes/files.wd/$LIBOGG_NAME/* $SOURCES/$LIBOGG_NAME >>$LOGFILES/part10_libogg_patch.log 2>>$LOGFILES/part10_libogg_patch_err.log
+echo -e -n "make | "
+mkdir -p $BUILDS/build-$LIBOGG_NAME
+cd $BUILDS/build-$LIBOGG_NAME
+CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
+LDFLAGS="-L$PREFIX/$TARGET/lib"  \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
+AR="$PREFIX/bin/$TARGET-ar" \
+RANLIB="$PREFIX/bin/$TARGET-ranlib" \
+$SOURCES/$LIBOGG_NAME/configure \
+    --prefix=$PREFIX/$TARGET \
+    --host=$TARGET \
+    --build=i686-linux-gnu \
+    --target=$TARGET \
+    >>$LOGFILES/part10_libogg_configure.log 2>>$LOGFILES/part10_libogg_configure_err.log  
+echo -e -n "make | "
+make $CPU >>$LOGFILES/part10_libogg_make.log 2>>$LOGFILES/part10_libogg_make_err.log   
+echo -e "install\e[0m"
+make $CPU install >>$LOGFILES/part10_libogg_make.log 2>>$LOGFILES/part10_libogg_make_err.log   
+cd $SOURCES
+
+echo -e -n "\e[0m\e[36m   * $LIBVORBIS_NAME:\e[30m configure | "
+mkdir -p $BUILDS/build-$LIBVORBIS_NAME
+cd $BUILDS/build-$LIBVORBIS_NAME
+CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
+LDFLAGS="-L$PREFIX/$TARGET/lib"  \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
+$SOURCES/$LIBVORBIS_NAME/configure \
+    --prefix=$PREFIX/$TARGET \
+    --host=$TARGET \
+    --build=i686-linux-gnu \
+    --target=$TARGET \
+    >>$LOGFILES/part10_libvorbis_configure.log 2>>$LOGFILES/part10_libvorbis_configure_err.log  
+echo -e -n "make | "
+make $CPU >>$LOGFILES/part10_libvorbis_make.log 2>>$LOGFILES/part10_libvorbis_make_err.log   
+echo -e "install\e[0m"
+make $CPU install >>$LOGFILES/part10_libvorbis_make.log 2>>$LOGFILES/part10_libvorbis_make_err.log   
+cd $SOURCES
+
+echo -e -n "\e[0m\e[36m   * $LIBTHEORA_NAME:\e[30m patch | "
+cp -rf $WORKSPACE/_install/recipes/files.wd/$LIBTHEORA_NAME/* $SOURCES/$LIBTHEORA_NAME >>$LOGFILES/part10_libtheora_patch.log 2>>$LOGFILES/part10_libtheora_patch_err.log
+echo -e -n "make | "
+mkdir -p $BUILDS/build-$LIBTHEORA_NAME
+cd $BUILDS/build-$LIBTHEORA_NAME
+CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
+LDFLAGS="-L$PREFIX/$TARGET/lib"  \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
+$SOURCES/$LIBTHEORA_NAME/configure \
+    --prefix=$PREFIX/$TARGET \
+    --host=$TARGET \
+    --build=i686-linux-gnu \
+    --target=$TARGET \
+    >>$LOGFILES/part10_libtheora_configure.log 2>>$LOGFILES/part10_libtheora_configure_err.log  
+echo -e -n "make | "
+make $CPU >>$LOGFILES/part10_libtheora_make.log 2>>$LOGFILES/part10_libtheora_make_err.log   
+echo -e "install\e[0m"
+make $CPU install >>$LOGFILES/part10_libtheora_make.log 2>>$LOGFILES/part10_libtheora_make_err.log   
+cd $SOURCES
+
+echo -e -n "\e[0m\e[36m   * $LIBFREETYPE_NAME:\e[30m patch | "
+cp -rf $WORKSPACE/_install/recipes/files.wd/freetype/builds/unix/* $SOURCES/$LIBFREETYPE_NAME/builds/unix >>$LOGFILES/part10_sdl_ttf_patch.log 2>>$LOGFILES/part10_sdl_ttf_patch_err.log
+echo -e -n "configure | "
+mkdir -p $BUILDS/build-$LIBFREETYPE_NAME
+cd $BUILDS/build-$LIBFREETYPE_NAME
+PATH="$PREFIX/bin:$PATH" \
+CFLAGS="-I$PREFIX/$TARGET/include -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
+LDFLAGS="-L$PREFIX/$TARGET/lib"  \
+LIBPNG="libpng-config --libs" \
+LIBPNG_CFLAGS="libpng-config --cflags" \
+LIBPNG_LDFLAGS="libpng-config --ldflags" \
+CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
+$SOURCES/$LIBFREETYPE_NAME/configure \
+    --prefix=$PREFIX/$TARGET \
+    --host=$TARGET \
+    --build=i686-linux-gnu \
+    --target=$TARGET \
+    --enable-freetype-config \
+    >>$LOGFILES/part10_freetype_configure.log 2>>$LOGFILES/part10_freetype_configure_err.log  
+echo -e -n "make | "
+make $CPU >>$LOGFILES/part10_freetype_make.log 2>>$LOGFILES/part10_freetype_make_err.log   
+echo -e "install\e[0m"
+make $CPU install >>$LOGFILES/part10_freetype_make.log 2>>$LOGFILES/part10_freetype_make_err.log 
+cd $SOURCES
 
 echo -e -n "\e[0m\e[36m   * $LIBSDL_TTF_NAME:\e[30m configure | "
 mkdir -p $BUILDS/build-$LIBSDL_TTF_NAME
 cd $BUILDS/build-$LIBSDL_TTF_NAME
-export LIBS="-L$PREFIX/$TARGET/lib -lm -lSDL -lSDL_Apollo -ldebug"
-PATH="$PREFIX/bin:$PATH" \
-PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
 SDL_CONFIG="$PREFIX/bin/sdl-config" \
 FREETYPE_CONFIG="$PREFIX/$TARGET/bin/freetype-config" \
-CFLAGS="-O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -noixemul -I$PREFIX/$TARGET/include/SDL" \
-DEFS="-D_HAVE_STDINT_H" \
+PKG_CONFIG_PATH="$PREFIX/$TARGET/lib/pkgconfig" \
+PATH="$PREFIX/bin:$PATH" \
+CFLAGS="-I$PREFIX/$TARGET/include/SDL -O2 -fomit-frame-pointer -m68040 -m68881 -ffast-math -mnobitfield -noixemul" \
 LDFLAGS="-L$PREFIX/$TARGET/lib" \
+LIB="-lm -lSDL" \
 CC="$PREFIX/bin/$TARGET-gcc -static-libgcc" \
 AR="$PREFIX/bin/$TARGET-ar" \
 RANLIB="$PREFIX/bin/$TARGET-ranlib" \
@@ -120,6 +219,8 @@ $SOURCES/$LIBSDL_TTF_NAME/configure \
     --build=i686-linux-gnu \
     --target=$TARGET \
     >>$LOGFILES/part10_sdl_ttf_configure.log 2>>$LOGFILES/part10_sdl_ttf_configure_err.log  
+echo -e -n "patch | "
+cp -rf $WORKSPACE/_install/recipes/files.wd/SDL_ttf/Makefile $BUILDS/build-$LIBSDL_TTF_NAME >>$LOGFILES/part10_sdl_prepare.log 2>>$LOGFILES/part10_sdl_prepare_err.log
 echo -e -n "make | "
 make $CPU >>$LOGFILES/part10_sdl_ttf_make.log 2>>$LOGFILES/part10_sdl_ttf_make_err.log   
 echo -e "install\e[0m"

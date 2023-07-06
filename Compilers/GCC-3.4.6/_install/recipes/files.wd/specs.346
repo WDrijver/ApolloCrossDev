@@ -92,9 +92,6 @@ cc1 -E %{traditional|ftraditional|traditional-cpp:-traditional-cpp}
 *linker:
 collect2
 
-*target:
-/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/
-
 *link_libgcc:
 %D
 
@@ -128,3 +125,4 @@ collect2
 *link_command:
 %{!fsyntax-only:%{!c:%{!M:%{!MM:%{!E:%{!S:    %(linker) %l %{pie:} %X %{o*} %{A} %{d} %{e*} %{m} %{N} %{n} %{r}    %{s} %{t} %{u*} %{x} %{z} %{Z} %{!A:%{!nostdlib:%{!nostartfiles:%S}}}    %{static:} %{L*} %(link_libgcc) %o %{fprofile-arcs|fprofile-generate:-lgcov}    %{!nostdlib:%{!nodefaultlibs:%(link_gcc_c_sequence)}}    %{!A:%{!nostdlib:%{!nostartfiles:%E}}} %{T*} }}}}}}
 
+*target:
