@@ -1,10 +1,6 @@
 {
 	"folders": [
 		{
-			"name": "ApolloSVN",
-			"path": "../ApolloSVN"
-		},
-		{
 			"name": "ApolloCrossDev",
 			"path": "."
 		}
