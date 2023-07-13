@@ -88,7 +88,8 @@
 			"semaphore": "cpp",
 			"stop_token": "cpp",
 			"thread": "cpp",
-			"cfenv": "cpp"
+			"cfenv": "cpp",
+			"*.def": "cpp"
 		},
 		"C_Cpp.intelliSenseCacheSize": 512
 	}
