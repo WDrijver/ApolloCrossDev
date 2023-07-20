@@ -89,7 +89,8 @@
 			"stop_token": "cpp",
 			"thread": "cpp",
 			"cfenv": "cpp",
-			"*.def": "cpp"
+			"*.def": "cpp",
+			"*.x": "c"
 		},
 		"C_Cpp.intelliSenseCacheSize": 512
 	}
