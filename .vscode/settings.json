@@ -1,3 +1,4 @@
 {
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "cmake.sourceDirectory": "/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/_sources/freetype-2.13.0"
 }
