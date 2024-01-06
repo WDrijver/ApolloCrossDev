@@ -59,7 +59,7 @@ echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
 make all -j3 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4.log
 
 # PART 5: Patch Amiga-GCC with additional Apollo Patches not merged into Bebbo Source
-echo -e "\e[1m\e[37m3. Patch Amiga-GCC with additional Apollo Opcodes not yet adopted by (Stefan -Bebbo- Franke)\e[0m\e[36m"
+echo -e "\e[1m\e[37m5. Patch Amiga-GCC with additional Apollo Opcodes not yet adopted by (Stefan -Bebbo- Franke)\e[0m\e[36m"
 cd $SOURCES/amiga-gcc/projects/binutils/opcodes
 patch m68k-opc.c $PATCHES/m68k-opc.c.diff
 cd $SOURCES/amiga-gcc/projects/binutils/gas/config
@@ -69,24 +69,23 @@ patch m68k.c $PATCHES/m68k.c.diff
 cd $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k
 patch m68k.h $PATCHES/m68k.h.diff
 cd $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k
-patch m68k.md $PATCHES/m68k.md.diff
+patch -R m68k.md $PATCHES/m68k.md.diff
 cd $SOURCES
 
 # Part 6: Compile Amiga-GCC - Second Run
-echo -e "\e[1m\e[37m4. Compile Amiga-GCC - Second Run\e[0m\e[36m"
+echo -e "\e[1m\e[37m6. Compile Amiga-GCC - Second Run\e[0m\e[36m"
 cd $SOURCES/amiga-gcc
 echo -e "\e[0m\e[36m   * Build Amiga-GCC\e[0m"
 make all -j3 PREFIX=$PREFIX >>$LOGFILES/part6.log 2>>$LOGFILES/part6.log
-cd ..
 
 # Part 7: SDL
-echo -e "\e[1m\e[37m4. Adding SDL include and lib files\e[0m\e[36m"
+echo -e "\e[1m\e[37m7. Adding SDL include and lib files\e[0m\e[36m"
 cd $ARCHIVES/SDL
 cp -r include/SDL $PREFIX/m68k-amigaos/include  >>$LOGFILES/part7.log 2>>$LOGFILES/part7.log
 cp lib/* $PREFIX/m68k-amigaos/lib  >>$LOGFILES/part7.log 2>>$LOGFILES/part7.log
 
 # PART 8: Cleanup
-echo -e "\e[1m\e[37m5. Cleanup\e[0m\e[36m"
+echo -e "\e[1m\e[37m8. Cleanup\e[0m\e[36m"
 cd $PREFIX
 rm -rf info
 rm -rf man
