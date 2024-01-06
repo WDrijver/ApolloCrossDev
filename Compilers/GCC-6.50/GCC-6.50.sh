@@ -47,7 +47,17 @@ sudo apt -y install build-essential gawk flex bison expect dejagnu texinfo lhasa
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
 git clone --progress https://github.com/bebbo/amiga-gcc 2>>$LOGFILES/part3.log
 
-# PART 4: Patch Amiga-GCC with additional Apollo Patches not merged into Bebbo Source
+# Part 4: Compile Amiga-GCC - First Run
+echo -e "\e[1m\e[37m4. Compile Amiga-GCC - First Run\e[0m\e[36m"
+cd $SOURCES/amiga-gcc
+echo -e "\e[0m\e[36m   * Clean Amiga-GCC\e[0m"
+make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4.log
+echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
+make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4.log
+echo -e "\e[0m\e[36m   * Build Amiga-GCC\e[0m"
+make all -j3 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4.log
+
+# PART 5: Patch Amiga-GCC with additional Apollo Patches not merged into Bebbo Source
 echo -e "\e[1m\e[37m3. Patch Amiga-GCC with additional Apollo Opcodes not yet adopted by (Stefan -Bebbo- Franke)\e[0m\e[36m"
 cd $SOURCES/amiga-gcc/projects/binutils/opcodes
 patch m68k-opc.c $PATCHES/m68k-opc.c.diff
@@ -61,18 +71,14 @@ cd $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k
 patch m68k.md $PATCHES/m68k.md.diff
 cd $SOURCES
 
-# Part 5: Compile Amiga-GCC
-echo -e "\e[1m\e[37m4. Compile Amiga-GCC\e[0m\e[36m"
-cd amiga-gcc
-echo -e "\e[0m\e[36m   * Clean Amiga-GCC\e[0m"
-make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4.log
-echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
-make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4.log
+# Part 6: Compile Amiga-GCC - Second Run
+echo -e "\e[1m\e[37m4. Compile Amiga-GCC - Second Run\e[0m\e[36m"
+cd $SOURCES/amiga-gcc
 echo -e "\e[0m\e[36m   * Build Amiga-GCC\e[0m"
-make all -j3 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4.log
+make all -j3 PREFIX=$PREFIX >>$LOGFILES/part6.log 2>>$LOGFILES/part6.log
 cd ..
 
-# PART 6: Cleanup
+# PART 7: Cleanup
 echo -e "\e[1m\e[37m5. Cleanup\e[0m\e[36m"
 cd $PREFIX
 rm -rf info
