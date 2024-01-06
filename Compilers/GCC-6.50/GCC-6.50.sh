@@ -10,10 +10,11 @@
 # 3. Read make-gcc650 for compile instructions
 
 EDITION=GCC-6.50
-VERSION=0.6
+VERSION=0.7
 CPU=-j16
 
 WORKSPACE="`pwd`"
+ARCHIVES=$WORKSPACE/_archives
 SOURCES=$WORKSPACE/_sources
 PATCHES=$WORKSPACE/_install/patches
 LOGFILES=$WORKSPACE/_logs
@@ -54,7 +55,7 @@ echo -e "\e[0m\e[36m   * Clean Amiga-GCC\e[0m"
 make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4.log
 echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4.log
-echo -e "\e[0m\e[36m   * Build Amiga-GCC\e[0m"
+echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
 make all -j3 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4.log
 
 # PART 5: Patch Amiga-GCC with additional Apollo Patches not merged into Bebbo Source
@@ -78,7 +79,13 @@ echo -e "\e[0m\e[36m   * Build Amiga-GCC\e[0m"
 make all -j3 PREFIX=$PREFIX >>$LOGFILES/part6.log 2>>$LOGFILES/part6.log
 cd ..
 
-# PART 7: Cleanup
+# Part 7: SDL
+echo -e "\e[1m\e[37m4. Adding SDL include and lib files\e[0m\e[36m"
+cd $ARCHIVES/SDL
+cp -r include/SDL $PREFIX/m68k-amigaos/include  >>$LOGFILES/part7.log 2>>$LOGFILES/part7.log
+cp lib/* $PREFIX/m68k-amigaos/lib  >>$LOGFILES/part7.log 2>>$LOGFILES/part7.log
+
+# PART 8: Cleanup
 echo -e "\e[1m\e[37m5. Cleanup\e[0m\e[36m"
 cd $PREFIX
 rm -rf info
