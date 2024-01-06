@@ -93,6 +93,8 @@
 			"*.def": "cpp",
 			"*.x": "c"
 		},
-		"C_Cpp.intelliSenseCacheSize": 512
+		"C_Cpp.intelliSenseCacheSize": 512,
+		"search.useIgnoreFiles": false,
+		"explorer.excludeGitIgnore": true
 	}
 }
