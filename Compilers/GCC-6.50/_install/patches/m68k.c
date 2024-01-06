@@ -3519,7 +3519,7 @@ bool
 valid_mov3q_const (HOST_WIDE_INT i)
 {
   return TARGET_ISAB && (i == -1 || IN_RANGE (i, 1, 7));
-//  return (TARGET_ISAB ||TUNE_68080) && (i == -1 || IN_RANGE (i, 1, 7));  // APOLLO 68080 Future Feature
+  //eturn (TARGET_68080 || TARGET_ISAB) && (i == -1 || IN_RANGE (i, 1, 7)); // Apollo 68080 Future Feauture
 }
 
 /* Return an instruction to move CONST_INT OPERANDS[1] into OPERANDS[0].
@@ -5701,12 +5701,12 @@ const char *
 output_andsi3 (rtx *operands)
 {
   int logval;
-  
-  if (TUNE_68080 &&  (DATA_REG_P (operands[0])) && (INTVAL (operands[2]) == 0xff))            // APOLLO
-  return "extub%.l %0";			                                                                  // APOLLO
-  if (TUNE_68080 &&   (DATA_REG_P (operands[0])) &&  (INTVAL (operands[2]) == 0xffff))        // APOLLO
-  return "extuw%.l %0";                                                                       // APOLLO
-  return "and%.l %2,%0";                                                                      // APOLLO
+
+  if (TUNE_68080 &&  (DATA_REG_P (operands[0])) && (INTVAL (operands[2]) == 0xff))            // Apollo 68080
+  return "extub%.l %0";			                                                                  // Apollo 68080
+  if (TUNE_68080 &&   (DATA_REG_P (operands[0])) &&  (INTVAL (operands[2]) == 0xffff))        // Apollo 68080
+  return "extuw%.l %0";                                                                       // Apollo 68080
+  return "and%.l %2,%0";                                                                      // Apollo 68080
   
   if (GET_CODE (operands[2]) == CONST_INT
       && (INTVAL (operands[2]) | 0xffff) == -1

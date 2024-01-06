@@ -42,7 +42,7 @@ const struct m68k_opcode m68k_opcodes[] =
 
 {"addib", 4,	one(0003000),	one(0177700), "#b$s", m68000up },
 {"addiw", 4,	one(0003100),	one(0177700), "#w$s", m68000up },
-{"addiwl",4,    one(0003300),   one(0177700), "#w$s", m68080 }, // 68080 APOLLO
+{"addiwl",4,   one(0003300),   one(0177700), "#w$s", m68080 }, // 68080 APOLLO
 {"addil", 6,	one(0003200),	one(0177700), "#l$s", m68000up },
 {"addil", 6,	one(0003200),	one(0177700), "#lDs", mcfisa_a },
 
@@ -338,12 +338,11 @@ const struct m68k_opcode m68k_opcodes[] =
 {"dbmi", 2,	one(0055710),	one(0177770), "DsBw", m68000up },
 {"dbne", 2,	one(0053310),	one(0177770), "DsBw", m68000up },
 {"dbpl", 2,	one(0055310),	one(0177770), "DsBw", m68000up },
-
-{"dbral", 2, one(0050710), one(0177770), "DsB~", m68080 },   // APOLLO 68080
-
 {"dbt", 2,	one(0050310),	one(0177770), "DsBw", m68000up },
 {"dbvc", 2,	one(0054310),	one(0177770), "DsBw", m68000up },
 {"dbvs", 2,	one(0054710),	one(0177770), "DsBw", m68000up },
+
+{"dbral", 2, one(0050710), one(0177770), "DsB~", m68080 },   // APOLLO 68080 DBRAL
 
 {"divsw", 2,	one(0100700),	one(0170700), ";wDd", m68000up | mcfhwdiv },
 
@@ -1559,15 +1558,6 @@ const struct m68k_opcode m68k_opcodes[] =
 
 	jtc@cygnus.com - 97/01/24.  */
 
-/*
-{"moviwl",4, one(0121000), one(0177700), "#w$s", m68080 },  // Apollo 68080 Future Feature
-{"mov3ql",2, one(0120100), one(0170700), "xd%s", m68080 },  // Apollo 68080 Future Feature
-{"mvsb",  2, one(0120400), one(0170700), "b$s",  m68080 },  // Apollo 68080 Future Feature
-{"mvsw",  2, one(0120500), one(0170700), "w$s",  m68080 },  // Apollo 68080 Future Feature
-{"mvzb",  2, one(0120600), one(0170700), "b$s",  m68080 },  // Apollo 68080 Future Feature
-{"mvzw",  2, one(0120700), one(0170700), "w$s",  m68080 },  // Apollo 68080 Future Feature
-*/
-
 {"moveal", 2,	one(0020100),	one(0170700), "*lAd", m68000up | mcfisa_a },
 {"moveaw", 2,	one(0030100),	one(0170700), "*wAd", m68000up | mcfisa_a },
 
@@ -1687,6 +1677,14 @@ const struct m68k_opcode m68k_opcodes[] =
 {"mvsw", 2,	one(0070500),	one(0170700), "*wDd", mcfisa_b | mcfisa_c },
 {"mvzb", 2,	one(0070600),	one(0170700), "*bDd", mcfisa_b | mcfisa_c },
 {"mvzw", 2,	one(0070700),	one(0170700), "*wDd", mcfisa_b | mcfisa_c },
+
+//{"moviwl",4,    one(0121000),   one(0177700), "#w$s", m68080 }, // Apollo 68080 Future Release
+//{"mov3ql", 2,   one(0120100),   one(0170700), "xd%s", m68080 }, // Apollo 68080 Future Release
+//{"mvsb", 2,     one(0120400),   one(0170700), "*bDd", m68080 }, // Apollo 68080 Future Release
+//{"mvsw", 2,     one(0120500),   one(0170700), "*wDd", m68080 }, // Apollo 68080 Future Release
+//{"mvzb", 2,     one(0120600),   one(0170700), "*bDd", m68080 }, // Apollo 68080 Future Release
+//{"mvzw", 2,     one(0120700),   one(0170700), "*wDd", m68080 }, // Apollo 68080 Future Release
+
 
 {"movesb", 4,	two(0007000, 0),     two(0177700, 07777), "~sR1", m68010up },
 {"movesb", 4,	two(0007000, 04000), two(0177700, 07777), "R1~s", m68010up },
