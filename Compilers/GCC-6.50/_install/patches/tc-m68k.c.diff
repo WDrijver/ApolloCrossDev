@@ -1,0 +1,8 @@
+3299a3300,3306
+> 
+>       case '~':                                               // APOLLO 68080 DBRAL
+>         opP->disp.exp.X_add_number |=1;                       // APOLLO 68080 DBRAL
+>         add_fix ('w', &opP->disp, 1, 0, opP->disp.baserel);   // APOLLO 68080 DBRAL
+>         addword (0);                                          // APOLLO 68080 DBRAL
+>         break;                                                // APOLLO 68080 DBRAL
+> 

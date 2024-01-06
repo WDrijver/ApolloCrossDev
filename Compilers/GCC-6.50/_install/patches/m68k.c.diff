@@ -1,0 +1,10 @@
+3521a3522
+>   //eturn (TARGET_68080 || TARGET_ISAB) && (i == -1 || IN_RANGE (i, 1, 7)); // Apollo 68080 Future Feauture
+5702a5704,5710
+> 
+>   if (TUNE_68080 &&  (DATA_REG_P (operands[0])) && (INTVAL (operands[2]) == 0xff))            // Apollo 68080
+>   return "extub%.l %0";			                                                                  // Apollo 68080
+>   if (TUNE_68080 &&   (DATA_REG_P (operands[0])) &&  (INTVAL (operands[2]) == 0xffff))        // Apollo 68080
+>   return "extuw%.l %0";                                                                       // Apollo 68080
+>   return "and%.l %2,%0";                                                                      // Apollo 68080
+>   

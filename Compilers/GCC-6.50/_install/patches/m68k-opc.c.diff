@@ -1,0 +1,20 @@
+45c45
+< {"addiwl",4,    one(0003300),   one(0177700), "#w$s", m68080 }, // 68080 APOLLO
+---
+> {"addiwl",4,   one(0003300),   one(0177700), "#w$s", m68080 }, // 68080 APOLLO
+344a345,346
+> {"dbral", 2, one(0050710), one(0177770), "DsB~", m68080 },   // APOLLO 68080 DBRAL
+> 
+396a399,401
+> {"extubl", 2,   one(0045700),   one(0177770), "Ds", m68080 },  // 68080 APOLLO
+> {"extuwl", 2,   one(0046700),   one(0177770), "Ds", m68080 },  // 68080 APOLLO
+> 
+1674a1680,1687
+> 
+> //{"moviwl",4,    one(0121000),   one(0177700), "#w$s", m68080 }, // Apollo 68080 Future Release
+> //{"mov3ql", 2,   one(0120100),   one(0170700), "xd%s", m68080 }, // Apollo 68080 Future Release
+> //{"mvsb", 2,     one(0120400),   one(0170700), "*bDd", m68080 }, // Apollo 68080 Future Release
+> //{"mvsw", 2,     one(0120500),   one(0170700), "*wDd", m68080 }, // Apollo 68080 Future Release
+> //{"mvzb", 2,     one(0120600),   one(0170700), "*bDd", m68080 }, // Apollo 68080 Future Release
+> //{"mvzw", 2,     one(0120700),   one(0170700), "*wDd", m68080 }, // Apollo 68080 Future Release
+> 

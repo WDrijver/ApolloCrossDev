@@ -1,0 +1,44 @@
+1819c1819
+<   "!TARGET_COLDFIRE"
+---
+>   "!TARGET_COLDFIRE && !TARGET_68080"
+1825c1825
+<   "!TARGET_COLDFIRE"
+---
+>   "!TARGET_COLDFIRE && !TARGET_68080"
+3779a3780,3790
+>   if ( TUNE_68080 &&
+>          DATA_REG_P (operands[0])
+>       && GET_CODE (operands[2]) == CONST_INT)
+>     {
+>       if (INTVAL (operands[2]) == 0x000000ff)
+>         return "mvz%.b %0,%0";
+>       else if (INTVAL (operands[2]) == 0x0000ffff)
+>         return "mvz%.w %0,%0";
+>     }
+> 
+> 
+3797a3809,3817
+>   if (
+>          DATA_REG_P (operands[0])
+>       && GET_CODE (operands[2]) == CONST_INT)
+>     {
+>       if (INTVAL (operands[2]) == 0x000000ff)
+>         return "mvz%.b %0,%0";
+>       else if (INTVAL (operands[2]) == 0x0000ffff)
+>         return "mvz%.w %0,%0";
+>     }
+3805c3825
+<   "TARGET_COLDFIRE"
+---
+>   "TARGET_COLDFIRE || TARGET_68080"
+7235,7237c7255,7259
+< 	  if (TUNE_68060 || TUNE_68080)
+< 		  return "subq%.l #1,%0\;jcc %l1";
+<       return "dbra %0,%l1\;clr%.w %0\;subq%.l #1,%0\;jcc %l1";
+---
+>     if (TUNE_68080)
+>             return "dbral %0,%l1";                 // APOLLO 68080 DBRAL
+>     if (TUNE_68060)
+>             return "subq%.l #1,%0;jcc %l1";
+>     return "dbra %0,%l1;clr%.w %0;subq%.l #1,%0;jcc %l1";
