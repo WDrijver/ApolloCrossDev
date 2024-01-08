@@ -80,9 +80,9 @@ make all -j3 PREFIX=$PREFIX >>$LOGFILES/part6.log 2>>$LOGFILES/part6.log
 
 # Part 7: SDL
 echo -e "\e[1m\e[37m7. Adding SDL include and lib files\e[0m\e[36m"
-cd $ARCHIVES/SDL
-cp -r include/SDL $PREFIX/m68k-amigaos/include  >>$LOGFILES/part7.log 2>>$LOGFILES/part7.log
-cp lib/* $PREFIX/m68k-amigaos/lib  >>$LOGFILES/part7.log 2>>$LOGFILES/part7.log
+#cd $ARCHIVES/SDL
+#cp -r include/SDL $PREFIX/m68k-amigaos/include  >>$LOGFILES/part7.log 2>>$LOGFILES/part7.log
+#cp lib/* $PREFIX/m68k-amigaos/lib  >>$LOGFILES/part7.log 2>>$LOGFILES/part7.log
 
 # PART 8: Cleanup
 echo -e "\e[1m\e[37m8. Cleanup\e[0m\e[36m"
