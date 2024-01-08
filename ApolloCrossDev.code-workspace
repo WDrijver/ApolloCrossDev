@@ -91,7 +91,9 @@
 			"thread": "cpp",
 			"cfenv": "cpp",
 			"*.def": "cpp",
-			"*.x": "c"
+			"*.x": "c",
+			"*.inc": "cpp",
+			"vampire.h": "c"
 		},
 		"C_Cpp.intelliSenseCacheSize": 512,
 		"search.useIgnoreFiles": false,
