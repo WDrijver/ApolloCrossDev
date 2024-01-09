@@ -394,10 +394,10 @@ const struct m68k_opcode m68k_opcodes[] =
 
 {"extw", 2,	one(0044200),	one(0177770), "Ds", m68000up|mcfisa_a },
 {"extl", 2,	one(0044300),	one(0177770), "Ds", m68000up|mcfisa_a },
-{"extbl", 2,	one(0044700),	one(0177770), "Ds", m68020up | cpu32 | fido_a | mcfisa_a },
-
 {"extubl", 2,   one(0045700),   one(0177770), "Ds", m68080 },  // 68080 APOLLO
 {"extuwl", 2,   one(0046700),   one(0177770), "Ds", m68080 },  // 68080 APOLLO
+
+{"extbl", 2,	one(0044700),	one(0177770), "Ds", m68020up | cpu32 | fido_a | mcfisa_a },
 
 {"ff1", 2,   	one(0002300), one(0177770), "Ds", mcfisa_aa | mcfisa_c},
 
@@ -1675,16 +1675,16 @@ const struct m68k_opcode m68k_opcodes[] =
 {"mov3ql", 2,	one(0120500),	one(0170700), "xd%s", mcfisa_b | mcfisa_c },
 {"mvsb", 2,	one(0070400),	one(0170700), "*bDd", mcfisa_b | mcfisa_c },
 {"mvsw", 2,	one(0070500),	one(0170700), "*wDd", mcfisa_b | mcfisa_c },
+
+{"moviwl",4,    one(0121000),   one(0177700), "#w$s", m68080 }, // Apollo 68080 Development Core Needed
+{"mov3ql", 2,   one(0120100),   one(0170700), "xd%s", m68080 }, // Apollo 68080 Development Core Needed
+{"mvsb", 2,     one(0120400),   one(0170700), "*bDd", m68080 }, // Apollo 68080 Development Core Needed
+{"mvsw", 2,     one(0120500),   one(0170700), "*wDd", m68080 }, // Apollo 68080 Development Core Needed
+{"mvzb", 2,     one(0120600),   one(0170700), "*bDd", m68080 }, // Apollo 68080 Development Core Needed
+{"mvzw", 2,     one(0120700),   one(0170700), "*wDd", m68080 }, // Apollo 68080 Development Core Needed
+
 {"mvzb", 2,	one(0070600),	one(0170700), "*bDd", mcfisa_b | mcfisa_c },
 {"mvzw", 2,	one(0070700),	one(0170700), "*wDd", mcfisa_b | mcfisa_c },
-
-//{"moviwl",4,    one(0121000),   one(0177700), "#w$s", m68080 }, // Apollo 68080 Future Release
-//{"mov3ql", 2,   one(0120100),   one(0170700), "xd%s", m68080 }, // Apollo 68080 Future Release
-//{"mvsb", 2,     one(0120400),   one(0170700), "*bDd", m68080 }, // Apollo 68080 Future Release
-//{"mvsw", 2,     one(0120500),   one(0170700), "*wDd", m68080 }, // Apollo 68080 Future Release
-//{"mvzb", 2,     one(0120600),   one(0170700), "*bDd", m68080 }, // Apollo 68080 Future Release
-//{"mvzw", 2,     one(0120700),   one(0170700), "*wDd", m68080 }, // Apollo 68080 Future Release
-
 
 {"movesb", 4,	two(0007000, 0),     two(0177700, 07777), "~sR1", m68010up },
 {"movesb", 4,	two(0007000, 04000), two(0177700, 07777), "R1~s", m68010up },

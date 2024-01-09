@@ -1,10 +1,52 @@
-3521a3522
->   //eturn (TARGET_68080 || TARGET_ISAB) && (i == -1 || IN_RANGE (i, 1, 7)); // Apollo 68080 Future Feauture
-5702a5704,5710
-> 
->   if (TUNE_68080 &&  (DATA_REG_P (operands[0])) && (INTVAL (operands[2]) == 0xff))            // Apollo 68080
->   return "extub%.l %0";			                                                                  // Apollo 68080
->   if (TUNE_68080 &&   (DATA_REG_P (operands[0])) &&  (INTVAL (operands[2]) == 0xffff))        // Apollo 68080
->   return "extuw%.l %0";                                                                       // Apollo 68080
->   return "and%.l %2,%0";                                                                      // Apollo 68080
->   
+3521,3522c3521
+<   // return TARGET_ISAB && (i == -1 || IN_RANGE (i, 1, 7));
+<   return (TARGET_68080 || TARGET_ISAB) && (i == -1 || IN_RANGE (i, 1, 7)); // Apollo 68080 Development Core Needed
+---
+>   return TARGET_ISAB && (i == -1 || IN_RANGE (i, 1, 7));
+3536,3540c3535,3539
+<   if (src == 0 && (DATA_REG_P (dest) ))         // For clear DN MOVEQ is best
+<     return "moveq #0,%0";
+<   else if (src == 0 && MEM_P (dest)             // For memory use CLR
+<                                                 // but not for IO register on 68000
+<           && ((TARGET_68010  TARGET_COLDFIRE)  !(MEM_P (dest) && MEM_VOLATILE_P (dest))))
+---
+>   if (src == 0
+>       && (DATA_REG_P (dest) || MEM_P (dest))
+>       /* clr insns on 68000 read before writing.  */
+>       && ((TARGET_68010 || TARGET_COLDFIRE)
+> 	  || !(MEM_P (dest) && MEM_VOLATILE_P (dest))))
+3544,3549c3543,3544
+<   else if (src == 0 && ADDRESS_REG_P (dest))    // For AN always use SUBA
+<     return "suba%.l %0,%0";
+<   else if (DATA_REG_P (dest) && IN_RANGE (src, -0x80, 0x7f))
+<     return "moveq %1,%0";
+<   else if (DATA_REG_P (dest) && IN_RANGE (src, -0x8000, 0x7fff) && TARGET_68080)      // Apollo 68080
+<     return "moviw%.l %1,%0";
+---
+>   else if (src == 0 && ADDRESS_REG_P (dest))
+>     return "sub%.l %0,%0";
+3559,3561c3554,3556
+<            && GET_CODE (XEXP (dest, 0)) == PRE_DEC
+<            && REGNO (XEXP (XEXP (dest, 0), 0)) == STACK_POINTER_REGNUM
+<            && IN_RANGE (src, -0x8000, 0x7fff))
+---
+> 	   && GET_CODE (XEXP (dest, 0)) == PRE_DEC
+> 	   && REGNO (XEXP (XEXP (dest, 0), 0)) == STACK_POINTER_REGNUM
+> 	   && IN_RANGE (src, -0x8000, 0x7fff))
+3567,3572c3562
+<   else if (IN_RANGE (src, -0x8000, 0x7fff) && TARGET_68080){                        // Apollo 68080                 
+<     return "moviw%.l %1,%0";
+<   }else if (DATA_REG_P (dest) && IN_RANGE (src, 0, 0xFfff) && TARGET_68080){        // Apollo 68080
+<     return "movzw%.l %1,%0";
+<   }
+<     return "move%.l %1,%0";
+---
+>   return "move%.l %1,%0";
+5713,5719d5702
+< 
+<   if (TUNE_68080 &&  (DATA_REG_P (operands[0])) && (INTVAL (operands[2]) == 0xff))            // Apollo 68080
+<   return "extub%.l %0";			                                                                  // Apollo 68080
+<   if (TUNE_68080 &&   (DATA_REG_P (operands[0])) &&  (INTVAL (operands[2]) == 0xffff))        // Apollo 68080
+<   return "extuw%.l %0";                                                                       // Apollo 68080
+<   return "and%.l %2,%0";                                                                      // Apollo 68080
+<   

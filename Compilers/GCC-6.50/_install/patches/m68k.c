@@ -3518,8 +3518,8 @@ output_move_const_into_data_reg (rtx *operands)
 bool
 valid_mov3q_const (HOST_WIDE_INT i)
 {
-  return TARGET_ISAB && (i == -1 || IN_RANGE (i, 1, 7));
-  //eturn (TARGET_68080 || TARGET_ISAB) && (i == -1 || IN_RANGE (i, 1, 7)); // Apollo 68080 Future Feauture
+  // return TARGET_ISAB && (i == -1 || IN_RANGE (i, 1, 7));
+  return (TARGET_68080 || TARGET_ISAB) && (i == -1 || IN_RANGE (i, 1, 7)); // Apollo 68080 Development Core Needed
 }
 
 /* Return an instruction to move CONST_INT OPERANDS[1] into OPERANDS[0].
@@ -3533,16 +3533,20 @@ output_move_simode_const (rtx *operands)
 
   dest = operands[0];
   src = INTVAL (operands[1]);
-  if (src == 0
-      && (DATA_REG_P (dest) || MEM_P (dest))
-      /* clr insns on 68000 read before writing.  */
-      && ((TARGET_68010 || TARGET_COLDFIRE)
-	  || !(MEM_P (dest) && MEM_VOLATILE_P (dest))))
+  if (src == 0 && (DATA_REG_P (dest) ))         // For clear DN MOVEQ is best
+    return "moveq #0,%0";
+  else if (src == 0 && MEM_P (dest)             // For memory use CLR
+                                                // but not for IO register on 68000
+          && ((TARGET_68010  TARGET_COLDFIRE)  !(MEM_P (dest) && MEM_VOLATILE_P (dest))))
     return "clr%.l %0";
   else if (GET_MODE (dest) == SImode && valid_mov3q_const (src))
     return "mov3q%.l %1,%0";
-  else if (src == 0 && ADDRESS_REG_P (dest))
-    return "sub%.l %0,%0";
+  else if (src == 0 && ADDRESS_REG_P (dest))    // For AN always use SUBA
+    return "suba%.l %0,%0";
+  else if (DATA_REG_P (dest) && IN_RANGE (src, -0x80, 0x7f))
+    return "moveq %1,%0";
+  else if (DATA_REG_P (dest) && IN_RANGE (src, -0x8000, 0x7fff) && TARGET_68080)      // Apollo 68080
+    return "moviw%.l %1,%0";
   else if (DATA_REG_P (dest))
     return output_move_const_into_data_reg (operands);
   else if (ADDRESS_REG_P (dest) && IN_RANGE (src, -0x8000, 0x7fff))
@@ -3552,15 +3556,20 @@ output_move_simode_const (rtx *operands)
       return "move%.w %1,%0";
     }
   else if (MEM_P (dest)
-	   && GET_CODE (XEXP (dest, 0)) == PRE_DEC
-	   && REGNO (XEXP (XEXP (dest, 0), 0)) == STACK_POINTER_REGNUM
-	   && IN_RANGE (src, -0x8000, 0x7fff))
+           && GET_CODE (XEXP (dest, 0)) == PRE_DEC
+           && REGNO (XEXP (XEXP (dest, 0), 0)) == STACK_POINTER_REGNUM
+           && IN_RANGE (src, -0x8000, 0x7fff))
     {
       if (valid_mov3q_const (src))
         return "mov3q%.l %1,%-";
       return "pea %a1";
     }
-  return "move%.l %1,%0";
+  else if (IN_RANGE (src, -0x8000, 0x7fff) && TARGET_68080){                        // Apollo 68080                 
+    return "moviw%.l %1,%0";
+  }else if (DATA_REG_P (dest) && IN_RANGE (src, 0, 0xFfff) && TARGET_68080){        // Apollo 68080
+    return "movzw%.l %1,%0";
+  }
+    return "move%.l %1,%0";
 }
 
 const char *
