@@ -2,14 +2,13 @@
 < {"addiwl",4,   one(0003300),   one(0177700), "#w$s", m68080 }, // 68080 APOLLO
 ---
 > {"addiwl",4,    one(0003300),   one(0177700), "#w$s", m68080 }, // 68080 APOLLO
-345,346d344
-< {"dbral", 2, one(0050710), one(0177770), "DsB~", m68080 },   // APOLLO 68080 DBRAL
-< 
-397,399d394
+260a261
+> {"clrq", 2,     one(0127000),   one(0177700), "$s", m68080 }, // APOLLO 68080
+397,399d397
 < {"extubl", 2,   one(0045700),   one(0177770), "Ds", m68080 },  // 68080 APOLLO
 < {"extuwl", 2,   one(0046700),   one(0177770), "Ds", m68080 },  // 68080 APOLLO
 < 
-1678,1685d1672
+1678,1685d1675
 < 
 < {"moviwl",4,    one(0121000),   one(0177700), "#w$s", m68080 }, // Apollo 68080 Development Core Needed
 < {"mov3ql", 2,   one(0120100),   one(0170700), "xd%s", m68080 }, // Apollo 68080 Development Core Needed

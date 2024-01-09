@@ -32,22 +32,22 @@ echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
 echo -e "\e[1m\e[37m5. Restore Amiga-GCC original m68k files before applying Patches\e[0m\e[36m"
 cp -f $PATCHES/m68k-opc.c.original $SOURCES/amiga-gcc/projects/binutils/opcodes/m68k-opc.c 
 cp -f $PATCHES/tc-m68k.c.original $SOURCES/amiga-gcc/projects/binutils/gas/config/tc-m68k.c 
-cp -f $PATCHES/m68k.c.original $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k.c 
-cp -f $PATCHES/m68k.h.original $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k.h 
-cd -f $PATCHES/m68k.md.original $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k.md 
+cp -f $PATCHES/m68k.c.original $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k/m68k.c 
+cp -f $PATCHES/m68k.h.original $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k/m68k.h 
+cp -f $PATCHES/m68k.md.original $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k/m68k.md 
 
 # PART 5: Patch Amiga-GCC with additional Apollo Patches not merged into Bebbo Source
-echo -e "\e[1m\e[37m5. Patch Amiga-GCC with additional Apollo Opcodes not yet adopted by (Stefan -Bebbo- Franke)\e[0m\e[36m"
+echo -e "\e[1m\e[37m5. Patch Amiga-GCC with additional Apollo Opcodes not yet adopted\e[0m\e[36m"
 cd $SOURCES/amiga-gcc/projects/binutils/opcodes
-patch m68k-opc.c $PATCHES/m68k-opc.c.diff
+patch -R m68k-opc.c $PATCHES/m68k-opc.c.diff
 cd $SOURCES/amiga-gcc/projects/binutils/gas/config
-patch tc-m68k.c $PATCHES/tc-m68k.c.diff
+patch -R tc-m68k.c $PATCHES/tc-m68k.c.diff
 cd $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k
-patch m68k.c $PATCHES/m68k.c.diff
+patch -R m68k.c $PATCHES/m68k.c.diff
 cd $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k
-patch m68k.h $PATCHES/m68k.h.diff
+patch -R m68k.h $PATCHES/m68k.h.diff
 cd $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k
-patch -R m68k.md $PATCHES/m68k.md.diff
+patch -R -R m68k.md $PATCHES/m68k.md.diff
 cd $SOURCES
 
 # Part 6: Compile Amiga-GCC - Second Run

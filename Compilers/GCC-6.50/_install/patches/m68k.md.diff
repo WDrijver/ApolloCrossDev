@@ -1,12 +1,23 @@
-1819c1819
+1588a1589,1598
+> ;; Special case of qword move when source is zero for 68080.
+> (define_insn "*movdi_const0_68080"
+>   [(set (match_operand:DI 0 "movsi_const0_operand" "=m")
+> 	(const_int 0))]
+>   "TUNE_68080"
+>   "@
+>    clr%.q %0"
+>   [(set_attr "type" "clr_l")
+>    (set_attr "opy" "*")])
+> 
+1819c1829
 <   "!TARGET_COLDFIRE && !TARGET_68080"
 ---
 >   "!TARGET_COLDFIRE"
-1825c1825
+1825c1835
 <   "!TARGET_COLDFIRE && !TARGET_68080"
 ---
 >   "!TARGET_COLDFIRE"
-3780,3790d3779
+3780,3790d3789
 <   if ( TUNE_68080 &&
 <          DATA_REG_P (operands[0])
 <       && GET_CODE (operands[2]) == CONST_INT)
@@ -18,7 +29,7 @@
 <     }
 < 
 < 
-3809,3817d3797
+3809,3817d3807
 <   if (
 <          DATA_REG_P (operands[0])
 <       && GET_CODE (operands[2]) == CONST_INT)
@@ -28,11 +39,11 @@
 <       else if (INTVAL (operands[2]) == 0x0000ffff)
 <         return "mvz%.w %0,%0";
 <     }
-3825c3805
+3825c3815
 <   "TARGET_COLDFIRE || TARGET_68080"
 ---
 >   "TARGET_COLDFIRE"
-7242,7246c7222,7226
+7242,7246c7232,7236
 <         (if_then_else
 <          (ne (match_operand:SI 0 "nonimmediate_operand" "+d*g")
 <              (const_int 0))
@@ -44,28 +55,56 @@
 > 	     (const_int 0))
 > 	 (label_ref (match_operand 1 "" ""))
 > 	 (pc)))
-7248,7249c7228,7229
+7248,7249c7238,7239
 <         (plus:SI (match_dup 0)
 <                  (const_int -1)))]
 ---
 > 	(plus:SI (match_dup 0)
 > 		 (const_int -1)))]
-7254,7255c7234,7235
+7254,7255c7244,7245
 <         {
 <     if (TUNE_68080 )
 ---
 > 	{
 >     if (TUNE_68080)
-7256a7237,7238
+7256a7247,7248
 >     if (TUNE_68060)
 >             return "subq%.l #1,%0;jcc %l1";
-7258c7240
+7258c7250
 <         }
 ---
 > 	}
-7260,7261c7242,7243
+7260,7261c7252,7253
 <     return "subq%.l #1,%0;jcc %l1";
 <   return "subq%.l #1,%0;cmpa%.w #-1,%0;jne %l1";  // An reg as counter 
 ---
 >     return "subq%.l #1,%0\;jcc %l1";
 >   return "subq%.l #1,%0\;cmp%.l #-1,%0\;jne %l1";
+7323c7315
+<   return "subq%.l #1,%0\;cmp%.l #-1,%0\;jne %l1";
+---
+>   return "subq%.l #1,%0\;cmp%.w #-1,%0\;jne %l1";
+9174a9167,9189
+> ;; combine clr if possible .l #0,x(a0), #0,x+4(a0) -> .q #0,n(a0)
+> (define_peephole2
+>   [(set (mem:SI (plus (match_operand:SI 0 "register_operand" "") (match_operand:SI 2 "const_int_operand" "")))
+> 		(match_operand:SI 1 "const_int_operand" ""))
+>    (set (mem:SI (plus (match_dup 0) (match_operand:SI 3 "const_int_operand" "")))
+>    		(match_dup 1))
+>    ]
+>   "reload_completed && !INTVAL (operands[1]) && INTVAL (operands[2]) + 4 == INTVAL (operands[3]) && (operands[4] = SET_DEST(PATTERN(insn))) && !operands[4]->volatil"
+>   [(set (mem:DI (plus (match_dup 0) (match_dup 2))) (match_dup 1))]
+> {
+> })
+> 
+> ;; combine post_inc if possible .l #0,(a0)+, #0,(a0)+ -> .q #0,(a0)+
+> (define_peephole2
+>   [(set (mem:SI (post_inc:SI (match_operand:SI 0 "register_operand" "")))
+> 		(match_operand:SI 1 "const_int_operand" ""))
+>    (set (mem:SI (post_inc:SI (match_dup 0)))
+>    		(match_dup 1))
+>    ]
+>   "reload_completed && !INTVAL (operands[1]) && (operands[3] = SET_DEST(PATTERN(insn))) && !operands[3]->volatil"
+>   [(set (mem:DI (post_inc:SI (match_dup 0))) (match_dup 1))]
+> {
+> })
