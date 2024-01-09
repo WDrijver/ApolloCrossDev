@@ -13,7 +13,12 @@
 		"svn.delete.ignoredRulesForDeletedFiles": [
 			"RHLOS/robin",
 			"RHLOS/mixer",
-			"RIVA/0.60/RiVA"
+			"RIVA/0.60/RiVA",
+			"wesnoth/config.status",
+			"wesnoth/config.log",
+			"wesnoth/po/wesnoth/Makefile",
+			"wesnoth/po/wesnoth/Makefile.in",
+			"wesnoth/po/wesnoth/Makefile.in.in"
 		],
 		"files.associations": {
 			"pr6713.C": "cpp",
