@@ -43,12 +43,11 @@ while test $# -gt 0; do
       if test ${prefix}/include != /usr/include ; then
         includes=-I${prefix}/include
       fi
-      echo -I/home/willem/Downloads/ApolloCrossDev/Compilers/GCC-6.50/ApolloCrossDev/m68k-amigaos/include -I/home/willem/Downloads/ApolloCrossDev/Compilers/GCC-6.50/ApolloCrossDev/m68k-amigaos/include/SDL -I/home/willem/Downloads/ApolloCrossDev/Compilers/GCC-6.50/ApolloCrossDev/m68k-amigaos/ndk-include
+      echo -I$PWD/../../ApolloCrossDev/Compilers/GCC-6.50/ApolloCrossDev/m68k-amigaos/include -I$PWD/../../ApolloCrossDev/Compilers/GCC-6.50/ApolloCrossDev/m68k-amigaos/include/SDL -I$PWD/../../ApolloCrossDev/Compilers/GCC-6.50/ApolloCrossDev/m68k-amigaos/ndk-include
       ;;
     --libs)
       libdirs="-L${exec_prefix}/lib "
-      echo -L$HOME/Downloads/ApolloCrossDev/Compilers/GCC-6.50/ApolloCrossDev/m68k-amigaos/lib -L$HOME/Downloads/ApolloCrossDev/Compilers/GCC-6.50/ApolloCrossDev/lib/gcc/m68k-amigaos/6.5.0b -lSDL -lSDL_mixer -lSDL_net -lsocket -lfreetype -lmad -lpng16 -ljpeg -lm -lgl_dummy -ldebug -lamiga -lpthread -lintl -liconv -lstdc++ -lz
-#-L/cygdrive/e/usr/local/amiga/m68k-amigaos/lib -lSDL_Mixer5 -lvorbisfile -lvorbis -logg -lsdl_image -ljpeg -lpng16 -lz -lm -lSDL.ix -lgl_dummy -ldebug -lamiga -lpthread -lintl -liconv -lstdc++
+      echo -L$PWD/../../ApolloCrossDev/Compilers/GCC-6.50/ApolloCrossDev/m68k-amigaos/lib -L$PWD/../../ApolloCrossDev/Compilers/GCC-6.50/ApolloCrossDev/lib/gcc/m68k-amigaos/6.5.0b -lSDL -lSDL_mixer -lSDL_net -lsocket -lfreetype -lmad -lpng15 -ljpeg -lm -lgl_dummy -ldebug -lamiga -lpthread -lintl -liconv -lstdc++ -lz
       ;;
     --static-libs)
       libdirs="-L${exec_prefix}/lib "
