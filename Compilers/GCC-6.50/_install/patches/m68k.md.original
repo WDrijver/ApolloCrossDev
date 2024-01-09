@@ -1586,6 +1586,16 @@
   ""
   "")
 
+;; Special case of qword move when source is zero for 68080.
+(define_insn "*movdi_const0_68080"
+  [(set (match_operand:DI 0 "movsi_const0_operand" "=m")
+	(const_int 0))]
+  "TUNE_68080"
+  "@
+   clr%.q %0"
+  [(set_attr "type" "clr_l")
+   (set_attr "opy" "*")])
+
 ;; movdi can apply to fp regs in some cases
 (define_insn ""
   ;; Let's see if it really still needs to handle fp regs, and, if so, why.
@@ -7302,7 +7312,7 @@
 	}
   if (GET_CODE (operands[0]) == MEM)
     return "subq%.l #1,%0\;jcc %l1";
-  return "subq%.l #1,%0\;cmp%.l #-1,%0\;jne %l1";
+  return "subq%.l #1,%0\;cmp%.w #-1,%0\;jne %l1";
 })
 
 (define_expand "sibcall"
@@ -9154,3 +9164,26 @@
     return "fsincos%.<FP:prec> %2,%0,%1";
 })
 
+;; combine clr if possible .l #0,x(a0), #0,x+4(a0) -> .q #0,n(a0)
+(define_peephole2
+  [(set (mem:SI (plus (match_operand:SI 0 "register_operand" "") (match_operand:SI 2 "const_int_operand" "")))
+		(match_operand:SI 1 "const_int_operand" ""))
+   (set (mem:SI (plus (match_dup 0) (match_operand:SI 3 "const_int_operand" "")))
+   		(match_dup 1))
+   ]
+  "reload_completed && !INTVAL (operands[1]) && INTVAL (operands[2]) + 4 == INTVAL (operands[3]) && (operands[4] = SET_DEST(PATTERN(insn))) && !operands[4]->volatil"
+  [(set (mem:DI (plus (match_dup 0) (match_dup 2))) (match_dup 1))]
+{
+})
+
+;; combine post_inc if possible .l #0,(a0)+, #0,(a0)+ -> .q #0,(a0)+
+(define_peephole2
+  [(set (mem:SI (post_inc:SI (match_operand:SI 0 "register_operand" "")))
+		(match_operand:SI 1 "const_int_operand" ""))
+   (set (mem:SI (post_inc:SI (match_dup 0)))
+   		(match_dup 1))
+   ]
+  "reload_completed && !INTVAL (operands[1]) && (operands[3] = SET_DEST(PATTERN(insn))) && !operands[3]->volatil"
+  [(set (mem:DI (post_inc:SI (match_dup 0))) (match_dup 1))]
+{
+})

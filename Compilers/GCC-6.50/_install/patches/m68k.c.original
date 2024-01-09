@@ -3532,16 +3532,17 @@ output_move_simode_const (rtx *operands)
 
   dest = operands[0];
   src = INTVAL (operands[1]);
-  if (src == 0
-      && (DATA_REG_P (dest) || MEM_P (dest))
+  if (src == 0 && (DATA_REG_P (dest) ))         // For clear DN MOVEQ is best
+    return "moveq #0,%0";
+  else if (src == 0 && MEM_P (dest)             // For memory use CLR
       /* clr insns on 68000 read before writing.  */
       && ((TARGET_68010 || TARGET_COLDFIRE)
-	  || !(MEM_P (dest) && MEM_VOLATILE_P (dest))))
+	  || !MEM_VOLATILE_P (dest)))           // but not for IO register on 68000
     return "clr%.l %0";
   else if (GET_MODE (dest) == SImode && valid_mov3q_const (src))
     return "mov3q%.l %1,%0";
-  else if (src == 0 && ADDRESS_REG_P (dest))
-    return "sub%.l %0,%0";
+  else if (src == 0 && ADDRESS_REG_P (dest))    // For AN always use SUBA
+    return "suba%.l %0,%0";
   else if (DATA_REG_P (dest))
     return output_move_const_into_data_reg (operands);
   else if (ADDRESS_REG_P (dest) && IN_RANGE (src, -0x8000, 0x7fff))

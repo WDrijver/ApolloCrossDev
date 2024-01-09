@@ -58,8 +58,16 @@ make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
 make all -j3 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# PART 5A: Backup original files to $PATCHES 
+echo -e "\e[1m\e[37m5. Backup Amiga-GCC original m68k files before applying Patches\e[0m\e[36m"
+cp -f $SOURCES/amiga-gcc/projects/binutils/opcodes/m68k-opc.c $PATCHES/m68k-opc.c.original
+cp -f $SOURCES/amiga-gcc/projects/binutils/gas/config/tc-m68k.c $PATCHES/tc-m68k.c.original
+cp -f $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k.c $PATCHES/m68k.c.original
+cp -f $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k.h $PATCHES/m68k.h.original
+cd -f $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k.md $PATCHES/m68k.md.original
+
 # PART 5: Patch Amiga-GCC with additional Apollo Patches not merged into Bebbo Source
-echo -e "\e[1m\e[37m5. Patch Amiga-GCC with additional Apollo Opcodes not yet adopted by (Stefan -Bebbo- Franke)\e[0m\e[36m"
+echo -e "\e[1m\e[37m5. Patch Amiga-GCC with additional Apollo Opcodes not yet adopted\e[0m\e[36m"
 cd $SOURCES/amiga-gcc/projects/binutils/opcodes
 patch m68k-opc.c $PATCHES/m68k-opc.c.diff
 cd $SOURCES/amiga-gcc/projects/binutils/gas/config

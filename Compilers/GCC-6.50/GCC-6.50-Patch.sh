@@ -28,6 +28,14 @@ echo -e "\e[1m\e[37m########## \e[31mApollo\e[1;30mCrossDev \e[36m$EDITION\e[30m
 echo " "
 echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
 
+# PART 5A: Restore original files to $SOURCES 
+echo -e "\e[1m\e[37m5. Restore Amiga-GCC original m68k files before applying Patches\e[0m\e[36m"
+cp -f $PATCHES/m68k-opc.c.original $SOURCES/amiga-gcc/projects/binutils/opcodes/m68k-opc.c 
+cp -f $PATCHES/tc-m68k.c.original $SOURCES/amiga-gcc/projects/binutils/gas/config/tc-m68k.c 
+cp -f $PATCHES/m68k.c.original $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k.c 
+cp -f $PATCHES/m68k.h.original $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k.h 
+cd -f $PATCHES/m68k.md.original $SOURCES/amiga-gcc/projects/gcc/gcc/config/m68k.md 
+
 # PART 5: Patch Amiga-GCC with additional Apollo Patches not merged into Bebbo Source
 echo -e "\e[1m\e[37m5. Patch Amiga-GCC with additional Apollo Opcodes not yet adopted by (Stefan -Bebbo- Franke)\e[0m\e[36m"
 cd $SOURCES/amiga-gcc/projects/binutils/opcodes

@@ -3297,6 +3297,13 @@ m68k_ip (char *instring)
 		}
 	      addword (0);
 	      break;
+
+      case '~':                                               // APOLLO 68080 DBRAL
+        opP->disp.exp.X_add_number |=1;                       // APOLLO 68080 DBRAL
+        add_fix ('w', &opP->disp, 1, 0, opP->disp.baserel);   // APOLLO 68080 DBRAL
+        addword (0);                                          // APOLLO 68080 DBRAL
+        break;                                                // APOLLO 68080 DBRAL
+
 	    case 'C':		/* Fixed size LONG coproc branches.  */
 	      add_fix ('l', &opP->disp, 1, 0, opP->disp.baserel);
 	      addword (0);
