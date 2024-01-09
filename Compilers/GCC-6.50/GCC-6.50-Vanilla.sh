@@ -58,13 +58,6 @@ make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
 make all -j3 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
-# Part 7: SDL
-echo -e "\e[1m\e[37m7. Adding SDL include and lib files\e[0m\e[36m"
-cd $ARCHIVES
-cp -r -f SDL/* $PREFIX/$TARGET >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
-cp -r -f sys-include/* $PREFIX/$TARGET/sys-include >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
-rm -r -f $PREFIX/include/SDL* >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
-
 # PART 8: Cleanup
 echo -e "\e[1m\e[37m8. Cleanup\e[0m\e[36m"
 cd $PREFIX
