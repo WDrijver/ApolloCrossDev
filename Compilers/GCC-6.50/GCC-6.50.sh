@@ -46,17 +46,17 @@ sudo apt -y install build-essential gawk flex bison expect dejagnu texinfo lhasa
  
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-git clone --progress https://github.com/bebbo/amiga-gcc 2>>$LOGFILES/part3.log
+git clone --progress https://github.com/bebbo/amiga-gcc 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile Amiga-GCC - First Run
 echo -e "\e[1m\e[37m4. Compile Amiga-GCC - First Run\e[0m\e[36m"
 cd $SOURCES/amiga-gcc
 echo -e "\e[0m\e[36m   * Clean Amiga-GCC\e[0m"
-make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4.log
+make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
-make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4.log
+make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
-make all -j3 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4.log
+make all -j3 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # PART 5: Patch Amiga-GCC with additional Apollo Patches not merged into Bebbo Source
 echo -e "\e[1m\e[37m5. Patch Amiga-GCC with additional Apollo Opcodes not yet adopted by (Stefan -Bebbo- Franke)\e[0m\e[36m"
@@ -76,13 +76,14 @@ cd $SOURCES
 echo -e "\e[1m\e[37m6. Compile Amiga-GCC - Second Run\e[0m\e[36m"
 cd $SOURCES/amiga-gcc
 echo -e "\e[0m\e[36m   * Build Amiga-GCC\e[0m"
-make all -j3 PREFIX=$PREFIX >>$LOGFILES/part6.log 2>>$LOGFILES/part6.log
+make all -j3 PREFIX=$PREFIX >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 # Part 7: SDL
 echo -e "\e[1m\e[37m7. Adding SDL include and lib files\e[0m\e[36m"
-#cd $ARCHIVES/SDL
-#cp -r include/SDL $PREFIX/m68k-amigaos/include  >>$LOGFILES/part7.log 2>>$LOGFILES/part7.log
-#cp lib/* $PREFIX/m68k-amigaos/lib  >>$LOGFILES/part7.log 2>>$LOGFILES/part7.log
+cd $ARCHIVES/SDL
+cp -r * $PREFIX/m68k-amigaos >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
+cp -f sys-include/stdlib.h $PREFIX/m68k-amigaos/sys-include >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
+rm -r $PREFIX/include/SDL* $PREFIX/m68k-amigaos/sys-include >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 
 # PART 8: Cleanup
 echo -e "\e[1m\e[37m8. Cleanup\e[0m\e[36m"
