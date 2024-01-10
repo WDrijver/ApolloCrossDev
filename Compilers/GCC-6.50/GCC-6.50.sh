@@ -15,6 +15,7 @@ CPU=-j16
 
 WORKSPACE="`pwd`"
 ARCHIVES=$WORKSPACE/_archives
+BUILDS=$WORKSPACE/_builds
 SOURCES=$WORKSPACE/_sources
 PATCHES=$WORKSPACE/_install/patches
 LOGFILES=$WORKSPACE/_logs
@@ -34,6 +35,8 @@ rm -f -r $PREFIX
 mkdir $PREFIX
 rm -f -r $LOGFILES
 mkdir -p $LOGFILES
+rm -f -r $BUILDS
+mkdir -p $BUILDS
 rm -f -r $SOURCES
 mkdir $SOURCES
 cd $SOURCES
