@@ -48,7 +48,7 @@ sudo apt -y install build-essential gawk flex bison expect dejagnu texinfo lhasa
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
 git clone --progress https://github.com/bebbo/amiga-gcc 2>>$LOGFILES/part3_err.log
 
-
+exit
 
 # Part 4: Compile Amiga-GCC - First Run
 echo -e "\e[1m\e[37m4. Compile Amiga-GCC - First Run\e[0m\e[36m"
