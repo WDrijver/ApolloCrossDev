@@ -49,7 +49,7 @@ sudo apt -y install build-essential gawk flex bison expect dejagnu texinfo lhasa
  
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-git clone --progress https://github.com/bebbo/amiga-gcc 2>>$LOGFILES/part3_err.log
+git clone --progress https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile Amiga-GCC - First Run
 echo -e "\e[1m\e[37m4. Compile Amiga-GCC - First Run\e[0m\e[36m"
@@ -59,7 +59,7 @@ make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
-make all -j3 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+make all -j16 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # PART 5: Patch Amiga-GCC with additional Apollo Patches not merged into Bebbo Source
 echo -e "\e[1m\e[37m5. Patch Amiga-GCC with additional Apollo Opcodes not yet adopted by (Stefan -Bebbo- Franke)\e[0m\e[36m"
