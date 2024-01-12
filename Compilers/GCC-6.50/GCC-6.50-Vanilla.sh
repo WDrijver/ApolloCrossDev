@@ -45,8 +45,8 @@ sudo apt -y install build-essential gawk flex bison expect dejagnu texinfo lhasa
      make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev autoconf rsync libreadline-dev >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
  
 # PART 3: Clone Amiga-GCC
-echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-git clone --progress https://github.com/bebbo/amiga-gcc 2>>$LOGFILES/part3_err.log
+echo -e "\e[1m\e[37m3. Clone Amiga-GCC from ApolloCDrossDev (parts are forked from Stefan -Bebbo- Franke)\e[0m\e[36m"
+git clone --progress https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile Amiga-GCC - First Run
 echo -e "\e[1m\e[37m4. Compile Amiga-GCC - First Run\e[0m\e[36m"
