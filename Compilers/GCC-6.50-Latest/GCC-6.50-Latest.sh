@@ -8,7 +8,7 @@ WORKSPACE="`pwd`"
 ARCHIVES=$WORKSPACE/_archives
 BUILDS=$WORKSPACE/_builds
 SOURCES=$WORKSPACE/_sources
-PATCHES=$WORKSPACE/_install/patches
+PATCHES=$WORKSPACE/_patches
 LOGFILES=$WORKSPACE/_logs
 PREFIX=$WORKSPACE/ApolloCrossDev
 TARGET=m68k-amigaos
@@ -50,7 +50,7 @@ make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
-make all -j16 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+make all -j4 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Part 7: SDL
 echo -e "\e[1m\e[37m7. Adding SDL include and lib files\e[0m\e[36m"
