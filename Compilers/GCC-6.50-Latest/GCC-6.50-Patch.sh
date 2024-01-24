@@ -55,7 +55,7 @@ cd $SOURCES
 echo -e "\e[1m\e[37m6. Compile Amiga-GCC - Rebuild with Patches\e[0m\e[36m"
 cd $SOURCES/amiga-gcc
 echo -e "\e[0m\e[36m   * Build Amiga-GCC\e[0m"
-make all -j4 PREFIX=$PREFIX >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make all -j16 PREFIX=$PREFIX >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 # PART 8: Cleanup
 echo -e "\e[1m\e[37m8. Cleanup\e[0m\e[36m"

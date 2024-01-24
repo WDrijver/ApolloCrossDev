@@ -139,17 +139,19 @@
    (UNSPECV_TAS_2	4)
   ])
 
-;; Registers by name. SBF: Do not define PIC_REG / A6_REG here!
+;; Registers by name. SBF: Do not define PIC_REG here!
 (define_constants
   [(D0_REG		0)
    (D1_REG		1)
    (D2_REG		2)
+   (D7_REG		7)
    (A0_REG		8)
    (A1_REG		9)
    (A6_REG		14)
    (SP_REG		15)
    (FP0_REG		16)
    (FP1_REG		17)
+   (FP7_REG		23)
   ])
 
 (include "predicates.md")
@@ -3802,15 +3804,6 @@
 		(match_operand:SI 2 "general_src_operand" "dKT,dmSMi")))]
   "TUNE_68080"
 {
-  if (
-         DATA_REG_P (operands[0])
-      && GET_CODE (operands[2]) == CONST_INT)
-    {
-      if (INTVAL (operands[2]) == 0x000000ff)
-        return "mvz%.b %0,%0";
-      else if (INTVAL (operands[2]) == 0x0000ffff)
-        return "mvz%.w %0,%0";
-    }
   return output_andsi3 (operands);
 })
 
@@ -7249,7 +7242,7 @@
   if (DATA_REG_P (operands[0]))
 	{
     if (TUNE_68080)
-            return "dbral %0,%l1";                 // APOLLO 68080 DBRAL
+            return "dbral %0,%l1";                 // APOLLO 68080 DBRAL  
     if (TUNE_68060)
             return "subq%.l #1,%0;jcc %l1";
     return "dbra %0,%l1;clr%.w %0;subq%.l #1,%0;jcc %l1";
@@ -8359,7 +8352,7 @@
         (call (mem (match_dup 0))
               (match_operand 5 "const_int_operand")))]
   "reload_completed && 
-   INTVAL(operands[2]) < 0x8000 && INTVAL(operands[2]) > -0x7fff && REGNO(operands[1]) > 7
+   INTVAL(operands[2]) < 0x8000 && INTVAL(operands[2]) > -0x7fff && ADDRESS_REG_P(operands[1])
 && peep2_reg_dead_p (2, operands[0])
   "
   [
@@ -9170,16 +9163,25 @@
     return "fsincos%.<FP:prec> %2,%0,%1";
 })
 
-;; combine clr if possible .l #0,x(a0), #0,x+4(a0) -> .q #0,n(a0)
+;; combine clr if possible .l #0,x(a0), #0,x+4(a0) -> .q #0,x(a0)
+;; or .w #0,x(a0), #0,x+2(a0) -> .l #0,x(a0)
 (define_peephole2
-  [(set (mem:SI (plus (match_operand:SI 0 "register_operand" "") (match_operand:SI 2 "const_int_operand" "")))
-		(match_operand:SI 1 "const_int_operand" ""))
-   (set (mem:SI (plus (match_dup 0) (match_operand:SI 3 "const_int_operand" "")))
+  [(set (mem (plus (match_operand:SI 0 "register_operand" "") (match_operand:SI 2 "const_int_operand" "")))
+		(match_operand 1 "const_int_operand" ""))
+   (set (mem (plus (match_dup 0) (match_operand:SI 3 "const_int_operand" "")))
    		(match_dup 1))
    ]
-  "reload_completed && !INTVAL (operands[1]) && INTVAL (operands[2]) + 4 == INTVAL (operands[3]) && (operands[4] = SET_DEST(PATTERN(insn))) && !operands[4]->volatil"
-  [(set (mem:DI (plus (match_dup 0) (match_dup 2))) (match_dup 1))]
+  "(operands[4] = SET_DEST(PATTERN(insn))) && 
+  (TARGET_68080 || GET_MODE_SIZE(GET_MODE(operands[4])) == 2) && 
+  current_pass->static_pass_number >= 2 && 
+   0 == INTVAL (operands[1]) && 
+   !operands[4]->volatil &&
+   (GET_MODE(operands[4]) == HImode || GET_MODE(operands[4]) == SImode) && 
+   INTVAL (operands[2]) + GET_MODE_SIZE(GET_MODE(operands[4])) == INTVAL (operands[3])"
+  [(set (match_dup 5) (match_dup 1))]
 {
+  operands[5] = gen_rtx_MEM(GET_MODE(operands[4]) == HImode ? SImode : DImode,
+                            gen_rtx_PLUS(SImode, operands[0], operands[2]));
 })
 
 ;; combine post_inc if possible .l #0,(a0)+, #0,(a0)+ -> .q #0,(a0)+
@@ -9189,7 +9191,160 @@
    (set (mem:SI (post_inc:SI (match_dup 0)))
    		(match_dup 1))
    ]
-  "reload_completed && !INTVAL (operands[1]) && (operands[3] = SET_DEST(PATTERN(insn))) && !operands[3]->volatil"
+  "TARGET_68080 && current_pass->static_pass_number >= 2 && !INTVAL (operands[1]) && (operands[3] = SET_DEST(PATTERN(insn))) && !operands[3]->volatil"
   [(set (mem:DI (post_inc:SI (match_dup 0))) (match_dup 1))]
 {
 })
+
+;; unroll loops unfortunately adds additional registers which are used once
+;; eliminate these
+;; lea 8(a0),a1
+;; clr.l (a1)
+;; ->
+;; clr.l 8(a0)
+;; lea 8(a0),a1
+(define_peephole2
+  [(set (match_operand:SI 0 "register_operand" "")
+		(plus (match_operand:SI 1 "register_operand" "") (match_operand:SI 2 "const_int_operand" "")))
+   (set (match_operand 3 "memory_operand" "")
+   		(match_operand 4 "general_src_operand" ""))
+   ]
+  "operands[0] != operands[1] && ADDRESS_REG_P(operands[1]) && 
+   MEM_P(operands[3]) && 
+   ADDRESS_REG_P(XEXP(operands[3], 0)) &&
+   XEXP(operands[3], 0) == operands[0] && 
+   !reg_overlap_mentioned_p(operands[0], operands[4])
+  "
+  [(set (match_dup 5) (match_dup 4))
+   (set (match_dup 0) (plus:SI (match_dup 1) (match_dup 2)))]
+{
+  operands[5] = gen_rtx_MEM (GET_MODE(operands[3]), gen_rtx_PLUS(SImode, operands[1], operands[2]));
+})
+
+;; also move adds after next insn if possible
+;; lea 16(a0),a1
+;; clr 24(a0)
+;; -->
+;; clr 24(a0)
+;; lea 16(a0),a1
+(define_peephole2
+  [(set (match_operand:SI 0 "register_operand" "")
+		(plus (match_operand:SI 1 "register_operand" "") (match_operand:SI 2 "const_int_operand" "")))
+   (set (match_operand 3 "memory_operand" "") 
+   		(match_operand 4 "general_src_operand" ""))
+   ]
+  "operands[0] != operands[1] &&
+   offsettable_nonstrict_memref_p(operands[3]) &&
+   !reg_overlap_mentioned_p(operands[0], operands[3]) && !reg_overlap_mentioned_p(operands[0], operands[4]) && 
+   !reg_overlap_mentioned_p(operands[1], operands[4]) 
+  "
+  [(set (match_dup 3) (match_dup 4))
+   (set (match_dup 0) (plus:SI (match_dup 1) (match_dup 2)))]
+{
+})
+
+;; same for move loaded register ff offset is adjustable
+;; lea 16(a1),a0
+;; clr 4(a0)
+;; -->
+;; clr 20(a1)
+;; lea 16(a1),a0
+(define_peephole2
+  [(set (match_operand:SI 0 "register_operand" "")
+		(plus (match_operand:SI 1 "register_operand" "") (match_operand:SI 2 "const_int_operand" "")))
+   (set (match_operand 3 "memory_operand" "")
+   		(match_operand 4 "general_src_operand" ""))
+   ]
+  "operands[0] != operands[1] && ADDRESS_REG_P(operands[1]) && 
+   MEM_P(operands[3]) && GET_CODE(XEXP(operands[3], 0)) == PLUS && 
+   ADDRESS_REG_P(XEXP(XEXP(operands[3], 0), 0)) &&
+   CONST_INT_P(XEXP(XEXP(operands[3], 0), 0)) && 
+   !reg_overlap_mentioned_p(operands[0], operands[3]) && !reg_overlap_mentioned_p(operands[0], operands[4])
+   "
+  [(set (match_dup 3) (match_dup 4))
+   (set (match_dup 0) (plus:SI (match_dup 1) (match_dup 2)))]
+{
+  operands[3] = gen_rtx_MEM (GET_MODE(operands[3]), gen_rtx_PLUS(SImode, operands[1], 
+                             GEN_INT (INTVAL(operands[2]) + INTVAL(XEXP(XEXP(operands[3], 0), 0)))));
+})   
+
+;; now combine two adds if it's a temp register and source is an ADDRESS_REG
+;; lea 16(a0),a1
+;; lea 112(a1),a0
+;; -->
+;; lea 128(a0),a0
+(define_peephole2
+  [(set (match_operand:SI 0 "register_operand" "")
+		(plus (match_operand:SI 1 "register_operand" "") (match_operand:SI 2 "const_int_operand" "")))
+   (set (match_dup 1)
+		(plus (match_dup 0) (match_operand:SI 3 "const_int_operand" "")))
+   ]
+  "operands[0] != operands[1] && ADDRESS_REG_P (operands[1]) && 
+   IN_RANGE (INTVAL (operands[2]) + INTVAL (operands[3]), -32768, 32767) && 
+   peep2_reg_dead_p (2, operands[0])
+  "
+  [(set (match_dup 1) (plus:SI (match_dup 1) (match_dup 4)))]
+{
+  operands[4] = GEN_INT (INTVAL (operands[2]) + INTVAL (operands[3]));
+})
+
+;; no check, it's only generated via peephole2
+(define_insn "mov2si_68080"
+  [(set (match_operand:SI 0 "nonimmediate_operand" "=da,o")
+        (match_operand:SI 1 "general_src_operand" "o,da"))
+   (set (match_operand:SI 2 "nonimmediate_operand" "=da,o")
+        (match_operand:SI 3 "general_src_operand" "o,da"))]
+  "TUNE_68080 && reload_completed"
+  "@
+   move2%.l %1,%0:%2
+   move2%.l %1:%3,%0")
+
+;; combine two move.l into move2.l (n,ax),r1:r2
+(define_peephole2
+  [(set (match_operand:SI 0 "register_operand" "")
+        (match_operand:SI 1 "memory_operand" ""))
+   (set (match_operand:SI 2 "register_operand" "")
+        (match_operand:SI 3 "memory_operand" ""))]
+  "TUNE_68080 && reload_completed && flag_experimental && REGNO(operands[0]) < 16 && REGNO(operands[2]) < 16 &&
+   ((ADDRESS_REG_P(XEXP(operands[1], 0)) &&                  // (ax)
+    GET_CODE(XEXP(operands[3], 0)) == PLUS &&                // (4,ax)
+    XEXP(XEXP(operands[3], 0), 0) == XEXP(operands[1], 0) && // same reg used
+    GET_CODE(XEXP(XEXP(operands[3], 0), 1)) == CONST_INT &&  // addend is int 
+    INTVAL(XEXP(XEXP(operands[3], 0), 1)) == 4) ||           // offset is 4
+   (GET_CODE(XEXP(operands[1], 0)) == PLUS &&
+    ADDRESS_REG_P(XEXP(XEXP(operands[1], 0), 0)) && 
+    GET_CODE(XEXP(XEXP(operands[1], 0), 1)) == CONST_INT &&
+    GET_CODE(XEXP(operands[3], 0)) == PLUS &&
+    XEXP(XEXP(operands[3], 0), 0) == XEXP(XEXP(operands[1], 0), 0) &&
+    GET_CODE(XEXP(XEXP(operands[3], 0), 1)) == CONST_INT &&
+    INTVAL(XEXP(XEXP(operands[3], 0), 1)) == 4 + INTVAL(XEXP(XEXP(operands[1], 0), 1))))"
+  [(parallel[
+     (set (match_dup 0) (match_dup 1))
+     (set (match_dup 2) (match_dup 3))
+   ])]
+   {})
+   
+;; combine two move.l into move2.l r1:r2,(n,ax)
+(define_peephole2
+  [(set (match_operand:SI 1 "memory_operand" "")
+        (match_operand:SI 0 "register_operand" ""))
+   (set (match_operand:SI 3 "memory_operand" "")
+        (match_operand:SI 2 "register_operand" ""))]
+  "TUNE_68080 && reload_completed && flag_experimental && REGNO(operands[0]) < 16 && REGNO(operands[2]) < 16 &&
+   ((ADDRESS_REG_P(XEXP(operands[1], 0)) && 
+    GET_CODE(XEXP(operands[3], 0)) == PLUS &&
+    XEXP(XEXP(operands[3], 0), 0) == XEXP(operands[1],0) &&
+    GET_CODE(XEXP(XEXP(operands[3], 0), 1)) == CONST_INT &&
+    INTVAL(XEXP(XEXP(operands[3], 0), 1)) == 4) ||
+   (GET_CODE(XEXP(operands[1], 0)) == PLUS &&
+    ADDRESS_REG_P(XEXP(XEXP(operands[1], 0), 0)) && 
+    GET_CODE(XEXP(XEXP(operands[1], 0), 1)) == CONST_INT &&
+    GET_CODE(XEXP(operands[3], 0)) == PLUS &&
+    XEXP(XEXP(operands[3], 0), 0) == XEXP(XEXP(operands[1], 0), 0) &&
+    GET_CODE(XEXP(XEXP(operands[3], 0), 1)) == CONST_INT &&
+    INTVAL(XEXP(XEXP(operands[3], 0), 1)) == 4 + INTVAL(XEXP(XEXP(operands[1], 0), 1))))"
+  [(parallel[
+     (set (match_dup 1) (match_dup 0))
+     (set (match_dup 3) (match_dup 2))
+   ])]
+   {})
