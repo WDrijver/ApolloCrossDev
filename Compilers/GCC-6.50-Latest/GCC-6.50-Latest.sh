@@ -1,7 +1,6 @@
-# ApolloCrossDev GCC-6.50 - Install Script v0.7 - Apollo Dev Patches
-
+# ApolloCrossDev GCC-6.50 - Install Script v0.8 - Latest from Bebbo Repo
 EDITION=GCC-6.50
-VERSION=0.7
+VERSION=0.8
 CPU=-j16
 
 WORKSPACE="`pwd`"
@@ -50,7 +49,7 @@ make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
-make all -j16 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+make all $CPU PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Part 7: SDL
 echo -e "\e[1m\e[37m7. Adding SDL include and lib files\e[0m\e[36m"

@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-6.50 - Install Script v0.8 - Stable from WD Repo (= Bebbo December 2023, before starting 68080 changes)
+# ApolloCrossDev GCC-6.50 - Install Script v0.8 - Added DBRAL Opcode
 
 EDITION=GCC-6.50
 VERSION=0.8
@@ -40,7 +40,7 @@ sudo apt -y install build-essential gawk flex bison expect dejagnu texinfo lhasa
  
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-git clone --progress https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
+git clone --progress -b WD-Apollo-DBRAL https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile Amiga-GCC
 echo -e "\e[1m\e[37m4. Compile Amiga-GCC\e[0m\e[36m"
