@@ -1,5 +1,4 @@
-# ApolloCrossDev GCC-6.50 - Install Script v0.8 - Added MOV Opcodes (MOVIW and MOV3Q)
-
+# ApolloCrossDev GCC-6.50 - Install Script v0.8 - Apollo MVS and MVZ opcode
 EDITION=GCC-6.50
 VERSION=0.8
 CPU=-j16
@@ -8,7 +7,7 @@ WORKSPACE="`pwd`"
 ARCHIVES=$WORKSPACE/_archives
 BUILDS=$WORKSPACE/_builds
 SOURCES=$WORKSPACE/_sources
-PATCHES=$WORKSPACE/_install/patches
+PATCHES=$WORKSPACE/_patches
 LOGFILES=$WORKSPACE/_logs
 PREFIX=$WORKSPACE/ApolloCrossDev
 TARGET=m68k-amigaos
@@ -40,7 +39,7 @@ sudo apt -y install build-essential gawk flex bison expect dejagnu texinfo lhasa
  
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-git clone --progress -b WD-Apollo-MOV https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
+git clone --progress -b WD-Apollo-MVS-MVZ https://github.com/bebbo/amiga-gcc 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile Amiga-GCC
 echo -e "\e[1m\e[37m4. Compile Amiga-GCC\e[0m\e[36m"
