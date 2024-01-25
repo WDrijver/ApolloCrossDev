@@ -23,7 +23,7 @@ echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
 cd $SOURCES
 
 # Part 6: Compile Amiga-GCC - Rebuild
-echo -e "\e[1m\e[37m6. Compile Amiga-GCC - Rebuild with Patches\e[0m\e[36m"
+echo -e "\e[1m\e[37m6. Compile Amiga-GCC - Rebuild\e[0m\e[36m"
 cd $SOURCES/amiga-gcc
 echo -e "\e[0m\e[36m   * Build Amiga-GCC\e[0m"
 make all -j16 PREFIX=$PREFIX >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log

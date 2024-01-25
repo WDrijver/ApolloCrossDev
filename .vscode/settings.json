@@ -1,5 +1,6 @@
 {
     "cmake.configureOnOpen": false,
     "cmake.sourceDirectory": "/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/_sources/freetype-2.13.0",
-    "search.useIgnoreFiles": false
+    "search.useIgnoreFiles": false,
+    "C_Cpp.errorSquiggles": "disabled"
 }

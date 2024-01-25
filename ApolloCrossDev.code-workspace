@@ -7,6 +7,18 @@
 		{
 			"name": "ApolloSVN",
 			"path": "../ApolloSVN"
+		},
+		{
+			"name": "amiga-gcc",
+			"path": "../amiga-gcc"
+		},
+		{
+			"name": "binutils-gdb",
+			"path": "../binutils-gdb"
+		},
+		{
+			"name": "gcc",
+			"path": "../gcc"
 		}
 	],
 	"settings": {
