@@ -39,7 +39,7 @@ sudo apt -y install build-essential gawk flex bison expect dejagnu texinfo lhasa
  
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-git clone --progress -b WD-Apollo-MVS-MVZ https://github.com/bebbo/amiga-gcc 2>>$LOGFILES/part3_err.log
+git clone --progress -b WD-Apollo-MVS-MVZ https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile Amiga-GCC
 echo -e "\e[1m\e[37m4. Compile Amiga-GCC\e[0m\e[36m"
