@@ -102,6 +102,7 @@
 		},
 		"C_Cpp.intelliSenseCacheSize": 512,
 		"search.useIgnoreFiles": false,
-		"explorer.excludeGitIgnore": false
+		"explorer.excludeGitIgnore": false,
+		"C_Cpp.codeAnalysis.exclude": {}
 	}
 }
