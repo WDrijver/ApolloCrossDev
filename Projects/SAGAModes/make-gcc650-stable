@@ -1,0 +1,68 @@
+# ApolloCrossDev Makefile template for GCC-6.50 v0.8 - ASM only
+# 11-2-2024
+# Willem Drijver
+
+# Define Shell Environment
+PWD = $(shell pwd)
+DIR = $(notdir $(shell pwd))
+
+# Define ApolloCrossDev
+PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Stable/ApolloCrossDev
+TARGET 	= m68k-amigaos
+
+# Define ASM Compiler
+S_COMPILER = $(PREFIX)/bin/vasmm68k_mot
+
+# Define ASM Includes
+S_INCLUDE = $(PREFIX)/$(TARGET)/include
+
+# Define ASM Options
+S_FLAGS = -Fhunk -m68080 -m68881 -opt-speed -I$(S_INCLUDE)
+
+# Define Object Linker
+O_LINKER = $(PREFIX)/bin/vlink
+
+# Define Source and Object Directory
+S_SOURCEDIR = .
+S_OBJECTDIR = .
+
+# Define Object Filelist
+S_FILES = $(wildcard $(S_SOURCEDIR)/*.s)
+O_FILES = $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES))
+
+# Define Executable Name
+EXE = $(DIR)-gcc650
+
+# Make Project (Init -> Build -> Clean -> Exit)
+all: init clean build exit
+
+# Build Executable
+build: $(EXE)
+
+# Link all Objects from Filelist together
+$(EXE) : $(O_FILES) 
+	$(O_LINKER) $(O_FILES) -o $(EXE) >>log-650.txt 2>>log-err-650.txt
+
+# Compile all ASM-Sources to Objects
+$(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
+	$(S_COMPILER) $(S_FLAGS) -o $@ $< >>log-650.txt 2>>log-err-650.txt
+
+# Clean Project
+clean:
+	rm -f $(S_OBJECTDIR)/*.o log*.txt $(EXE) log-650.txt log-err-650.txt
+
+.phony: init
+
+init:
+	clear
+	@echo "\e[37m---------------------------------\e[0m"
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-6.50-Stable Edition v0.8\e[0m"    
+	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
+	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"
+	@echo "\e[37m---------------------------------\e[30m"
+		
+exit:
+	@echo "\e[37m---------------------------------\e[0m"
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[32mCompile Successful\e[0m"
+	@echo "\e[37m---------------------------------\e[0m"
+	@echo " "

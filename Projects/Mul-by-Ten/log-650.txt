@@ -1,0 +1,6 @@
+vasm 1.9a (c) in 2002-2022 Volker Barthelmann
+vasm M68k/CPU32/ColdFire cpu backend 2.5f (c) 2002-2022 Frank Wille
+vasm motorola syntax module 3.16 (c) 2002-2022 Frank Wille
+vasm hunk format output module 2.14b (c) 2002-2022 Frank Wille
+
+code(acrx2):	           6 bytes

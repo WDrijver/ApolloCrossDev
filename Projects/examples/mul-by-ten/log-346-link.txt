@@ -1,2 +1,0 @@
-Fatal error 8: Cannot open "test".
-Aborting.

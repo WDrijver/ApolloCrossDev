@@ -98,7 +98,9 @@
 			"*.def": "cpp",
 			"*.x": "c",
 			"*.inc": "cpp",
-			"vampire.h": "c"
+			"vampire.h": "c",
+			"locale": "c",
+			"pr37337.C": "cpp"
 		},
 		"C_Cpp.intelliSenseCacheSize": 512,
 		"search.useIgnoreFiles": false,

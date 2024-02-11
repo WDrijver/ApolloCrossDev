@@ -1,2 +1,0 @@
-/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/libnix/lib/libnix/ncrt0.o(.text+0x60):/home/willem/ApolloCrossDev/Compilers/GCC-3.4.6/ApolloCrossDev/m68k-unknown-amigaos/libnix/lib/libnix/ncrt0.o: undefined reference to `_main'
-collect2: ld returned 1 exit status

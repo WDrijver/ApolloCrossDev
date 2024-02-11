@@ -1,2 +1,0 @@
->     CloseScreen(&MySecondScreen);
-warning 85 in line 38 of "openscreen.c": assignment of different pointers
