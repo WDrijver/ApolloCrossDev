@@ -10,26 +10,31 @@ DIR = $(notdir $(shell pwd))
 PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Stable/ApolloCrossDev
 TARGET 	= m68k-amigaos
 
-# Define C-Compiler
+# Define C-Compiler (C = Default, change comments to change to C++)
 C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc
+# C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-g++
 
-# Define C-Library (LibNix = Default, change comments to change to Clib2)
+# Define C-Library (LibNix = Default, change comments to change to Clib2 or C++)
 C_LIB 		= -noixemul
 # C_LIB = -mcrt=clib2
 
 C_INCL_CLB	= $(PREFIX)/$(TARGET)/libnix/include
 # C_INCL_CLB  = $(PREFIX)/$(TARGET)/clib2/include
+# C_INCL_CLB  = $(PREFIX)/lib/gcc/m68k-amigaos/6.5.0b/include
+
 C_INCL		= $(PREFIX)/$(TARGET)/include
 C_INCL_SYS	= $(PREFIX)/$(TARGET)/sys-include
 C_INCL_NDK	= $(PREFIX)/$(TARGET)/ndk-include
-C_INCL_ALL 	= -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK)
+C_INCL_SDL  = $(PREFIX)/$(TARGET)/include/SDL
+C_INCL_MUI  = $(PREFIX)/$(TARGET)/include/mui
+C_INCL_ALL 	= -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK) -I$(C_INCL_SDL) -I$(C_INCL_MUI)
 
 C_LIBS_CLB	= $(PREFIX)/$(TARGET)/libnix/lib
 # C_LIBS_CLB = $(PREFIX)/$(TARGET)/clib2/lib
 C_LIBS_ALL	= -L$(C_LIBS_CLB)
 
 # Define C Options
-C_OPTIONS = -O2 -m68080 -m68881 -fomit-frame-pointer -ffast-math -DREGPARM=4 -DM68K=1 -w
+C_OPTIONS = -O2 -m68080 -m68881 -fomit-frame-pointer -ffast-math -DREGPARM=4 -DM68K=1 -w -lmui
 C_FLAGS = $(C_LIB) $(C_OPTIONS) $(C_INCL_ALL) $(C_LIBS_ALL)
 
 # Define ASM Compiler
@@ -74,7 +79,7 @@ $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
 
 # Compile all ASM-Sources to Objects
 $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
-	$(S_COMPILER) -c $(S_FLAGS) -o $@ $< >>log-650.txt 2>>log-err-650.txt
+	$(S_COMPILER) $(S_FLAGS) -o $@ $< >>log-650.txt 2>>log-err-650.txt
 
 # Clean Project
 clean:
