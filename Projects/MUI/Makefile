@@ -200,7 +200,6 @@ INCDIR    = $(PREFIX)/$(TARGET)/clib2/include
 #
 
 DEMOS = Aboutbox     \
-        Animals      \
         AppWindow    \
         Balancing    \
         BoopsiDoor   \
