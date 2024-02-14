@@ -161,8 +161,7 @@ ifeq ($(OS), os3)
 
   # Compiler/Linker flags
   CPU	    = -m68020-60 -msoft-float
-  CFLAGS  += -I./include/netinclude -DNO_INLINE_STDARG -D__CLIB2__ -D__amigaos3__ -noixemul
-  # LDFLAGS += -noixemul
+  CFLAGS  += -I./include/netinclude -DNO_INLINE_STDARG -D__CLIB2__ -D__amigaos3__ -mcrt=clib2
   LDLIBS  += -ldebug -lmui -lm
 
 
@@ -200,28 +199,43 @@ INCDIR    = $(PREFIX)/$(TARGET)/clib2/include
 # none - because we want to compile with -Wall all the time
 #
 
-DEMOS = AppWindow    \
+DEMOS = Aboutbox     \
+        Animals      \
+        AppWindow    \
         Balancing    \
         BoopsiDoor   \
         Class1       \
         Class2       \
         Class3       \
         Class4       \
+        Clock        \
         DragnDrop    \
+        ElidedText   \
+        EmbeddedImages \
         EnvBrowser   \
+        GIFAnim      \
+        Guigfx       \
+        Hyperlink    \
         InputHandler \
+        LayGroup     \
         Layout       \
+        List1        \
+        List2        \
+        MenuImages   \
         Menus        \
         MUI-Demo     \
         MultiSel     \
         Pages        \
+        Pointers     \
         Popup        \
         ShowHide     \
+        Slave        \
         Slidorama    \
         Subtask      \
         Textdata     \
         Title        \
-        Virtual
+        Virtual      \
+        WbMan
 
 ifeq ($(OS), os3)
 DEMOS += WbMan

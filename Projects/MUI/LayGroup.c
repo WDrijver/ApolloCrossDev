@@ -21,6 +21,13 @@ A simple demo application to show some new features of MUI 5.0.
 
 #define INITIAL_IMAGE_COUNT		30
 
+LONG _xget(Object *obj,ULONG attribute)
+{
+	LONG x;
+	get(obj,attribute,&x);
+	return(x);
+}
+
 static ULONG m_LayGroup_SET(struct IClass *cl, Object *obj, struct opSet *msg)
 {
 	struct TagItem *tags, *tag;
@@ -36,7 +43,7 @@ static ULONG m_LayGroup_SET(struct IClass *cl, Object *obj, struct opSet *msg)
 			case MUIA_LayGroup_ChildNumber:
 			{
 				ULONG newCount = tag->ti_Data;
-				ULONG oldCount = xget(obj, MUIA_LayGroup_ChildNumber);
+				ULONG oldCount = _xget(obj, MUIA_LayGroup_ChildNumber);
 
 				if(newCount != oldCount)
 				{

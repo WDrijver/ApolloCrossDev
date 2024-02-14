@@ -714,7 +714,7 @@ int main(UNUSED int argc, UNUSED char *argv[])
 
 	if (((struct Library *)SysBase)->lib_Version < 39)
 	{
-		//fprintf(stderr,"runs only with V39 and up\n");
+		fprintf(stderr,"runs only with V39 and up\n");
 		exit(20);
 	}
 

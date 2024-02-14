@@ -56,7 +56,7 @@ extern struct Library *DOSBase;
 extern struct Library *IconBase;
 #else
 struct IntuitionBase *IntuitionBase;
-extern struct UtilityBase;
+struct Library *UtilityBase;
 struct GfxBase *GfxBase;
 extern struct DosLibrary *DOSBase;
 struct Library *IconBase;
