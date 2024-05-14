@@ -22,7 +22,7 @@ BUILDS=$WORKSPACE/_builds
 LOGFILES=$WORKSPACE/_logs
 PREFIX=$WORKSPACE/ApolloCrossDev
 TARGET=m68k-unknown-amigaos
-HOSTSYSTEM=aarch64-linux-gnu
+
 export PATH=$PREFIX/bin:$PATH
 
 GCC_AUTOCONF=autoconf2.64
@@ -201,7 +201,6 @@ $SOURCES/$BINUTILS_NAME/configure \
     --target=$TARGET \
     --disable-nls \
     --disable-werror \
-    --host=$HOSTSYSTEM \
     >>$LOGFILES/part5_binutils_configure.log 2>>$LOGFILES/part5_binutils_configure_err.log
 echo -e -n "make | "
 make $CPU >>$LOGFILES/part5_binutils_make.log 2>>$LOGFILES/part5_binutils_make_err.log
