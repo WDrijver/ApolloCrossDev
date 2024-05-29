@@ -1,15 +1,24 @@
-Additional information on Cross Compiler Setup and Options
-==========================================================
+Information on Cross Compiler Setup and Options
+###############################################
 
-A. Libraries 
-GCC 2.95.3 / 3.4.6 and 6.5.0 can be compiled using different run-time and/or static libraries:
+A. How to Compile Examples in Project folder
+============================================
 
-1. ixemul (no arguments)
-    Dynamic ixemul libraries (LIBS:ixemul.library and LIBS:ixnet.library)
+1. Open a Terminal session in the Project folder
+2. Type "cd xxxx" where xxxx = name of the project you wamnt to Compile
+3. Type "make -f make-gcc650-stable" to Compile with GCC 6.50
+4. If you want to use another Compiler version (like GCC 3.4.6 or VBCC), copy desired Makefile from _makefiles folder
 
-2. libnix (-noixemul or -mcrt=nix20) 
-    libnix/lib
-    libnix/include
+A1. GCC Options for Libraries
+-----------------------------
+
+GCC 2.95.3 / 3.4.6 and 6.5.0 can be compiled using different run-time and/or static standrad C-libraries:
+
+1. CLIB = ixemul
+Compiler will use dynamic ixemul libraries (LIBS:ixemul.library and LIBS:ixnet.library), which are then required in AmigaOS
+
+2. CLIB = -noixemul or -mcrt=nix20 
+Compiler will use Static Libnix libraries from libnix/lib and Include files from libnix/include
 
 Libnix link order:
 * ncrt0*.0      : Startup codes (open shared libraries, stdin/out, etc)
@@ -21,23 +30,23 @@ Libnix link order:
 * detach.o      : Auto detaching
 * libstubs.a    : Library bases
 
-3. clib2 (-mcrt=clib2) 
-    clib2/lib
-    clib2/include
+3. CLIB = -mcrt=clib2
+Compiler will use Static CLIB2 libraries from clib2/lib and Include files from clib2/include
 
-GCC 
+A2. GCC Other Options 
+---------------------
 
-GCC 12.x (m68k-amiga-elf) does not have these switches
-
-B. Others 
-
--fomit-frame-pointer = omits the storing of stack frame pointers during function calls.
+1. C_OPTIONS = -fomit-frame-pointer
+Compiler will the storing of stack frame pointers during function calls.
 The -fomit-frame-pointer option instructs the compiler to not store stack frame pointers if the function does not need it.
 You can use this option to reduce the code image size.
 
--Wall = This enables all the warnings about constructions that some users consider questionable, and that are easy to avoid (or modify to prevent the warning), even in conjunction with macros.
+2. C_OPTIONS = -Wall
+Compiler will be enabled to output all the warnings about constructions that some users consider questionable, and that are easy to avoid (or modify to prevent the warning), even in conjunction with macros.
 
--O = Optimize Flags
+3. C_OPTIONS = -Ox
+Compiler will optimise output code based on the given Optimisation flag:
+
 -O0 = Reduce compilation time and make debugging produce the expected results. This is the default. 
 -O1 = Basic optimisation (Speed/Size)
 -O2 = Medium optimisation (Speed/Size)
@@ -47,11 +56,14 @@ You can use this option to reduce the code image size.
 -Og = Optimise for Debugging
 -Oz = Optimise for Size (agressive)
 
-Assembler Options:
+4. C_OPTIONS = -m680x0
+Compiler will be optimised for a specific CPU architecture based on the given CPU flag:
 
--m680x0 = CPU support
 GCC-2.95|3.4.6 = m68000|m68020|m68040|m68060
 GCC-6.50 = m68000|m68020|m68040|m68060|m68080
+
+A3. Additional Information 
+--------------------------
 
 Link Options:
 

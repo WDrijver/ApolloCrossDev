@@ -29,55 +29,9 @@
 #
 #***************************************************************************/
 
-###########################################################################
-# This makefile is a very generic one. It tries to identify both, the host
-# and the target operating system for which MUI should be compiled.
-# However, this auto-detection can be easily overridden by directly
-# specifying an option on the commandline while calling 'make'.
-#
-# Example:
-#
-# # to explicitly compile for AmigaOS3
-# > make OS=os3
-#
-# # to compile for AmigaOS4 but without debugging
-# > make OS=os4 DEBUG=
-#
-
-#############################################
-# find out the HOST operating system
-# on which this makefile is run
-HOST ?= $(shell uname)
-ifeq ($(HOST), AmigaOS)
-  ifeq ($(shell uname -m), powerpc)
-    HOST = AmigaOS4
-  endif
-  ifeq ($(shell uname -m), ppc)
-    HOST = AmigaOS4
-  endif
-endif
-
-# if no host is identifed (no uname tool)
-# we assume a AmigaOS build
-ifeq ($(HOST),)
-  HOST = AmigaOS
-endif
-
-#############################################
-# now we find out the target OS for
-# which we are going to compile MUI in case
-# the caller didn't yet define OS himself
-ifndef (OS)
-  ifeq ($(HOST), AmigaOS4)
-    OS = os4
-  else
-  ifeq ($(HOST), AmigaOS)
-    OS = os3
-  else
-    OS = os4
-  endif
-  endif
-endif
+# HOST and OS forced to AmigaOS / OS3
+HOST  = AmigaOS
+OS    = os3
 
 #############################################
 # define common commands we use in this
@@ -112,7 +66,7 @@ NIL    = NIL:
 # Common compiler/linker flags
 WARN       = -W -Wall -Wwrite-strings -Wpointer-arith -Wsign-compare -fno-strict-aliasing #-Wunreachable-code
 OPTFLAGS   = -O3 -fomit-frame-pointer
-DEBUG      = -DDEBUG -fno-omit-frame-pointer #-O0
+DEBUG      = -fno-omit-frame-pointer
 DEBUGSYM   = -g -gstabs
 CFLAGS     = -I. -I$(INCDIR)  $(CPU) $(WARN) $(OPTFLAGS) $(DEBUG) $(DEBUGSYM) -DAMIGAOS
 LDFLAGS    = $(CPU) $(DEBUGSYM)
@@ -153,11 +107,9 @@ ifeq ($(OS), os3)
   # AmigaOS3
 
   # Compiler/link/strip commands
-  ifneq ($(HOST), AmigaOS)
-    CC      = $(PREFIX)/bin/m68k-amigaos-gcc
-    STRIP   = $(PREFIX)/bin/m68k-amigaos-strip
-    OBJDUMP = $(PREFIX)/bin/m68k-amigaos-objdump
-  endif
+  CC      = $(PREFIX)/bin/m68k-amigaos-gcc
+  STRIP   = $(PREFIX)/bin/m68k-amigaos-strip
+  OBJDUMP = $(PREFIX)/bin/m68k-amigaos-objdump
 
   # Compiler/Linker flags
   CPU	    = -m68020-60 -msoft-float
