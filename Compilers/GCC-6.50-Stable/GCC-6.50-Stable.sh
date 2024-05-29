@@ -57,11 +57,9 @@ echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
 make all $CPU PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Part 5: SDL
-# echo -e "\e[1m\e[37m5. Adding SDL include and lib files\e[0m\e[36m"
-# cd $ARCHIVES
-# cp -r -f SDL/* $PREFIX/$TARGET >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-# cp -r -f sys-include/* $PREFIX/$TARGET/sys-include >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-# rm -r -f $PREFIX/include/SDL* >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+echo -e "\e[1m\e[37m5. Adding SDL TTF and Freetype files\e[0m\e[36m"
+cd $ARCHIVES
+cp -r -f SDL/* $PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
 # Part 6: MUI
 echo -e "\e[1m\e[37m6. Unpacking MUI5 Archive\e[0m\e[36m"
