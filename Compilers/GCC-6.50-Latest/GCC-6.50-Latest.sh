@@ -7,15 +7,19 @@ WORKSPACE="`pwd`"
 ARCHIVES=$WORKSPACE/_archives
 BUILDS=$WORKSPACE/_builds
 SOURCES=$WORKSPACE/_sources
-PATCHES=$WORKSPACE/_patches
+PATCHES=$WORKSPACE/_install/patches
 LOGFILES=$WORKSPACE/_logs
 PREFIX=$WORKSPACE/ApolloCrossDev
 TARGET=m68k-amigaos
 export PATH=$PREFIX/bin:$PATH
 
+MUI5_ARCHIVE=MUI-5.0-20210831-os3.lha
+
 # INIT Terminal
 clear
-echo -e "\e[1m\e[37m########## \e[31mApollo\e[1;30mCrossDev \e[36m$EDITION\e[30m v$VERSION \e[37m ##########\e[0m\e[36m"
+echo -e "\e[1m\e[37m########## \e[31mApollo\e[1;30mCrossDev \e[36m$EDITION\e[30m v$VERSION \e[37m ###########\e[0m\e[36m"
+echo -e "\e[1m\e[37m#"
+echo -e "\e[1m\e[37m# \e[0mBuilding with CPU=$CPU | If Build fails set CPU=-j1\e[0m\e[36m"
 echo " "
 echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
 
@@ -51,13 +55,22 @@ make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
 make all $CPU PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
-# Part 7: SDL
-echo -e "\e[1m\e[37m7. Adding SDL include and lib files\e[0m\e[36m"
+# Part 5: SDL
+echo -e "\e[1m\e[37m5. Adding SDL TTF and Freetype files\e[0m\e[36m"
 cd $ARCHIVES
-cp -r -f sys-include/* $PREFIX/$TARGET/sys-include >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
+cp -r -f SDL/* $PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
-# PART 8: Cleanup
-echo -e "\e[1m\e[37m8. Cleanup\e[0m\e[36m"
+# Part 6: MUI
+echo -e "\e[1m\e[37m6. Unpacking MUI5 Archive\e[0m\e[36m"
+cd $ARCHIVES/MUI5
+lha -xw=$SOURCES/MUI5 $MUI5_ARCHIVE >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+#mkdir $PREFIX/$TARGET
+#mkdir $PREFIX/$TARGET/include
+cp -rf $SOURCES/MUI5/SDK/MUI/C/include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -rf $SOURCES/MUI5/SDK/MUI/C/lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+# PART 7: Cleanup
+echo -e "\e[1m\e[37m7. Cleanup\e[0m\e[36m"
 cd $PREFIX
 rm -rf info
 rm -rf man
