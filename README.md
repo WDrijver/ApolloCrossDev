@@ -34,3 +34,9 @@ GCC-6.50-Stable is the Apollo controlled version that is advised for your Cross 
 GCC-6.50-Apollo-XXXX versions are all alpha/beta versions for testing new Apollo 68080 instructions.
 GCC-6.50-Apollo-ALL1 is the alpha/beta version in which all new Apollo-XXXX instructions are included.
 GCC-6.50-Latest is the latest version from Stefan -Bebbo- Franke repository, not under Apollo control.
+
+Resources:
+1. Apollo 68080 AMMX/SAGA Basic Documentation            : http://apollo-core.com/index.htm?page=coding
+2. Apollo Devpac - Native V4 MonAm Assembler + Debugger  : Integrated in ApolloOS (http://www.apollo-core.com/downloads/ApolloOS_R9.4.2-Release.img.zip)
+3. Apollo ASM-ONE - Native V4 Assembler                  : Integrated in ApolloOS (http://www.apollo-core.com/downloads/ApolloOS_R9.4.2-Release.img.zip)
+4. 
