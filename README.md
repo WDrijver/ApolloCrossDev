@@ -43,5 +43,6 @@ NOTE: ApolloCrossDev GCC-6.50-Stable includes compiling SDL v1.2 and MUI 5.0 lib
 
 Other Resources:
 1. Apollo 68080 AMMX/SAGA Basic Documentation            : http://apollo-core.com/index.htm?page=coding
-2. Apollo Devpac - Native V4 MonAm Assembler + Debugger  : Integrated in ApolloOS (http://www.apollo-core.com/downloads/ApolloOS_R9.4.2-Release.img.zip)
-3. Apollo ASM-ONE - Native V4 Assembler                  : Integrated in ApolloOS (http://www.apollo-core.com/downloads/ApolloOS_R9.4.2-Release.img.zip)
+2. Apollo Devpac - Native V4 MonAm Assembler + Debugger  : Integrated in ApolloOS
+3. Apollo ASM-ONE - Native V4 Assembler                  : Integrated in ApolloOS
+4. ApolloOS - Apollo V4 Open Source OS Distro Image      : http://www.apollo-core.com/downloads/ApolloOS_R9.4.2-Release.img.zip
