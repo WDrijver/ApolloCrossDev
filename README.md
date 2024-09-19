@@ -12,7 +12,7 @@ Requirements:
 1. Debian 12 amd64 (Intel) | arm64 (Mac Silicon) installed in a VM (8Gb+ RAM|100Gb+ HD|8+ Cores) 
 2. Microsoft Visual Studio Code downloaded and installed
 3. Basic Git tools installed from CLI (sudo apt install git)
-4. ApolloExplorer (https://github.com/ronybeck/ApolloExplorer)
+4. Download and install ApolloExplorer (https://github.com/ronybeck/ApolloExplorer)
 
 Installation:
 1. Open Microsoft Visual Studio Code
