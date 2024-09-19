@@ -9,7 +9,7 @@ ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup Cro
 (*) Apollo Development Team advises to work with the GCC 6.5.0 "Stable" Toolchain (see below).
 
 Requirements:
-1. Debian or Ubuntu x64 (Intel CPU) or Debian 12 ARM64 (Mac Silicon) installed in a Virtual Machine 
+1. Debian 12 x64 (Intel CPU) or Debian 12 ARM64 (Mac Silicon) installed in a Virtual Machine 
 2. Microsoft Visual Studio Code downloaded and installed
 3. Basic Git tools installed from CLI (sudo apt install git)
 4. ApolloExplorer (https://github.com/ronybeck/ApolloExplorer)
