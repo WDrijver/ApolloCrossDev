@@ -1,4 +1,4 @@
-ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup Cross Compilers on Linux (Debian/Ubuntu x64 architecture only), offering a selection of the best toolchains which I  reverse engineered from the excellent work by some of the most skilled and dedicated Amiga developers in the past 20 years;
+ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup Cross Compilers on Linux, offering a selection of the best toolchains which I  reverse engineered from the excellent work by some of the most skilled and dedicated Amiga developers in the past 20 years;
 
 - GCC-2.95.3        : based on toolchain-m68k by Krystian Bacławski (cahirwpz)
 - GCC-3.4.6         : based on NetSurf Toolchain by NetSurf Development Team
