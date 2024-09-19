@@ -1,4 +1,4 @@
-ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup Cross Compilers on Linux, offering a selection of the best toolchains which I  reverse engineered from the excellent work by some of the most skilled and dedicated Amiga developers in the past 20 years;
+ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup Cross Compilers on Ubuntu Linux, offering a selection of the best toolchains which I  reverse engineered from the excellent work by some of the most skilled and dedicated Amiga developers in the past 20 years;
 
 - GCC-2.95.3        : based on toolchain-m68k by Krystian Bacławski (cahirwpz)
 - GCC-3.4.6         : based on NetSurf Toolchain by NetSurf Development Team
@@ -9,7 +9,7 @@ ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup Cro
 (*) Apollo Development Team advises to work with the GCC 6.5.0 "Stable" Toolchain (see below).
 
 Requirements:
-1. Debian 12 amd64 (Intel) | arm64 (Mac Silicon) installed in a VM (8Gb+ RAM|100Gb+ HD|8+ Cores) 
+1. Ubuntu 24.04 LTS amd64 (Intel) | arm64 (Mac Silicon) installed in a VM (8Gb+ RAM|100Gb+ HD|8+ Cores) 
 2. Microsoft Visual Studio Code downloaded and installed
 3. Basic Git tools installed from CLI (sudo apt install git)
 4. Download and install ApolloExplorer (https://github.com/ronybeck/ApolloExplorer)
