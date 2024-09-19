@@ -39,7 +39,8 @@ GCC-6.50-Apollo-XXXX versions are all alpha/beta versions for testing new Apollo
 GCC-6.50-Apollo-ALL1 is the alpha/beta version in which all new Apollo-XXXX instructions are included.
 GCC-6.50-Latest is the latest version from Stefan -Bebbo- Franke repository, not under Apollo control.
 
-NOTE: ApolloCrossDev GCC-6.50-Stable includes compiling SDL v1.2 and MUI 5.0 libraries
+LIBRARIES: ApolloCrossDev GCC-6.50-Stable includes cross compiling SDL v1.2 and MUI 5.0 libraries
+INCLUDES : ApolloCrossDev GCC-6.50-Stable includes AmigaOS 3.9 | 3.2 NDK (C/C++) and DevPac (ASM)
 
 Other Resources:
 1. Apollo 68080 AMMX/SAGA Basic Documentation            : http://apollo-core.com/index.htm?page=coding
