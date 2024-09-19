@@ -1,10 +1,10 @@
 ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup Cross Compilers on Linux (Debian/Ubuntu x64 architecture only), offering a selection of the best toolchains which I  reverse engineered from the excellent work by some of the most skilled and dedicated Amiga developers in the past 20 years;
 
-> GCC-2.95.3        : based on toolchain-m68k by Krystian Bacławski (cahirwpz)
-> GCC-3.4.6         : based on NetSurf Toolchain by NetSurf Development Team
-> GCC 6.5.0         : based on Amiga-GCC by Stefan Franke (Bebbo) - PREFERRED CHOICE (*)
-> GCC 12.2          : based on vscode-amiga-debug from Abyss (Bartman)
-> VBCC/VASM/VLINK   : based on Hasenbraten VBCC from Dr.Barthelmann & Frank Wille
+- GCC-2.95.3        : based on toolchain-m68k by Krystian Bacławski (cahirwpz)
+- GCC-3.4.6         : based on NetSurf Toolchain by NetSurf Development Team
+- GCC 6.5.0         : based on Amiga-GCC by Stefan Franke (Bebbo) - PREFERRED CHOICE (*)
+- GCC 12.2          : based on vscode-amiga-debug from Abyss (Bartman)
+- VBCC/VASM/VLINK   : based on Hasenbraten VBCC from Dr.Barthelmann & Frank Wille
 
 (*) Apollo Development Team advises to work with the GCC 6.5.0 "Stable" Toolchain (see below).
 
