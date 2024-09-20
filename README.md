@@ -16,17 +16,18 @@ Requirements:
 
 Installation:
 1. Open VS-Code, Open Command Palette (CTRL+Shift+P), Select "git clone" and type "https://github.com/WDrijver/ApolloCrossDev"  
-3. Right-ClickCopy repository hyperlink | CTRL+Shift+P git clone | Paste repository hyperlink
-4. Click "Open" and accept to "trust the authors" and Click "Open Workspace" in the right corner popup window
-5. Click "Compilers" in the Explorer (left) to collapse all supported Compiler Toolchains
-6. Right-Click on the Compiler of Choice (Preferredd = GCC-6.50-Stable) and Select "Open in integrated Terminal"
-7. In the terminal windows type "./<Compiler>.sh" to install (for example: "./GCC-6.50-Stable.sh")
+2. After download Click "Open" and accept "trust the authors" and Click "Open Workspace" in the right corner popup window
+3. Click "Compilers" in the Explorer (left) to collapse all supported Compiler Toolchains
+4. Right-Click on the Compiler of Choice (Preferredd = GCC-6.50-Stable) and Select "Open in integrated Terminal"
+5. In the terminal windows type "./<Compiler>.sh" to install (for example: "./GCC-6.50-Stable.sh")
 
 For further ApolloCrossDev installation help a video guide is available at: xxx
 
 Test Compiler:
-1. Right-click Projects/hello-amiga folder and choose "Open in Integrated Terminal"
-2. Type 
+1. Right-click Projects/Hello-Intuition folder and choose "Open in Integrated Terminal"
+2. Type "make -f <Makefile Name>" to compile (for example: "make -f Makefile-GCC-6.50")
+3. Open ApolloExplorer Client in Ubuntu and Open ApolloExplorer Server on Apollo V4
+4. Browse to the preferred location on V4 and drag Hello-Intuition file 
 
 Create Project:
 1. Create Projects/<mysource> folder to include all your *.c and *.s sourcefiles (example: Projects/hello)
