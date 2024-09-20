@@ -9,18 +9,18 @@ ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup Cro
 (*) Apollo Development Team advises to work with the GCC 6.5.0 "Stable" Toolchain (see below).
 
 Requirements:
-1. Ubuntu 24.04 LTS amd64 (Intel) | arm64 (Mac Silicon) installed in a VM (8Gb+ RAM|100Gb+ HD|8+ Cores) 
-2. Microsoft Visual Studio Code downloaded and installed
-3. Basic Git tools installed from CLI (sudo apt install git)
-4. Download and install ApolloExplorer (https://github.com/ronybeck/ApolloExplorer)
+1. Ubuntu 24.x LTS amd64 (Intel) | arm64 (Mac Silicon) installed in a VM (8Gb+ RAM|100Gb+ HD|8+ Cores) 
+2. Microsoft Visual Studio Code (VS-Code) downloaded and installed (https://code.visualstudio.com)
+3. Git tools installed from CLI (open terminal and type "sudo apt install git")
+4. ApolloExplorer downloaded and installed (https://github.com/ronybeck/ApolloExplorer)
 
 Installation:
-1. Open Microsoft Visual Studio Code
-2. Clone ApolloCrossDev: Copy repository hyperlink | CTRL+Shift+P git clone | Paste repository hyperlink
-3. Click "Open" and after loading is finished Click "Open Workspace" in the right corner popup window
-4. Click "Compilers" in the Explorer (left) to collapse all supported Compiler Toolchains
-5. Right-Click on the Compiler of Choice (Preferredd = GCC-6.50-Stable) and Select "Open in integrated Terminal"
-6. In the terminal windows type "./<Compiler>.sh" to install (for example: "./GCC-6.50-Stable.sh")
+1. Open VS-Code, Open Command Palette (CTRL+Shift+P), Select "git clone" and type "https://github.com/WDrijver/ApolloCrossDev"  
+3. Right-ClickCopy repository hyperlink | CTRL+Shift+P git clone | Paste repository hyperlink
+4. Click "Open" and accept to "trust the authors" and Click "Open Workspace" in the right corner popup window
+5. Click "Compilers" in the Explorer (left) to collapse all supported Compiler Toolchains
+6. Right-Click on the Compiler of Choice (Preferredd = GCC-6.50-Stable) and Select "Open in integrated Terminal"
+7. In the terminal windows type "./<Compiler>.sh" to install (for example: "./GCC-6.50-Stable.sh")
 
 For further ApolloCrossDev installation help a video guide is available at: xxx
 
