@@ -1,64 +1,62 @@
-/* Taken from: http://aros.sourceforge.net/documentation/developers/zune-application-development.php */
+#include "Hello-MUI.h"
 
-#include <exec/types.h>
-#include <libraries/mui.h>
+int main(int argc,char *argv[])
+{
+	Object *app,*win1;
+	ULONG signals;
+	BOOL running = TRUE;
+	
+	if (!Open_Libs())
+	{
+		printf("Cannot open libs\n");
+		return(0);
+	}
 
-#include <proto/exec.h>
-#include <proto/intuition.h>
-#include <clib/muimaster_protos.h>
-#include <clib/alib_protos.h>
+	app = ApplicationObject,
+		MUIA_Application_Title      , "Project",
+		MUIA_Application_Version    , "$VER: Project X.X (XX.XX.XX)",
+		MUIA_Application_Copyright  , " ",
+		MUIA_Application_Author     , " ",
+		MUIA_Application_Description, " ", 
+		MUIA_Application_Base       , " ",
 
-/* Otherwise auto open will try version 37, and muimaster.library has version
- * 19.x for MUI 3.8 */
-int __oslibversion = 0;
+		MUIA_Application_Window, win1 = WindowObject,
+			MUIA_Window_Title, "Window Title",
+			MUIA_Window_ID   , MAKE_ID('E','M','R','T'),
+			WindowContents, VGroup,
+				Child, MUI_MakeObject(MUIO_Label,"Hello Apollo V4, I am MUI Application",NULL),
+			End,
+		End,
+	End;
 
-/* We don't use command line arguments. */
-int __nocommandline = 1;
+	if (!app)
+	{
+	printf("Cannot create application.\n");
+	return(0);
+	}
 
-int main(void) {
-  Object *wnd, *app, *but;
+        DoMethod(win1, MUIM_Notify, MUIA_Window_CloseRequest, TRUE,
+          app, 2, MUIM_Application_ReturnID, MUIV_Application_ReturnID_Quit);
 
-  // GUI creation
-  app = ApplicationObject,
-      SubWindow, wnd = WindowObject,
-        MUIA_Window_Title, "Hello world!",
-        WindowContents, VGroup,
-          Child, TextObject,
-            MUIA_Text_Contents, "\33cHello world!\nHow are you?",
-          End,
-          Child, but = SimpleButton("_Ok"),
-          End,
-        End,
-      End;
+    	set(win1,MUIA_Window_Open,TRUE);// open window
+    
+	while(running)
+	{
+		ULONG id = DoMethod(app,MUIM_Application_Input,&signals);
 
-  if (app != NULL) {
-    ULONG sigs = 0;
+		switch(id)
+		{
+				case MUIV_Application_ReturnID_Quit:
+					if((MUI_RequestA(app,0,0,"Quit?","_Yes|_No","\33cAre you sure?",0)) == 1)
+						running = FALSE;
+				break;	
+		}
+		if(running && signals) Wait(signals);
+	}
 
-    // Click Close gadget or hit Escape to quit
-    DoMethod(wnd, MUIM_Notify, MUIA_Window_CloseRequest, TRUE,
-             (APTR)app, 2,
-             MUIM_Application_ReturnID, MUIV_Application_ReturnID_Quit);
+	set(win1,MUIA_Window_Open,FALSE);
 
-    // Click the button to quit
-    DoMethod(but, MUIM_Notify, MUIA_Pressed, FALSE,
-             (APTR)app, 2,
-             MUIM_Application_ReturnID, MUIV_Application_ReturnID_Quit);
-
-    // Open the window
-    set(wnd, MUIA_Window_Open, TRUE);
-
-    while((LONG)DoMethod(app, MUIM_Application_NewInput, (APTR)&sigs)
-          != MUIV_Application_ReturnID_Quit) {
-      if (sigs) {
-        sigs = Wait(sigs | SIGBREAKF_CTRL_C);
-        if (sigs & SIGBREAKF_CTRL_C)
-          break;
-      }
-    }
-
-    // Destroy our application and all its objects
-    MUI_DisposeObject(app);
-  }
-
-  return 0;
+    if(app) MUI_DisposeObject(app);
+	Close_Libs();
+	exit(TRUE);
 }

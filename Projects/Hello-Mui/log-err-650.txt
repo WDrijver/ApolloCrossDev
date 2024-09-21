@@ -1,5 +1,0 @@
-/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Stable/ApolloCrossDev/lib/gcc/m68k-amigaos/6.5.0b/../../../../m68k-amigaos/bin/ld: ./Hello-MUI.o: in function `main':
-./Hello-MUI.o:(.text+0x6e): undefined reference to `MUI_MakeObject'
-/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Stable/ApolloCrossDev/lib/gcc/m68k-amigaos/6.5.0b/../../../../m68k-amigaos/bin/ld: ./Hello-MUI.o:(.text+0x74): undefined reference to `MUI_NewObject'
-/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Stable/ApolloCrossDev/lib/gcc/m68k-amigaos/6.5.0b/../../../../m68k-amigaos/bin/ld: ./Hello-MUI.o:(.text+0x192): undefined reference to `MUI_DisposeObject'
-collect2: error: ld returned 1 exit status

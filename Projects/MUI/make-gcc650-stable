@@ -1,157 +1,75 @@
-#/***************************************************************************
-#
-# Magic User Interface - MUI
-# Copyright (C) 1992-2004 by Stefan Stuntz <stefan@stuntz.com>
-# All Rights Reserved.
-#
-# This program/documents may not in whole or in part, be copied, photocopied
-# reproduced, translated or reduced to any electronic medium or machine
-# readable form without prior consent, in writing, from the above authors.
-#
-# With this document the authors makes no warrenties or representations,
-# either expressed or implied, with respect to MUI. The information
-# presented herein is being supplied on an "AS IS" basis and is expressly
-# subject to change without notice. The entire risk as to the use of this
-# information is assumed by the user.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-#
-# IN NO EVENT WILL THE AUTHORS BE LIABLE FOR DIRECT, INDIRECT, INCIDENTAL,
-# OR CONSEQUENTIAL DAMAGES RESULTING FROM ANY CLAIM ARISING OUT OF THE
-# INFORMATION PRESENTED HEREIN, EVEN IF IT HAS BEEN ADVISED OF THE
-# POSSIBILITIES OF SUCH DAMAGES.
-#
-# MUI Official Support Site:  http://www.sasg.com/
-#
-# $Id$
-#
-#***************************************************************************/
+# ApolloCrossDev Makefile template for GCC-6.50 v0.9
+# 20-9-2024
+# Willem Drijver
 
-# HOST and OS forced to AmigaOS / OS3
-HOST  = AmigaOS
-OS    = os3
+# Define Shell Environment
+PWD = $(shell pwd)
+DIR = $(notdir $(shell pwd))
 
-#############################################
-# define common commands we use in this
-# makefile. Please note that each of them
-# might be overridden on the commandline.
+# Define ApolloCrossDev
+PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Stable/ApolloCrossDev
+TARGET 	= m68k-amigaos
+ACP 	= $(PWD)/../../acp
 
-# common commands
-RM      = rm -f #delete force
-RMDIR   = rm -rf #delete force all
-MKDIR   = mkdir -p #makedir force all
-CHMOD   = chmod 755 #protect FLAGS=rwed
-CAT     = cat #type
-CC      = gcc
-STRIP   = strip
-OBJDUMP = objdump
+# Define GNU C-Compiler Type (C = Default, switch comment to change to C++)
+C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc
+# C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-g++
 
-# path definitions
-CDUP   = /
-CDTHIS =
-NIL    = NIL:
+# Define Standard C-Libraries and Headers (libnix = Default, switch comments to change to clib2)
+C_LIB		= -noixemul
+# C_LIB = -mcrt=clib2
+C_LIBS_CLB	= $(PREFIX)/$(TARGET)/libnix/lib
+# C_LIBS_CLB = $(PREFIX)/$(TARGET)/clib2/lib
+C_INCL_CLB	= $(PREFIX)/$(TARGET)/libnix/include
+# C_INCL_CLB  = $(PREFIX)/$(TARGET)/clib2/include
 
-###########################################################################
-# CPU and DEBUG can be defined outside, defaults to above
-# using e.g. "make DEBUG= CPU=-mcpu=603e" produces optimized non-debug
-# PPC-603e version
-#
-# OPTFLAGS are disabled by DEBUG normally!
-#
-# ignored warnings are:
-# none - because we want to compile with -Wall all the time
+# Define Additional Libraries
+C_LIBS_SDL	= -lSDL -lSDL_ttf -lfreetype
+C_LIBS_MUI	= -lmui
+C_LIBS_MATH	= -lm
+C_LIBS_ALL 	= $(C_LIBS_SDL) $(C_LIBS_MUI) $(C_LIBS_MATH) 
 
-# Common compiler/linker flags
-WARN       = -W -Wall -Wwrite-strings -Wpointer-arith -Wsign-compare -fno-strict-aliasing #-Wunreachable-code
-OPTFLAGS   = -O3 -fomit-frame-pointer
-DEBUG      = -fno-omit-frame-pointer
-DEBUGSYM   = -g -gstabs
-CFLAGS     = -I. -I$(INCDIR)  $(CPU) $(WARN) $(OPTFLAGS) $(DEBUG) $(DEBUGSYM) -DAMIGAOS
-LDFLAGS    = $(CPU) $(DEBUGSYM)
-LDLIBS     = -L$(LIB) -lm
-STRIPFLAGS = --preserve-dates -R.comment -R.sdata2 -S
+#Define Additional Headers
+C_INCL_SYS	= $(PREFIX)/$(TARGET)/sys-include
+C_INCL_NDK13= $(PREFIX)/$(TARGET)/ndk13-include
+C_INCL_NDK39= $(PREFIX)/$(TARGET)/ndk39-include
+C_INCL_NDK32= $(PREFIX)/$(TARGET)/ndk32-include/Include_H
+C_INCL_GL	= $(PREFIX)/$(TARGET)/include/GL
+C_INCL_SDL	= $(PREFIX)/$(TARGET)/include/SDL
+C_INCL_MUI	= $(PREFIX)/$(TARGET)/include/MUI
+C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK32)
 
-# different options per target OS
-ifeq ($(OS), os4)
+# Define C Options
+C_OPTIONS 	= -O3 -m68080 -m68881 -fomit-frame-pointer -ffast-math -DREGPARM=4 -DM68K=1 -w
+C_DEFINES 	= -DNO_INLINE_STDARG -D_TIMEVAL_DEFINED 
+C_FLAGS = $(C_LIB) $(C_OPTIONS) $(C_DEFINES) $(C_INCL_ALL) $(C_LIBS_ALL)
 
-  ##############################
-  # AmigaOS4
+# Define ASM Compiler
+S_COMPILER = $(PREFIX)/bin/vasmm68k_mot
 
-  # Compiler/link/strip commands
-  ifneq ($(HOST), AmigaOS4)
-    CC      = ppc-amigaos-gcc
-    STRIP   = ppc-amigaos-strip
-    OBJDUMP = ppc-amigaos-objdump
-  else
-    HCFLAGS += -mcrt=newlib
-  endif
+# Define ASM Includes
+S_INCLUDE 	= $(PREFIX)/$(TARGET)/devpac/Include
+S_LIBS		= $(PREFIX)/$(TARGET)/devpac/Libs	
 
-  # Compiler/Linker flags
-  CRT      = newlib
-  CPU      = -mcpu=powerpc #-mstrict-align
-  WARN     += -Wdeclaration-after-statement -Wdisabled-optimization
-  REDEFINE = -DCoerceMethod=ICoerceMethod -DDoMethod=IDoMethod \
-             -DDoSuperMethod=IDoSuperMethod -DDoSuperMethodA=IDoSuperMethodA
-  CFLAGS   += -mcrt=$(CRT) -D__USE_INLINE__ -D__NEW_TIMEVAL_DEFINITION_USED__ -D__USE_CLASSIC_MINTERM__ \
-              $(REDEFINE) -Wa,-mregnames
-  LDFLAGS  += -mcrt=$(CRT)
-  DEMOLIBS = -lauto
-  CFGFLAGS = -DOS4
+# Define ASM Options
+S_FLAGS = -Fhunk -m68080 -m68881 -opt-speed -I$(S_INCLUDE)
 
-else
-ifeq ($(OS), os3)
+# Define Object Linker
+O_LINKER = $(PREFIX)/bin/m68k-amigaos-gcc
 
-  ##############################
-  # AmigaOS3
+# Define Source and Object Directory
+C_SOURCEDIR = .
+S_SOURCEDIR = .
+C_OBJECTDIR = .
+S_OBJECTDIR = .
 
-  # Compiler/link/strip commands
-  CC      = $(PREFIX)/bin/m68k-amigaos-gcc
-  STRIP   = $(PREFIX)/bin/m68k-amigaos-strip
-  OBJDUMP = $(PREFIX)/bin/m68k-amigaos-objdump
+# Define Object Filelist
+C_FILES = $(wildcard $(C_SOURCEDIR)/*.c)
+S_FILES = $(wildcard $(S_SOURCEDIR)/*.s)
+O_FILES = $(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES))
 
-  # Compiler/Linker flags
-  CPU	    = -m68020-60 -msoft-float
-  CFLAGS  += -I./include/netinclude -DNO_INLINE_STDARG -D__CLIB2__ -D__amigaos3__ -mcrt=clib2
-  LDLIBS  += -ldebug -lmui -lm
-
-
-endif
-endif
-
-# override some variables for non-native builds (cross-compiler)
-ifneq ($(HOST), AmigaOS)
-ifneq ($(HOST), AmigaOS4)
-    # when we end up here this is either a unix or Aros host
-    # so lets use unix kind of commands
-    RM      = rm -f
-    RMDIR   = rm -rf
-    MKDIR   = mkdir -p
-    CHMOD   = chmod 755
-    CAT     = cat
-
-    CDUP   = ../
-    CDTHIS = ./
-    NIL    = /dev/null
-endif
-endif
-
-# Directories
-PREFIX    = $(PWD)/../../Compilers/GCC-6.50-Stable/ApolloCrossDev
-TARGET    = m68k-amigaos
-INCDIR    = $(PREFIX)/$(TARGET)/clib2/include
-
-# CPU and DEBUG can be defined outside, defaults to above
-# using e.g. "make DEBUG= CPU=-m68060" produces optimized non-debug 68060 version
-#
-# OPTFLAGS are disabled by DEBUG normally!
-#
-# ignored warnings are:
-# none - because we want to compile with -Wall all the time
-#
-
-DEMOS = Aboutbox     \
+# Define Executable Name
+EXE = Aboutbox     \
         AppWindow    \
         Balancing    \
         BoopsiDoor   \
@@ -188,35 +106,46 @@ DEMOS = Aboutbox     \
         Virtual      \
         WbMan
 
-ifeq ($(OS), os3)
-DEMOS += WbMan
-endif
+# Make Project (Init -> Build -> Clean -> Exit)
+all: init clean build upload exit
 
-#
+# Build Executable
+build: $(EXE)
 
-.PHONY: all
-all: $(DEMOS)
+# Link all Objects from Filelist together
+$(EXE) : $(O_FILES) 
+	$(O_LINKER) $< $(C_FLAGS) -o $@  >>log-650.txt 2>>log-err-650.txt
 
-#
+# Compile all C-Sources to Objects 
+$(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
+	$(C_COMPILER) -c $(C_FLAGS) -o $@ $< >>log-650.txt 2>>log-err-650.txt
 
-#
+# Compile all ASM-Sources to Objects
+$(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
+	$(S_COMPILER) $(S_FLAGS) -o $@ $< >>log-650.txt 2>>log-err-650.txt
 
-.PHONY: strip
-strip: $(DEMOS)
-	-$(STRIP) $(STRIPFLAGS) $^
-
-.PHONY: clean
+# Clean Project
 clean:
-	@echo "  CLEAN"
-	@-$(RM) $(DEMOS) $(addsuffix .debug,$(DEMOS))
+	rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o log*.txt $(EXE) log-650.txt log-err-650.txt
 
-.PHONY: cleanall
-cleanall: clean
-	@echo "  CLEANALL"
+.phony: init
 
-%: %.c demo.h
-	@echo "  CC/LD $@.debug"
-	@$(CC) $(CFLAGS) -D__USE_OLD_TIMEVAL__ -I. $< -o $@.debug $(LDLIBS) $(DEMOLIBS)
-	@echo "  CC/LD $@"
-	@$(STRIP) $(STRIPFLAGS) -o $@ $@.debug
-	@$(CHMOD) $@
+init:
+	clear
+	@echo "\e[37m------------------------------------------------------------------\e[0m"
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-6.50-Stable Edition v0.8\e[0m"    
+	@echo "\e[36mC-Sources : \e[37m$(C_FILES)\e[0m"
+	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
+	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"
+	@echo "\e[37m------------------------------------------------------------------\e[30m"
+
+upload:
+	@echo "\e[37m------------------------------------------------------------------\e[0m"
+	@echo "\e[1;31mApollo\e[1;30mExplorer\e[37m Upload\e[30m"
+	@$(ACP) $(EXE) "V4SA:RAM Disk/"
+
+exit:
+	@echo "\e[37m------------------------------------------------------------------\e[0m"
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[32mCompile Successful\e[0m"
+	@echo "\e[37m------------------------------------------------------------------\e[0m"
+	@echo " "

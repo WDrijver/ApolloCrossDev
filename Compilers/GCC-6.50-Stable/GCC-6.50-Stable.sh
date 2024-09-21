@@ -1,7 +1,7 @@
-# ApolloCrossDev GCC-6.50 - Install Script v0.8 - Stable from WD Repo (= Bebbo December 2023, before starting 68080 changes)
+# ApolloCrossDev GCC-6.50 - Install Script v0.9 - Stable from WD Repo (= Bebbo December 2023, before starting 68080 changes)
 
 EDITION=GCC-6.50
-VERSION=0.8
+VERSION=0.9
 CPU=-j16
 
 WORKSPACE="`pwd`"
@@ -15,6 +15,7 @@ TARGET=m68k-amigaos
 export PATH=$PREFIX/bin:$PATH
 
 MUI5_ARCHIVE=MUI-5.0-20210831-os3.lha
+NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
 
 # INIT Terminal
 clear
@@ -57,21 +58,37 @@ echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
 make all $CPU PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Part 5: SDL
-echo -e "\e[1m\e[37m5. Adding SDL TTF and Freetype files\e[0m\e[36m"
+echo -e "\e[1m\e[37m5. Adding Open-GL, SDL, TTF and FreeType\e[0m\e[36m"
+cd $PREFIX
+cp -r -f $PREFIX/include/GL $PREFIX/$TARGET/include/GL >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+cp -r -f $PREFIX/include/gdb $PREFIX/$TARGET/include/GDB >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+cp -r -f $PREFIX/include/SDL $PREFIX/$TARGET/include/SDL >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+cp -r -f $PREFIX/include/SDL_*.* $PREFIX/$TARGET/include/SDL  >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+cp -r -f $PREFIX/lib/libSDL* $PREFIX/$TARGET/lib >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+rm -r -f $PREFIX/lib/libSDL* >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+rm -r -f $PREFIX/include >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cd $ARCHIVES
-cp -r -f SDL/* $PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+cp -r -f SDL/* $PREFIX/$TARGET >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
 # Part 6: MUI
-echo -e "\e[1m\e[37m6. Unpacking MUI5 Archive\e[0m\e[36m"
+echo -e "\e[1m\e[37m6. Adding MUI5\e[0m\e[36m"
 cd $ARCHIVES/MUI5
 lha -xw=$SOURCES/MUI5 $MUI5_ARCHIVE >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-#mkdir $PREFIX/$TARGET
-#mkdir $PREFIX/$TARGET/include
 cp -rf $SOURCES/MUI5/SDK/MUI/C/include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -rf $SOURCES/MUI5/SDK/MUI/C/lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-# PART 7: Cleanup
-echo -e "\e[1m\e[37m7. Cleanup\e[0m\e[36m"
+# PART 7: NDK
+echo -e "\e[1m\e[37m8. Development Kits\e[0m\e[36m"
+mv $PREFIX/$TARGET/ndk-include $PREFIX/$TARGET/ndk39-include
+cd $PREFIX/$TARGET
+git clone --progress https://github.com/WDrijver/DevPac >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
+cd $SOURCES
+wget -nc $NDK32_DOWNLOAD -a  $LOGFILES/part7.log
+mkdir $PREFIX/$TARGET/ndk32-include
+lha -xw=$PREFIX/$TARGET/ndk32-include NDK3.2.lha >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
+
+# PART 8: Cleanup
+echo -e "\e[1m\e[37m8. Cleanup\e[0m\e[36m"
 cd $PREFIX
 rm -rf info
 rm -rf man

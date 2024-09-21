@@ -1,5 +1,5 @@
-# ApolloCrossDev Makefile template for GCC-6.50 v0.8
-# 10-2-2024
+# ApolloCrossDev Makefile template for GCC-6.50 v0.9
+# 20-9-2024
 # Willem Drijver
 
 # Define Shell Environment
@@ -9,34 +9,47 @@ DIR = $(notdir $(shell pwd))
 # Define ApolloCrossDev
 PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Stable/ApolloCrossDev
 TARGET 	= m68k-amigaos
+ACP 	= $(PWD)/../../acp
 
-# Define C-Compiler
+# Define GNU C-Compiler Type (C = Default, switch comment to change to C++)
 C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc
+# C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-g++
 
-# Define C-Library (LibNix = Default, change comments to change to Clib2)
-C_LIB 		= -noixemul
+# Define Standard C-Libraries and Headers (libnix = Default, switch comments to change to clib2)
+C_LIB		= -noixemul
 # C_LIB = -mcrt=clib2
-
-C_INCL_CLB	= $(PREFIX)/$(TARGET)/libnix/include
-# C_INCL_CLB  = $(PREFIX)/$(TARGET)/clib2/include
-C_INCL		= $(PREFIX)/$(TARGET)/include
-C_INCL_SYS	= $(PREFIX)/$(TARGET)/sys-include
-C_INCL_NDK	= $(PREFIX)/$(TARGET)/ndk-include
-C_INCL_ALL 	= -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK)
-
 C_LIBS_CLB	= $(PREFIX)/$(TARGET)/libnix/lib
 # C_LIBS_CLB = $(PREFIX)/$(TARGET)/clib2/lib
-C_LIBS_ALL	= -L$(C_LIBS_CLB)
+C_INCL_CLB	= $(PREFIX)/$(TARGET)/libnix/include
+# C_INCL_CLB  = $(PREFIX)/$(TARGET)/clib2/include
+
+# Define Additional Libraries
+C_LIBS_SDL	= -lSDL -lSDL_ttf -lfreetype
+C_LIBS_MUI	= -lmui
+C_LIBS_MATH	= -lm
+C_LIBS_ALL 	= $(C_LIBS_SDL) $(C_LIBS_MUI) $(C_LIBS_MATH) 
+
+#Define Additional Headers
+C_INCL_SYS	= $(PREFIX)/$(TARGET)/sys-include
+C_INCL_NDK13= $(PREFIX)/$(TARGET)/ndk13-include
+C_INCL_NDK39= $(PREFIX)/$(TARGET)/ndk39-include
+C_INCL_NDK32= $(PREFIX)/$(TARGET)/ndk32-include/Include_H
+C_INCL_GL	= $(PREFIX)/$(TARGET)/include/GL
+C_INCL_SDL	= $(PREFIX)/$(TARGET)/include/SDL
+C_INCL_MUI	= $(PREFIX)/$(TARGET)/include/MUI
+C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK32)
 
 # Define C Options
-C_OPTIONS = -O2 -m68080 -m68881 -fomit-frame-pointer -ffast-math -DREGPARM=4 -DM68K=1 -w
-C_FLAGS = $(C_LIB) $(C_OPTIONS) $(C_INCL_ALL) $(C_LIBS_ALL)
+C_OPTIONS 	= -O3 -m68080 -m68881 -fomit-frame-pointer -ffast-math -DREGPARM=4 -DM68K=1 -w
+C_DEFINES 	= -DNO_INLINE_STDARG -D_TIMEVAL_DEFINED
+C_FLAGS = $(C_LIB) $(C_OPTIONS) $(C_DEFINES) $(C_INCL_ALL) $(C_LIBS_ALL)
 
 # Define ASM Compiler
 S_COMPILER = $(PREFIX)/bin/vasmm68k_mot
 
 # Define ASM Includes
-S_INCLUDE = $(PREFIX)/$(TARGET)/include
+S_INCLUDE 	= $(PREFIX)/$(TARGET)/devpac/Include
+S_LIBS		= $(PREFIX)/$(TARGET)/devpac/Libs	
 
 # Define ASM Options
 S_FLAGS = -Fhunk -m68080 -m68881 -opt-speed -I$(S_INCLUDE)
@@ -56,15 +69,14 @@ S_FILES = $(wildcard $(S_SOURCEDIR)/*.s)
 O_FILES = $(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES))
 
 # Define Executable Name
-EXE = $(DIR)-gcc650
+EXE = $(DIR)
 
 # Make Project (Init -> Build -> Clean -> Exit)
-all: init clean build exit
+all: init clean build upload exit
 
 # Build Executable
 build: $(EXE)
 
-# Link all Objects from Filelist together
 $(EXE) : $(O_FILES) 
 	$(O_LINKER) $(C_FLAGS) $(O_FILES) -o $(EXE) >>log-650.txt 2>>log-err-650.txt
 
@@ -74,7 +86,7 @@ $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
 
 # Compile all ASM-Sources to Objects
 $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
-	$(S_COMPILER) -c $(S_FLAGS) -o $@ $< >>log-650.txt 2>>log-err-650.txt
+	$(S_COMPILER) $(S_FLAGS) -o $@ $< >>log-650.txt 2>>log-err-650.txt
 
 # Clean Project
 clean:
@@ -84,15 +96,20 @@ clean:
 
 init:
 	clear
-	@echo "\e[37m---------------------------------\e[0m"
+	@echo "\e[37m------------------------------------------------------------------\e[0m"
 	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-6.50-Stable Edition v0.8\e[0m"    
 	@echo "\e[36mC-Sources : \e[37m$(C_FILES)\e[0m"
 	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
 	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"
-	@echo "\e[37m---------------------------------\e[30m"
-		
+	@echo "\e[37m------------------------------------------------------------------\e[30m"
+
+upload:
+	@echo "\e[37m------------------------------------------------------------------\e[0m"
+	@echo "\e[1;31mApollo\e[1;30mExplorer\e[37m Upload\e[30m"
+	@$(ACP) $(EXE) "V4SA:RAM Disk/"
+
 exit:
-	@echo "\e[37m---------------------------------\e[0m"
+	@echo "\e[37m------------------------------------------------------------------\e[0m"
 	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[32mCompile Successful\e[0m"
-	@echo "\e[37m---------------------------------\e[0m"
+	@echo "\e[37m------------------------------------------------------------------\e[0m"
 	@echo " "
