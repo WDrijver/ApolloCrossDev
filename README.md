@@ -1,12 +1,10 @@
-ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup Cross Compilers on Ubuntu Linux, offering a selection of the best toolchains which I  reverse engineered from the excellent work by some of the most skilled and dedicated Amiga developers in the past 20 years;
+ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup a Cross Compiler in a Virtual Ubuntu Linux.
 
-- GCC-2.95.3        : based on toolchain-m68k by Krystian Bacławski (cahirwpz)
-- GCC-3.4.6         : based on NetSurf Toolchain by NetSurf Development Team
-- GCC 6.5.0         : based on Amiga-GCC by Stefan Franke (Bebbo) - PREFERRED CHOICE (*)
-- GCC 12.2          : based on vscode-amiga-debug from Abyss (Bartman)
-- VBCC/VASM/VLINK   : based on Hasenbraten VBCC from Dr.Barthelmann & Frank Wille
-
-(*) Apollo Development Team advises to work with the GCC 6.5.0 "Stable" Toolchain (see below).
+Content:
+1. GCC 6.5.0 Toolchain (Apollo optimised Fork from excellent Amiga-GCC by Stefan -Bebbo- Franke)
+2. VASM Assembler (Apollo optimised Assembler from Dr. Volker Barthelsmann & Frank Wille) 
+3. Amiga OS NDK's (1.3, 3.9 and 3.2)
+4. Additional SDK (SDL, FreeType, Open-GL, MUI5)  
 
 Requirements:
 1. Ubuntu 24.x LTS amd64 (Intel) | arm64 (Mac Silicon) installed in a VM (8Gb+ RAM|100Gb+ HD|8+ Cores) 
@@ -33,16 +31,6 @@ Create Project:
 1. Create Projects/<mysource> folder to include all your *.c and *.s sourcefiles (example: Projects/hello)
 2. Copy makefile template from Project/_makefiles into your folder (example: Projects/hello/make-gcc650-stable)
 3. Type "make -f make-xxxyyy" or read make file for further Compile instructions (example: make -f make-gcc650-stable)
-
-GCC-6.50:
-Apollo Team has chosen GCC 6.50 as preferred version for developing software for Apollo V4 Series.
-GCC-6.50-Stable is the Apollo controlled version that is advised for your Cross Development Compiler.
-GCC-6.50-Apollo-XXXX versions are all alpha/beta versions for testing new Apollo 68080 instructions.
-GCC-6.50-Apollo-ALL1 is the alpha/beta version in which all new Apollo-XXXX instructions are included.
-GCC-6.50-Latest is the latest version from Stefan -Bebbo- Franke repository, not under Apollo control.
-
-LIBRARIES: ApolloCrossDev GCC-6.50-Stable includes cross compiling SDL v1.2 and MUI 5.0 libraries
-INCLUDES : ApolloCrossDev GCC-6.50-Stable includes AmigaOS 3.9 | 3.2 NDK (C/C++) and DevPac (ASM)
 
 Other Resources:
 1. Apollo 68080 AMMX/SAGA Basic Documentation            : http://apollo-core.com/index.htm?page=coding
