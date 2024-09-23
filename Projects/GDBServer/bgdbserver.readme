@@ -1,0 +1,12 @@
+Short:        A gdbserver for remote debugging with m68k-amigaos-gdb
+Author:       stefan@franke.ms
+Uploader:     stefan@franke.ms
+Architecture: m68k-amigaos
+Type:         dev/debug
+Version:      1.3
+Replaces:     dev/debug/bgdbserver.lha
+Required:     bsdsocket.library (e.g AmiTCP)
+
+This is a gdbserver for AmigaOS using bsdsocket.library
+to connect via TCP with m68k-amigaos-gdb using `target remote :2345`
+and debug binaries providing stab debug infos.
