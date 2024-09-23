@@ -7,9 +7,10 @@ PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
 
 # Define ApolloCrossDev
-PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Stable/ApolloCrossDev
+PREFIX 	= Compilers/GCC-6.50-Stable/ApolloCrossDev
 TARGET 	= m68k-amigaos
-ACP 	= $(PWD)/../../acp
+ACP 	= ./acp
+PROJECT = Projects/Mul-by-Ten
 
 # Define GNU C-Compiler Type (C = Default, switch comment to change to C++)
 C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc
@@ -42,7 +43,8 @@ C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK32)
 # Define C Options
 C_OPTIONS 	= -O3 -m68080 -m68881 -fomit-frame-pointer -ffast-math -DREGPARM=4 -DM68K=1 -w
 C_DEFINES 	= -DNO_INLINE_STDARG -D_TIMEVAL_DEFINED
-C_FLAGS = $(C_LIB) $(C_OPTIONS) $(C_DEFINES) $(C_INCL_ALL) $(C_LIBS_ALL)
+C_DEBUG		= -g
+C_FLAGS = $(C_LIB) $(C_OPTIONS) $(DEBUG) $(C_DEFINES) $(C_INCL_ALL) $(C_LIBS_ALL)
 
 # Define ASM Compiler
 S_COMPILER = $(PREFIX)/bin/vasmm68k_mot
@@ -52,16 +54,17 @@ S_INCLUDE 	= $(PREFIX)/$(TARGET)/devpac/Include
 S_LIBS		= $(PREFIX)/$(TARGET)/devpac/Libs	
 
 # Define ASM Options
-S_FLAGS = -Fhunk -m68080 -m68881 -opt-speed -I$(S_INCLUDE)
+S_DEBUG		= -linedebug -kick1hunks
+S_FLAGS 	= -Fhunk -m68080 -m68881 -opt-speed $(S_DEBUG) -I$(S_INCLUDE)
 
 # Define Object Linker
 O_LINKER = $(PREFIX)/bin/m68k-amigaos-gcc
 
 # Define Source and Object Directory
-C_SOURCEDIR = .
-S_SOURCEDIR = .
-C_OBJECTDIR = .
-S_OBJECTDIR = .
+C_SOURCEDIR = $(PROJECT)
+S_SOURCEDIR = $(PROJECT)
+C_OBJECTDIR = $(PROJECT)
+S_OBJECTDIR = $(PROJECT)
 
 # Define Object Filelist
 C_FILES = $(wildcard $(C_SOURCEDIR)/*.c)
@@ -69,7 +72,7 @@ S_FILES = $(wildcard $(S_SOURCEDIR)/*.s)
 O_FILES = $(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES))
 
 # Define Executable Name
-EXE = $(DIR)
+EXE = Mul-by-Ten
 
 # Make Project (Init -> Build -> Clean -> Exit)
 all: init clean build upload exit
@@ -78,15 +81,15 @@ all: init clean build upload exit
 build: $(EXE)
 
 $(EXE) : $(O_FILES) 
-	$(O_LINKER) $(C_FLAGS) $(O_FILES) -o $(EXE) >>log-650.txt 2>>log-err-650.txt
+	$(O_LINKER) $(C_FLAGS) $(O_FILES) -g -o $(EXE) >>log-650.txt 2>>log-err-650.txt
 
 # Compile all C-Sources to Objects 
 $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
-	$(C_COMPILER) -c $(C_FLAGS) -o $@ $< >>log-650.txt 2>>log-err-650.txt
+	$(C_COMPILER) -c $(C_FLAGS) -g -o $@ $< >>log-650.txt 2>>log-err-650.txt
 
 # Compile all ASM-Sources to Objects
 $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
-	$(S_COMPILER) $(S_FLAGS) -o $@ $< >>log-650.txt 2>>log-err-650.txt
+	$(S_COMPILER) $(S_FLAGS) -linedebug -kick1hunks -o $@ $< >>log-650.txt 2>>log-err-650.txt
 
 # Clean Project
 clean:
@@ -106,7 +109,8 @@ init:
 upload:
 	@echo "\e[37m------------------------------------------------------------------\e[0m"
 	@echo "\e[1;31mApollo\e[1;30mExplorer\e[37m Upload\e[30m"
-	@$(ACP) $(EXE) "V4SA:RAM Disk/"
+	@$(ACP) $(EXE) "V4SA:Ram Disk/"
+	@mv $(EXE) $(PROJECT)
 
 exit:
 	@echo "\e[37m------------------------------------------------------------------\e[0m"

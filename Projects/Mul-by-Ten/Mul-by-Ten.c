@@ -1,16 +1,13 @@
-#include <stdio.h>
-extern int mul_by_ten(short input);
+#include "Mul_by_Ten.h"
 
 int main()
 {
-    short i;
+    int i;
 
-    mul_by_ten(1);
-
-    for (i = 0; i < 1000; i++)
+    for (i = 0; i < 10; i++)
     {
         printf("Line %d\n", i);
-        printf("10 * %d = %d\n", i, mul_by_ten(i));
+        printf("10 * %d = %d = %d\n", i, 10*i, mul_by_ten(i));
         printf("--------\n");
     }
 

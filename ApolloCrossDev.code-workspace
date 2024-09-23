@@ -7,7 +7,6 @@
 	],
 	"settings": {
 		"files.associations": {
-			"intuition.h": "c"
 		},
 		"C_Cpp.intelliSenseCacheSize": 512,
 		"search.useIgnoreFiles": false,

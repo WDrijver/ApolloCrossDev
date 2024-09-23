@@ -1,0 +1,12 @@
+*.o
+log*.*
+ApolloDemo/ApolloDemo
+bgdbserver/bgdbserver
+BubbleSort/BubbleSort
+Hello-Amiga/Hello-Amiga
+Hello-C/Hello-C
+Hello-Intuition/Hello-Intuition
+Hello-MUI/Hello-MUI
+Mul-by-Ten/Mul-by-Ten
+OpenScreen/OpenScreen
+SAGAModes/SAGAModes

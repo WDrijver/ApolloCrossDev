@@ -3,5 +3,90 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": []
+    "configurations": [
+        {
+            "name": "Debug BubbleSort",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Projects/BubbleSort/BubbleSort",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerServerAddress": "192.168.2.163:2345",
+            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50-Stable/ApolloCrossDev/bin/m68k-amigaos-gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "Debug Mul-by-Ten",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Projects/Mul-by-Ten/Mul-by-Ten",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerServerAddress": "192.168.2.163:2345",
+            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50-Stable/ApolloCrossDev/bin/m68k-amigaos-gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "Debug SAGAModes",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Projects/SAGAModes/SAGAModes",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerServerAddress": "192.168.2.163:2345",
+            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50-Stable/ApolloCrossDev/bin/m68k-amigaos-gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "Debug ApolloDemo",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Projects/ApolloDemo/ApolloDemo",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerServerAddress": "192.168.2.163:2345",
+            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50-Stable/ApolloCrossDev/bin/m68k-amigaos-gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
 }

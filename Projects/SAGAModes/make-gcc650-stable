@@ -7,8 +7,11 @@ PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
 
 # Define ApolloCrossDev
-PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Stable/ApolloCrossDev
+PREFIX 	= Compilers/GCC-6.50-Stable/ApolloCrossDev
 TARGET 	= m68k-amigaos
+ACP		= ./acp
+
+PROJECT = Projects/SAGAModes
 
 # Define ASM Compiler
 S_COMPILER = $(PREFIX)/bin/vasmm68k_mot
@@ -23,29 +26,29 @@ S_FLAGS = -Fhunk -m68080 -m68881 -opt-speed -I$(S_INCLUDE)
 O_LINKER = $(PREFIX)/bin/vlink
 
 # Define Source and Object Directory
-S_SOURCEDIR = .
-S_OBJECTDIR = .
+S_SOURCEDIR = $(PROJECT)
+S_OBJECTDIR = $(PROJECT)
 
 # Define Object Filelist
 S_FILES = $(wildcard $(S_SOURCEDIR)/*.s)
 O_FILES = $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES))
 
 # Define Executable Name
-EXE = $(DIR)-gcc650
+EXE = SAGAModes
 
 # Make Project (Init -> Build -> Clean -> Exit)
-all: init clean build exit
+all: init clean build upload exit
 
 # Build Executable
 build: $(EXE)
 
 # Link all Objects from Filelist together
 $(EXE) : $(O_FILES) 
-	$(O_LINKER) $(O_FILES) -o $(EXE) >>log-650.txt 2>>log-err-650.txt
+	$(O_LINKER) $(O_FILES) -g -o $(EXE) >>log-650.txt 2>>log-err-650.txt
 
 # Compile all ASM-Sources to Objects
 $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
-	$(S_COMPILER) $(S_FLAGS) -o $@ $< >>log-650.txt 2>>log-err-650.txt
+	$(S_COMPILER) $(S_FLAGS) -linedebug -o $@ $< >>log-650.txt 2>>log-err-650.txt
 
 # Clean Project
 clean:
@@ -60,7 +63,13 @@ init:
 	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
 	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"
 	@echo "\e[37m---------------------------------\e[30m"
-		
+
+upload:
+	@echo "\e[37m------------------------------------------------------------------\e[0m"
+	@echo "\e[1;31mApollo\e[1;30mExplorer\e[37m Upload\e[30m"
+	@$(ACP) $(EXE) "v4dev:Ram Disk/"
+	@mv $(EXE) $(PROJECT)
+
 exit:
 	@echo "\e[37m---------------------------------\e[0m"
 	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[32mCompile Successful\e[0m"
