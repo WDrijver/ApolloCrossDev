@@ -1,0 +1,8 @@
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Warning: The unit file, source configuration file or drop-ins of apt-news.service changed on disk. Run 'systemctl daemon-reload' to reload units.
+Warning: The unit file, source configuration file or drop-ins of esm-cache.service changed on disk. Run 'systemctl daemon-reload' to reload units.
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
