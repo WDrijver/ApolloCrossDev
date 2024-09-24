@@ -9,7 +9,7 @@ DIR = $(notdir $(shell pwd))
 # Define ApolloCrossDev
 PREFIX 	= Compilers/GCC-6.50
 TARGET 	= m68k-amigaos
-ACP 	= ./acp
+ACP 	= ./.vscode/acp
 
 #Define Project Directory (replace <project-name> with your directory)
 PROJECT = Projects/BubbleSort
@@ -111,8 +111,8 @@ init:
 upload:
 	@echo "\e[37m------------------------------------------------------------------\e[0m"
 	@echo "\e[1;31mApollo\e[1;30mExplorer\e[37m Upload\e[30m"
-	@$(ACP) $(EXE) "v4dev:Ram Disk/"
 	@mv $(EXE) $(PROJECT)
+	@$(ACP) $(PROJECT)/$(EXE) "$(APOLLO_V4_HOST)"
 
 exit:
 	@echo "\e[37m------------------------------------------------------------------\e[0m"

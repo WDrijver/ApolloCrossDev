@@ -1,10 +1,13 @@
 {
     "version": "2.0.0",
+    "options": {
+    "env": { "APOLLO_V4_HOST": "192.168.2.235:Ram Disk/" }
+    },
     "tasks": [
         {
             "label": "Build BubbleSort",
             "type": "shell",
-            "command": "make -f Projects/BubbleSort/make-gcc650-stable",
+            "command": "make -f Projects/BubbleSort/make-gcc650",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -12,17 +15,11 @@
             "problemMatcher": [
                 "$gcc"
             ]
-        },
-        {
-            "label": "Clean BubbleSort",
-            "type": "shell",
-            "command": "make clean -f Projects/BubbleSort/make-gcc650-stable",
-            "problemMatcher": []
         },
         {
             "label": "Build Hello-Amiga",
             "type": "shell",
-            "command": "make -f Projects/Hello-Amiga/make-gcc650-stable",
+            "command": "make -f Projects/Hello-Amiga/make-gcc650",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -32,15 +29,9 @@
             ]
         },
         {
-            "label": "Clean Hello-Amiga",
+            "label": "Build GDB Server",
             "type": "shell",
-            "command": "make clean -f Projects/Hello-Amiga/make-gcc650-stable",
-            "problemMatcher": []
-        },
-        {
-            "label": "Build bgdbserver",
-            "type": "shell",
-            "command": "make -f Projects/bgdbserver/make-gcc650-stable",
+            "command": "make -f Projects/GDBServer/make-gcc650",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -48,17 +39,11 @@
             "problemMatcher": [
                 "$gcc"
             ]
-        },
-        {
-            "label": "Clean bgdbserver",
-            "type": "shell",
-            "command": "make clean -f Projects/bgdbserver/make-gcc650-stable",
-            "problemMatcher": []
         },
         {
             "label": "Build Mul-by-Ten",
             "type": "shell",
-            "command": "make -f Projects/Mul-by-Ten/make-gcc650-stable",
+            "command": "make -f Projects/Mul-by-Ten/make-gcc650",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -66,17 +51,11 @@
             "problemMatcher": [
                 "$gcc"
             ]
-        },
-        {
-            "label": "Clean Mul-by-Ten",
-            "type": "shell",
-            "command": "make clean -f Projects/Mul-by-Ten/make-gcc650-stable",
-            "problemMatcher": []
         },
         {
             "label": "Build SAGAModes",
             "type": "shell",
-            "command": "make -f Projects/SAGAModes/make-gcc650-stable",
+            "command": "make -f Projects/SAGAModes/make-gcc650",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -84,17 +63,11 @@
             "problemMatcher": [
                 "$gcc"
             ]
-        },
-        {
-            "label": "Clean SAGAModes",
-            "type": "shell",
-            "command": "make clean -f Projects/SAGAModes/make-gcc650-stable",
-            "problemMatcher": []
         },
         {
             "label": "Build ApolloDemo",
             "type": "shell",
-            "command": "make -f Projects/ApolloDemo/make-gcc650-stable",
+            "command": "make -f Projects/ApolloDemo/make-gcc650",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -104,10 +77,64 @@
             ]
         },
         {
-            "label": "Clean ApolloDemo",
+            "label": "Build Hello-C",
             "type": "shell",
-            "command": "make clean -f Projects/ApolloDemo/make-gcc650-stable",
-            "problemMatcher": []
+            "command": "make -f Projects/Hello-C/make-gcc650",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build Hello-Intuition",
+            "type": "shell",
+            "command": "make -f Projects/Hello-Intuition/make-gcc650",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build Hello-MUI",
+            "type": "shell",
+            "command": "make -f Projects/Hello-MUI/make-gcc650",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build MUI Demos",
+            "type": "shell",
+            "command": "make -f Projects/MUI/make-gcc650",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build OpenScreen",
+            "type": "shell",
+            "command": "make -f Projects/OpenScreen/make-gcc650",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
         }
     ]
 }

@@ -3,34 +3,66 @@ ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup a C
 Content:
 1. GCC 6.5.0 Toolchain (Apollo optimised Fork from excellent Amiga-GCC by Stefan -Bebbo- Franke)
 2. VASM Assembler (Apollo optimised Assembler from Dr. Volker Barthelsmann & Frank Wille) 
-3. Amiga OS NDK's (1.3, 3.9 and 3.2)
-4. Additional SDK (SDL, FreeType, Open-GL, MUI5)  
+3. Amiga OS Native Development Kits (1.3, 3.9 and 3.2)
+4. Additional Software Development Kits (SDL, FreeType, Open-GL, MUI5)
+5. GDB-Server running native on Apollo V4 for remote debugging on Linux in Visual Studio Code
+6. C/C++/ASM Source-Code examples with automated Build from Makefiles and remote Debug enabled
+7. Apollo Library with some basic Apollo C++ and ASM routines, including Debug on Serial Output (TTY)
 
 Requirements:
 1. Ubuntu 24.x LTS amd64 (Intel) | arm64 (Mac Silicon) installed in a VM (8Gb+ RAM|100Gb+ HD|8+ Cores) 
-2. Microsoft Visual Studio Code (VS-Code) downloaded and installed (https://code.visualstudio.com)
-3. Git tools installed from CLI (open terminal and type "sudo apt install git")
-4. ApolloExplorer downloaded and installed (https://github.com/ronybeck/ApolloExplorer)
+2. Git tools installed from CLI (open terminal and type "sudo apt install git")
+3. Microsoft Visual Studio Code (VS-Code) downloaded and installed (https://code.visualstudio.com)
+4. Microsoft Visual Studio Code Extensions:
+   - Microsoft C/C++ (Intellisense, debugging and code browsing)
+   - Microsoft C/C++ Extension Pack (collection of popular extensions)
+   - Microsoft C/C++ Themes (semantic colorization)
+   - Microsoft Makefile Tools (support for C/C++ Makefiles)
+   - Amiga Assembly by Paul Raingeard (Amiga ASM Support) 
+5. ApolloExplorer by @RonyBeck downloaded + installed (https://github.com/ronybeck/ApolloExplorer)
 
 Installation:
-1. Open VS-Code, Open Command Palette (CTRL+Shift+P), Select "git clone" and type "https://github.com/WDrijver/ApolloCrossDev"  
-2. After download Click "Open" and accept "trust the authors" and Click "Open Workspace" in the right corner popup window
-3. Click "Compilers" in the Explorer (left) to collapse all supported Compiler Toolchains
-4. Right-Click on the Compiler of Choice (Preferredd = GCC-6.50-Stable) and Select "Open in integrated Terminal"
-5. In the terminal windows type "./<Compiler>.sh" to install (for example: "./GCC-6.50-Stable.sh")
+1. Open VS-Code Click "View" and select "Open Command Palette" (or press CTRL+Shift+P)
+2. In drop-down list Select "git clone" and type "https://github.com/WDrijver/ApolloCrossDev"  
+3. After download Click "Open" and accept "trust the authors" and Click "Open Workspace" in the right corner popup window
+4. Click "Compilers" in the Explorer (left) to collapse all supported Compiler Toolchains
+5. Right-Click on the Compilers Folder and Select "Open in integrated Terminal"
+6. In the terminal windows type "./GCC-6.50.sh" to install the Toolchain
+7. Open .vscode folder, select tasks.json and change APOLLO_V4_HOST variable to match your Apollo V4 target path
 
-For further ApolloCrossDev installation help a video guide is available at: xxx
+Test Compiler and File-Transfer:
+1. Click "Terminal" in menu and select "Run Build Task" (or press CTRL-Shift-B)
+2. Select "ApolloDemo" from the drop-down List
+3. DoubleClick ApolloDemo Icon on your Apollo V4 (in the target path specified in tasks.json)
 
-Test Compiler:
-1. Right-click Projects/Hello-Intuition folder and choose "Open in Integrated Terminal"
-2. Type "make -f <Makefile Name>" to compile (for example: "make -f Makefile-GCC-6.50")
-3. Open ApolloExplorer Client in Ubuntu and Open ApolloExplorer Server on Apollo V4
-4. Browse to the preferred location on V4 and drag Hello-Intuition file 
+Test Remote GDB Debugger:
+1. Click "Terminal" in menu and select "Run Build Task" (or press CTRL-Shift-B)
+2. Select "Build GDB Server" from the drop-down List
+3. On Apollo V4 open a CLI window, CD to your target path and type "bgdbserver 
 
-Create Project:
-1. Create Projects/<mysource> folder to include all your *.c and *.s sourcefiles (example: Projects/hello)
-2. Copy makefile template from Project/_makefiles into your folder (example: Projects/hello/make-gcc650-stable)
-3. Type "make -f make-xxxyyy" or read make file for further Compile instructions (example: make -f make-gcc650-stable)
+3. Set Breakpoint(s) in <projectname> source code by clicking left from the line number (red dot appears)
+4. Select "Run" and select "Start Debugging" (or press F5)
+3. Select the <projectname> you want to Remote Debug from the drop-down List
+4. DoubleClick your <projectname> Icon on your Apollo V4 (in the target path specified in tasks.json)
+5. Use Debug Controls (step-over, )
+
+Test Serial Terminal Debugger:
+(NOTE: Serial Debug requires PL2303 USB to Serial cable + TTY Terminal Program | Settings: 115200-8-1-N)
+
+
+Create new Project:
+1. Right-Click Projects Folder and select "New Folder..." to create a new <projectname> Folder
+2. Right-Click <projectname> Folder and select "New File..." to create .c .cpp and .s source files
+3. Copy make-gcc650 template from Projects/_makefiles to <projectname> Folder
+4. Change the Project/<projectname> line and make other customaizations to make-gcc650 if needed
+
+Compile new Project
+5. Right-Click <projectname> Folder and select "Open in integrated Terminal"
+5. Customize makefile to your project needs and Type "make -f make-gcc650" to Compile or 
+
+--------------------------------------------------------------------------------------------------------------------
+
+For further ApolloCrossDev installation help a video guide is available at: <TODO>>
 
 Other Resources:
 1. Apollo 68080 AMMX/SAGA Basic Documentation            : http://apollo-core.com/index.htm?page=coding

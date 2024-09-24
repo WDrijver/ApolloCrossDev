@@ -15,8 +15,8 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.163:2345",
-            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50-Stable/ApolloCrossDev/bin/m68k-amigaos-gdb",
+            "miDebuggerServerAddress": "192.168.2.235:2345",
+            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -36,8 +36,8 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.163:2345",
-            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50-Stable/ApolloCrossDev/bin/m68k-amigaos-gdb",
+            "miDebuggerServerAddress": "192.168.2.235:2345",
+            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -57,8 +57,8 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.163:2345",
-            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50-Stable/ApolloCrossDev/bin/m68k-amigaos-gdb",
+            "miDebuggerServerAddress": "192.168.2.235:2345",
+            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -78,8 +78,50 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.163:2345",
-            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50-Stable/ApolloCrossDev/bin/m68k-amigaos-gdb",
+            "miDebuggerServerAddress": "192.168.2.235:2345",
+            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "Debug Hello-MUI",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Projects/Hello-MUI/Hello-MUI",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerServerAddress": "192.168.2.235:2345",
+            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "Debug MUI Clock",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Projects/MUI/Clock",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerServerAddress": "192.168.2.235:2345",
+            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
