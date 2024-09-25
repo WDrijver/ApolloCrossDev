@@ -5,6 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "(gdb) Attach",
+            "type": "cppdbg",
+            "request": "attach",
+            "program": "enter program name, for example ${workspaceFolder}/a.out",
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
             "name": "Debug BubbleSort",
             "type": "cppdbg",
             "request": "launch",
@@ -15,14 +34,8 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.235:2345",
+            "miDebuggerServerAddress": "192.168.2.163:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
             ]
         },
         {
@@ -31,12 +44,12 @@
             "request": "launch",
             "program": "${workspaceFolder}/Projects/Mul-by-Ten/Mul-by-Ten",
             "args": [],
-            "stopAtEntry": true,
+            "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": false,
+            "externalConsole": true,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.235:2345",
+            "miDebuggerServerAddress": "192.168.2.163:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
@@ -57,7 +70,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.235:2345",
+            "miDebuggerServerAddress": "192.168.2.163:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
@@ -73,13 +86,15 @@
             "request": "launch",
             "program": "${workspaceFolder}/Projects/ApolloDemo/ApolloDemo",
             "args": [],
-            "stopAtEntry": true,
+            "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.235:2345",
+            "miDebuggerServerAddress": "192.168.2.163:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
+            "miDebuggerArgs": "-q",
+            "targetArchitecture": "x64",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -99,7 +114,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.235:2345",
+            "miDebuggerServerAddress": "192.168.2.163:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
@@ -120,7 +135,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.235:2345",
+            "miDebuggerServerAddress": "192.168.2.163:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {

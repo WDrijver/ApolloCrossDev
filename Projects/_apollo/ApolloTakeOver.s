@@ -8,7 +8,7 @@
 	XREF _LVOFindTask
 	XREF _LVOSetTaskPri
 
-	INCLUDE "exec/types.i"
+	INCLUDE <exec/types.i>
 	INCLUDE "dos/dos.i"
 	INCLUDE "lvo/intuition_lib.i"
 	INCLUDE "intuition/intuition.i"

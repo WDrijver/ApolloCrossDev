@@ -4,7 +4,7 @@
 #include "stdint.h"
 #include "stdlib.h"
 #include "stdbool.h"
-#include "Apollo.h"  
+#include "../_apollo/Apollo.h"  
 
 #include "clib/exec_protos.h"
 
@@ -40,14 +40,14 @@
 
 int main(void)
 {
+    // Close Workbench
+    // ApolloTakeOver();
+    ApolloDebugInit();         
+
     #ifdef APOLLODEBUG
     ApolloDebugPutStr("\n\n\nWelcome to ApolloDemo Serial Debug Output\n");
     #endif
 
-    // Close Workbench
-    ApolloTakeOver();
-    ApolloDebugInit();         
-    
     // Video Buffers
     UBYTE   *Screen_Video_Buffer, *BackGround_Video_Buffer, *UserInterface_Video_Buffer;
     ULONG   Screen_Video_Lenght, BackGround_Video_Lenght, UserInterFace_Video_Lenght;
@@ -80,7 +80,7 @@ int main(void)
     ApolloMouseState    MouseState = {0}; MouseState.MouseX_Pointer_Max = SAGA_X_SIZE; MouseState.MouseY_Pointer_Max = SAGA_Y_SIZE;
     ApolloJoypadState   JoypadState = {0};
 
-    ApolloCPUDelay(10000);
+    ApolloCPUDelay(5000);
     ApolloFadeOut(0, 0x7f, 0x00);
 
     // Load and Show Background Map

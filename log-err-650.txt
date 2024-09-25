@@ -1,0 +1,1 @@
+/bin/sh: 1: Compilers/GCC-6.50-Stable/ApolloCrossDev/bin/m68k-amigaos-gcc: not found

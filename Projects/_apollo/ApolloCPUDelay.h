@@ -10,7 +10,7 @@ extern "C"{
 #include <exec/types.h>
 #include "ApolloRegParam.h"
 
-extern _REG void ApolloCPUDelay( _D0(ULONG WaitTime));
+extern void ApolloCPUDelay( _D0(ULONG WaitTime));
 
 
 #ifdef __cplusplus

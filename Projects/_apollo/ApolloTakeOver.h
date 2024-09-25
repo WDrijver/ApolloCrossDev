@@ -11,7 +11,7 @@ extern "C"{
 #include <exec/types.h>
 #include "ApolloRegParam.h"
 
-extern _REG void ApolloTakeOver( void );
+extern void ApolloTakeOver( void );
 
 #ifdef __cplusplus
 }

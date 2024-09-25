@@ -5,10 +5,10 @@
 * d0 = l = buffer length	 							*
 *********************************************************
 
-	XDEF _ApolloEndianSwap8Loop
+	XDEF _ApolloEndianSwap8
 	CNOP 0,4
 
-_ApolloEndianSwap8Loop:
+_ApolloEndianSwap8:
 	movem.l d2,-(sp)			      					* Save registers to Stack
 	move.l d0,d2										* save loopcounter in d2
 	lsr.l #3,d0											* divide loopcounter by 8 for 64-bit chunks

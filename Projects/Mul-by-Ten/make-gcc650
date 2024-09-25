@@ -1,4 +1,4 @@
-# ApolloCrossDev Makefile template for GCC-6.50 v0.9
+# ApolloCrossDev Makefile template for GCC-6.50 v0.91
 # 20-9-2024
 # Willem Drijver
 
@@ -7,12 +7,14 @@ PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
 
 # Define ApolloCrossDev
-PREFIX 	= Compilers/GCC-6.50-Stable/ApolloCrossDev
+PREFIX 	= Compilers/GCC-6.50
 TARGET 	= m68k-amigaos
 ACP 	= ./.vscode/acp
+GDB		= ./.vscode/bgdbserver
 
-#Define Project Directory (replace <project-name> with your directory)
-PROJECT = Projects/Mul-by-Ten
+#Define Project Name and Directory (replace <project-name> and <directory-name>)
+PROJECT_NAME	= Mul-by-Ten
+PROJECT_DIR		= Projects/Mul-by-Ten
 
 # Define GNU C-Compiler Type (C = Default, switch comment to change to C++)
 C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc
@@ -52,8 +54,8 @@ C_FLAGS = $(C_LIB) $(C_OPTIONS) $(C_DEBUG) $(C_DEFINES) $(C_INCL_ALL) $(C_LIBS_A
 S_COMPILER = $(PREFIX)/bin/vasmm68k_mot
 
 # Define ASM Includes
-S_INCLUDE 	= $(PREFIX)/$(TARGET)/devpac/Include
-S_LIBS		= $(PREFIX)/$(TARGET)/devpac/Libs	
+S_INCLUDE 	= $(PREFIX)/$(TARGET)/DevPac/Include
+S_LIBS		= $(PREFIX)/$(TARGET)/DevPac/Libs	
 
 # Define ASM Options
 S_DEBUG		= -linedebug -kick1hunks
@@ -63,41 +65,20 @@ S_FLAGS 	= -Fhunk -m68080 -m68881 -opt-speed $(S_DEBUG) -I$(S_INCLUDE)
 O_LINKER = $(PREFIX)/bin/m68k-amigaos-gcc
 
 # Define Source and Object Directory
-C_SOURCEDIR = $(PROJECT)
-S_SOURCEDIR = $(PROJECT)
-C_OBJECTDIR = $(PROJECT)
-S_OBJECTDIR = $(PROJECT)
+C_SOURCEDIR = $(PROJECT_DIR)
+S_SOURCEDIR = $(PROJECT_DIR)
+C_OBJECTDIR = $(PROJECT_DIR)
+S_OBJECTDIR = $(PROJECT_DIR)
 
 # Define Object Filelist
 C_FILES = $(wildcard $(C_SOURCEDIR)/*.c)
 S_FILES = $(wildcard $(S_SOURCEDIR)/*.s)
 O_FILES = $(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES))
 
-# Define Executable Name
-EXE = Mul-by-Ten
+EXE		= $(PROJECT_DIR)/$(PROJECT_NAME)
 
 # Make Project (Init -> Build -> Clean -> Exit)
-all: init clean build upload exit
-
-# Build Executable
-build: $(EXE)
-
-$(EXE) : $(O_FILES) 
-	$(O_LINKER) $(C_FLAGS) $(O_FILES) -g -o $(EXE) >>log-650.txt 2>>log-err-650.txt
-
-# Compile all C-Sources to Objects 
-$(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
-	$(C_COMPILER) -c $(C_FLAGS) -g -o $@ $< >>log-650.txt 2>>log-err-650.txt
-
-# Compile all ASM-Sources to Objects
-$(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
-	$(S_COMPILER) $(S_FLAGS) -linedebug -kick1hunks -o $@ $< >>log-650.txt 2>>log-err-650.txt
-
-# Clean Project
-clean:
-	rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o log*.txt $(EXE) log-650.txt log-err-650.txt
-
-.phony: init
+all: init cleanbefore build upload cleanafter exit
 
 init:
 	clear
@@ -106,13 +87,37 @@ init:
 	@echo "\e[36mC-Sources : \e[37m$(C_FILES)\e[0m"
 	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
 	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"
-	@echo "\e[37m------------------------------------------------------------------\e[30m"
+
+cleanbefore:
+	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/log*.txt $(EXE)
+
+build: $(EXE)
+
+# Link all Objects to one Executable
+$(EXE) : $(O_FILES) 
+	@$(O_LINKER) $(C_FLAGS) $(O_FILES) -g -o $(EXE) >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
+
+# Compile all C-Sources to Objects 
+$(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
+	@$(C_COMPILER) -c $(C_FLAGS) -o $@ $< >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
+
+# Compile all ASM-Sources to Objects
+$(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
+	@$(S_COMPILER) $(S_FLAGS) -o $@ $< >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
 
 upload:
 	@echo "\e[37m------------------------------------------------------------------\e[0m"
 	@echo "\e[1;31mApollo\e[1;30mExplorer\e[37m Upload\e[30m"
-	@mv $(EXE) $(PROJECT)
-	@$(ACP) $(PROJECT)/$(EXE) "$(APOLLO_V4_HOST)"
+	@$(ACP) $(EXE) "$(APOLLO_V4_HOST)"
+	@$(ACP) $(GDB) "$(APOLLO_V4_HOST)"
+	@cp Projects/_icons/ApolloIcon.info $(PROJECT_DIR)/$(PROJECT_NAME).info
+	@cp Projects/_icons/ApolloIcon_Debug.info $(PROJECT_DIR)/$(PROJECT_NAME)_Debug.info
+	@$(ACP) $(PROJECT_DIR)/*.info "$(APOLLO_V4_HOST)"
+	@echo "bgdbserver $(PROJECT_NAME)" > $(EXE)_Debug
+	@$(ACP) $(EXE)_Debug "$(APOLLO_V4_HOST)"
+
+cleanafter:
+	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/*.info $(EXE)_Debug
 
 exit:
 	@echo "\e[37m------------------------------------------------------------------\e[0m"
