@@ -1,6 +1,7 @@
 *.o
 log*.*
 ApolloDemo/ApolloDemo
+ApolloCoreDisplay/ApolloCoreDisplay
 bgdbserver/bgdbserver
 BubbleSort/BubbleSort
 Hello-Amiga/Hello-Amiga

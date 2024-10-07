@@ -12,8 +12,8 @@ TARGET 	= m68k-amigaos
 ACP 	= ./.vscode/acp
 
 #Define Project Name and Directory (replace <project-name> and <directory-name>)
-PROJECT_NAME	= <project-name>
-PROJECT_DIR		= Projects/<directory-name>
+PROJECT_NAME	= OpenScreen
+PROJECT_DIR		= Projects/OpenScreen
 
 # Define GNU C-Compiler Type (C = Default, switch comment to change to C++)
 C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc

@@ -7,9 +7,9 @@ PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
 
 # Define ApolloCrossDev
-PREFIX 	= Compilers/GCC-6.50-Stable/ApolloCrossDev
+PREFIX 	= Compilers/GCC-6.50
 TARGET 	= m68k-amigaos
-ACP		= ./.vscode/acp
+ACP 	= ./.vscode/acp
 
 PROJECT = Projects/SAGAModes
 
@@ -44,11 +44,11 @@ build: $(EXE)
 
 # Link all Objects from Filelist together
 $(EXE) : $(O_FILES) 
-	$(O_LINKER) $(O_FILES) -g -o $(EXE) >>log-650.txt 2>>log-err-650.txt
+	$(O_LINKER) $(O_FILES) -g -o $(EXE) >>$(PROJECT)/log-650.txt 2>>$(PROJECT)/log-err-650.txt
 
 # Compile all ASM-Sources to Objects
 $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
-	$(S_COMPILER) $(S_FLAGS) -linedebug -o $@ $< >>log-650.txt 2>>log-err-650.txt
+	$(S_COMPILER) $(S_FLAGS) -linedebug -o $@ $< >>$(PROJECT)/log-650.txt 2>>$(PROJECT)/log-err-650.txt
 
 # Clean Project
 clean:
