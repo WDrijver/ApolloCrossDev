@@ -28,7 +28,8 @@ Installation:
 4. Click "Compilers" in the Explorer (left) to collapse all supported Compiler Toolchains
 5. Right-Click on the Compilers Folder and Select "Open in integrated Terminal"
 6. In the terminal windows type "./GCC-6.50.sh" to install the Toolchain
-7. Open .vscode folder, select tasks.json and change APOLLO_V4_HOST variable to match your Apollo V4 target path
+7. Open .vscode folder, select tasks.json and change "APOLLO_V4_HOST" variable to match your Apollo V4 target path
+8. Also select launch.json and change all "miDebuggerServerAddress" variables to match your Apollo V4 target path
 
 Test Compiler and File-Transfer:
 1. Click "Terminal" in menu and select "Run Build Task" (or press CTRL-Shift-B)
@@ -36,15 +37,12 @@ Test Compiler and File-Transfer:
 3. DoubleClick ApolloDemo Icon on your Apollo V4 (in the target path specified in tasks.json)
 
 Test Remote GDB Debugger:
-1. Click "Terminal" in menu and select "Run Build Task" (or press CTRL-Shift-B)
-2. Select "Build GDB Server" from the drop-down List
-3. On Apollo V4 open a CLI window, CD to your target path and type "bgdbserver 
-
-3. Set Breakpoint(s) in <projectname> source code by clicking left from the line number (red dot appears)
-4. Select "Run" and select "Start Debugging" (or press F5)
+1. Set Breakpoint(s) in <projectname> source code by clicking left from the line number (red dot appears)
+2. Select "Run" and select "Start Debugging" (or press F5)
 3. Select the <projectname> you want to Remote Debug from the drop-down List
 4. DoubleClick your <projectname> Icon on your Apollo V4 (in the target path specified in tasks.json)
-5. Use Debug Controls (step-over, )
+5. Use Debug Controls (step-over, step-into, etc.) to 
+6. Open 
 
 Test Serial Terminal Debugger:
 (NOTE: Serial Debug requires PL2303 USB to Serial cable + TTY Terminal Program | Settings: 115200-8-1-N)

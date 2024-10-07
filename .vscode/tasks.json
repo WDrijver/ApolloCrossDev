@@ -1,9 +1,21 @@
 {
     "version": "2.0.0",
     "options": {
-    "env": { "APOLLO_V4_HOST": "192.168.2.235:Ram Disk/" }
+    "env": { "APOLLO_V4_HOST": "192.168.2.163:Ram Disk/" }
     },
     "tasks": [
+        {
+            "label": "Build ApolloCoreDisplay",
+            "type": "shell",
+            "command": "make -f Projects/ApolloCoreDisplay/make-gcc650",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
         {
             "label": "Build BubbleSort",
             "type": "shell",

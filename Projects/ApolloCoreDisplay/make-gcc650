@@ -1,4 +1,4 @@
-# ApolloCrossDev Makefile template for GCC-6.50 v0.9
+# ApolloCrossDev Makefile template for GCC-6.50 v0.91
 # 20-9-2024
 # Willem Drijver
 
@@ -10,10 +10,11 @@ DIR = $(notdir $(shell pwd))
 PREFIX 	= Compilers/GCC-6.50
 TARGET 	= m68k-amigaos
 ACP 	= ./.vscode/acp
+GDB		= ./.vscode/bgdbserver
 
 #Define Project Name and Directory (replace <project-name> and <directory-name>)
-PROJECT_NAME	= Hello-C
-PROJECT_DIR		= Projects/Hello-C
+PROJECT_NAME	= ApolloCoreDisplay
+PROJECT_DIR		= Projects/ApolloCoreDisplay
 
 # Define GNU C-Compiler Type (C = Default, switch comment to change to C++)
 C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc
@@ -47,7 +48,7 @@ C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK32)
 C_OPTIONS 	= -O3 -m68080 -m68881 -fomit-frame-pointer -ffast-math -DREGPARM=4 -DM68K=1 -w
 C_DEFINES 	= -DNO_INLINE_STDARG -D_TIMEVAL_DEFINED
 C_DEBUG		= -g
-C_FLAGS = $(C_LIB) $(CLIB_CLB) $(C_OPTIONS) $(C_DEBUG) $(C_DEFINES) $(C_INCL_ALL) $(C_LIBS_ALL)
+C_FLAGS = $(C_LIB) $(C_OPTIONS) $(C_DEBUG) $(C_DEFINES) $(C_INCL_ALL) $(C_LIBS_ALL)
 
 # Define ASM Compiler
 S_COMPILER = $(PREFIX)/bin/vasmm68k_mot
@@ -77,7 +78,7 @@ O_FILES = $(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubs
 EXE		= $(PROJECT_DIR)/$(PROJECT_NAME)
 
 # Make Project (Init -> Build -> Clean -> Exit)
-all: init cleanbefore build cleanafter upload exit
+all: init cleanbefore build upload cleanafter exit
 
 init:
 	clear
@@ -86,7 +87,6 @@ init:
 	@echo "\e[36mC-Sources : \e[37m$(C_FILES)\e[0m"
 	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
 	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"
-	@echo "\e[37m------------------------------------------------------------------\e[30m"
 
 cleanbefore:
 	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/log*.txt $(EXE)
@@ -95,7 +95,7 @@ build: $(EXE)
 
 # Link all Objects to one Executable
 $(EXE) : $(O_FILES) 
-	$(O_LINKER) $(C_FLAGS) $(O_FILES) -g -o $(EXE) >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
+	@$(O_LINKER) $(C_FLAGS) $(O_FILES) -g -o $(EXE) >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
 
 # Compile all C-Sources to Objects 
 $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
@@ -105,14 +105,20 @@ $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
 $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
 	@$(S_COMPILER) $(S_FLAGS) -o $@ $< >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
 
-cleanafter:
-	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o
-
 upload:
 	@echo "\e[37m------------------------------------------------------------------\e[0m"
 	@echo "\e[1;31mApollo\e[1;30mExplorer\e[37m Upload\e[30m"
 	@$(ACP) $(EXE) "$(APOLLO_V4_HOST)"
-	@$(ACP) $(PROJECT_DIR)/*.info "$(APOLLO_V4_HOST)"
+	@$(ACP) $(GDB) "$(APOLLO_V4_HOST)"
+	@cp Projects/_icons/ApolloIcon.info $(PROJECT_DIR)/$(PROJECT_NAME).info
+	@cp Projects/_icons/ApolloIcon_Debug.info $(PROJECT_DIR)/$(PROJECT_NAME)_Debug.info
+	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME).info "$(APOLLO_V4_HOST)"
+	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME)_Debug.info "$(APOLLO_V4_HOST)"	
+	@echo "bgdbserver $(PROJECT_NAME)" > $(EXE)_Debug
+	@$(ACP) $(EXE)_Debug "$(APOLLO_V4_HOST)"
+
+cleanafter:
+	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/*.info $(EXE)_Debug
 
 exit:
 	@echo "\e[37m------------------------------------------------------------------\e[0m"
