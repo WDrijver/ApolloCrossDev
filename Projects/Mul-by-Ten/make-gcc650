@@ -95,7 +95,7 @@ build: $(EXE)
 
 # Link all Objects to one Executable
 $(EXE) : $(O_FILES) 
-	@$(O_LINKER) $(C_FLAGS) $(O_FILES) -g -o $(EXE) >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
+	@$(O_LINKER) $(C_FLAGS) $(O_FILES) -o $(EXE) >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
 
 # Compile all C-Sources to Objects 
 $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
