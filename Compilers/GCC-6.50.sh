@@ -74,11 +74,14 @@ cp -r -f SDL/* $PREFIX/$TARGET >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
 # Part 6: MUI
 echo -e "\e[1m\e[37m6. Adding MUI5\e[0m\e[36m"
-cd $ARCHIVES/MUI5
-lha -xw=$SOURCES/MUI5 $MUI5_ARCHIVE >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-mkdir $PREFIX/$TARGET/include/MUI >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -rf $SOURCES/MUI5/SDK/MUI/C/include/* $PREFIX/$TARGET/include/MUI >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -rf $SOURCES/MUI5/SDK/MUI/C/lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cd $SOURCES/amiga-gcc
+make sdk=mui PREFIX=$PREFIX >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+#cd $ARCHIVES/MUI5
+#lha -xw=$SOURCES/MUI5 $MUI5_ARCHIVE >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+#mkdir $PREFIX/$TARGET/include/MUI >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+#cp -rf $SOURCES/MUI5/SDK/MUI/C/include/* $PREFIX/$TARGET/include/MUI >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+#cp -rf $SOURCES/MUI5/SDK/MUI/C/lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 # PART 7: NDK
 echo -e "\e[1m\e[37m8. Development Kits\e[0m\e[36m"

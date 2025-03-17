@@ -12,8 +12,8 @@ TARGET 	= m68k-amigaos
 ACP 	= ./.vscode/acp
 
 #Define Project Name and Directory (replace <project-name> and <directory-name>)
-PROJECT_NAME	= <project-name>
-PROJECT_DIR		= Projects/<directory-name>
+PROJECT_NAME	= Hello-MUI
+PROJECT_DIR		= Projects/Hello-MUI
 
 # Define GNU C-Compiler Type (C = Default, switch comment to change to C++)
 C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc
@@ -95,11 +95,11 @@ build: $(EXE)
 
 # Link all Objects to one Executable
 $(EXE) : $(O_FILES) 
-	$(O_LINKER) $(C_FLAGS) $(O_FILES) -g -o $(EXE) >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
+	$(O_LINKER) $(O_FILES) -g -o $(EXE) $(C_FLAGS) >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
 
 # Compile all C-Sources to Objects 
 $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
-	@$(C_COMPILER) -c $(C_FLAGS) -o $@ $< >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
+	@$(C_COMPILER) -c -o $@ $< $(C_FLAGS) >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
 
 # Compile all ASM-Sources to Objects
 $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
