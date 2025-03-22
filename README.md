@@ -10,7 +10,7 @@ Content:
 7. Apollo Library with some basic Apollo C++ and ASM routines, including Debug on Serial Output (TTY)
 
 Requirements:
-1. Ubuntu 24.x LTS amd64 (Intel) | arm64 (Mac Silicon) installed in a VM (8Gb+ RAM|100Gb+ HD|8+ Cores) 
+1. Ubuntu 24.x LTS amd64 (Intel) | Debian 12.4.0 arm64 (Mac Silicon) installed in a VM (8Gb+ RAM|100Gb+ HD|8+ Cores) 
 2. Git tools installed from CLI (open terminal and type "sudo apt install git")
 3. Microsoft Visual Studio Code (VS-Code) downloaded and installed (https://code.visualstudio.com)
 4. Microsoft Visual Studio Code Extensions:
@@ -20,6 +20,13 @@ Requirements:
    - Microsoft Makefile Tools (support for C/C++ Makefiles)
    - Amiga Assembly by Paul Raingeard (Amiga ASM Support) 
 5. ApolloExplorer by @RonyBeck downloaded + installed (https://github.com/ronybeck/ApolloExplorer)
+   - Note for Debian 12.4.0 arm64: ApolloExplorer needs to be rebuild locally for arm64 platform:
+      1. Open VS-Code Click "View" and select "Open Command Palette" (or press CTRL+Shift+P)
+      2. In drop-down list Select "git clone" and type "https://github.com/ronybeck/ApolloExplorer"
+      3. Click "Terminal" and "New Terminal" to open a Terminal Window
+      4. Type "sudo apt install build-essential devscripts debhelper qtbase5-dev qtbase5-dev-tools qt5-qmake libqt5x11extras5-dev qttools5-dev-tools"
+      5. Type "qmake" and "make" to build ApolloExplorer binaries for arm64
+      6. Copy acp/acp to .vscode folder in ApolloCrossDev
 
 Installation:
 1. Open VS-Code Click "View" and select "Open Command Palette" (or press CTRL+Shift+P)
