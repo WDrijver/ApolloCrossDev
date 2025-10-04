@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-6.50 - Install Script v0.9 - Stable from WD Repo (= Bebbo December 2023, before starting 68080 changes)
+# ApolloCrossDev GCC-6.50 - Install Script v0.91
 
 EDITION=GCC-6.50
 VERSION=0.9
@@ -16,7 +16,6 @@ PREFIX=$WORKSPACE/$COMPILER
 TARGET=m68k-amigaos
 export PATH=$PREFIX/bin:$PATH
 
-MUI5_ARCHIVE=MUI-5.0-20210831-os3.lha
 NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
 
 # INIT Terminal
@@ -42,12 +41,14 @@ cd $SOURCES
 # PART 2: Update Linux Packages 
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
 sudo apt -y update >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
-sudo apt -y install build-essential gawk flex bison expect dejagnu texinfo lhasa git subversion \
-     make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev autoconf rsync libreadline-dev >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
+sudo apt -y install make wget git gcc g++ lhasa libgmp-dev libmpfr-dev libmpc-dev flex bison gettext texinfo ncurses-dev autoconf rsync libreadline-dev >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
+
+#build-essential gawk flex bison expect dejagnu texinfo lhasa git subversion \
+#     make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev autoconf rsync libreadline-dev >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
  
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-git clone --progress https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
+git clone --progress https://franke.ms/git/bebbo/amiga-gcc 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile Amiga-GCC
 echo -e "\e[1m\e[37m4. Compile Amiga-GCC\e[0m\e[36m"
@@ -76,12 +77,6 @@ cp -r -f SDL/* $PREFIX/$TARGET >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 echo -e "\e[1m\e[37m6. Adding MUI5\e[0m\e[36m"
 cd $SOURCES/amiga-gcc
 make sdk=mui PREFIX=$PREFIX >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-
-#cd $ARCHIVES/MUI5
-#lha -xw=$SOURCES/MUI5 $MUI5_ARCHIVE >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-#mkdir $PREFIX/$TARGET/include/MUI >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-#cp -rf $SOURCES/MUI5/SDK/MUI/C/include/* $PREFIX/$TARGET/include/MUI >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-#cp -rf $SOURCES/MUI5/SDK/MUI/C/lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 # PART 7: NDK
 echo -e "\e[1m\e[37m8. Development Kits\e[0m\e[36m"
