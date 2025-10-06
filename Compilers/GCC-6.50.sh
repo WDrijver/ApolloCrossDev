@@ -43,9 +43,6 @@ echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
 sudo apt -y update >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 sudo apt -y install make wget git gcc g++ lhasa libgmp-dev libmpfr-dev libmpc-dev flex bison gettext texinfo ncurses-dev autoconf rsync libreadline-dev >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 
-#build-essential gawk flex bison expect dejagnu texinfo lhasa git subversion \
-#     make wget libgmp-dev libmpfr-dev libmpc-dev gettext texinfo ncurses-dev autoconf rsync libreadline-dev >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
- 
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
 git clone --progress https://franke.ms/git/bebbo/amiga-gcc 2>>$LOGFILES/part3_err.log
@@ -78,7 +75,7 @@ cd $SOURCES/amiga-gcc
 make sdk=mui PREFIX=$PREFIX >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 # PART 7: NDK
-echo -e "\e[1m\e[37m8. Development Kits\e[0m\e[36m"
+echo -e "\e[1m\e[37m7. Development Kits\e[0m\e[36m"
 mv $PREFIX/$TARGET/ndk-include $PREFIX/$TARGET/ndk39-include
 cd $PREFIX/$TARGET
 git clone --progress https://github.com/WDrijver/DevPac >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
