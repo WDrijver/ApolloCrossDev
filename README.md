@@ -1,7 +1,7 @@
 ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup a Cross Compiler in a Virtual Ubuntu Linux.
 
 Content:
-1. GCC 6.5.0 Toolchain (Apollo optimised Fork from excellent Amiga-GCC by Stefan -Bebbo- Franke)
+1. GCC 6.5.0 / 13.1 Toolchain (Apollo optimised Fork from excellent Amiga-GCC by Stefan -Bebbo- Franke)
 2. VASM Assembler (Apollo optimised Assembler from Dr. Volker Barthelsmann & Frank Wille) 
 3. Amiga OS Native Development Kits (1.3, 3.9 and 3.2)
 4. Additional Software Development Kits (SDL, FreeType, Open-GL, MUI5)
@@ -10,7 +10,7 @@ Content:
 7. Apollo Library with some basic Apollo C++ and ASM routines, including Debug on Serial Output (TTY)
 
 Requirements:
-1. Ubuntu 24.x LTS amd64 (Intel) | Debian 12.4.0 arm64 (Mac Silicon) installed in a VM (8Gb+ RAM|100Gb+ HD|8+ Cores) 
+1. Ubuntu 24.x LTS amd64 (Intel) | Debian 13.x arm64 (Mac Silicon) installed in a VM (8Gb+ RAM|50Gb+ HD|4+ Cores) 
 2. Git tools installed from CLI (open terminal and type "sudo apt install git")
 3. Microsoft Visual Studio Code (VS-Code) downloaded and installed (https://code.visualstudio.com)
 4. Microsoft Visual Studio Code Extensions:
@@ -20,7 +20,7 @@ Requirements:
    - Microsoft Makefile Tools (support for C/C++ Makefiles)
    - Amiga Assembly by Paul Raingeard (Amiga ASM Support) 
 5. ApolloExplorer by @RonyBeck downloaded + installed (https://github.com/ronybeck/ApolloExplorer)
-   - Note for Debian 12.4.0 arm64: ApolloExplorer needs to be rebuild locally for arm64 platform:
+   - Note for Debian 12.x / 13.x arm64: ApolloExplorer needs to be rebuild locally for arm64 platform:
       1. Open VS-Code Click "View" and select "Open Command Palette" (or press CTRL+Shift+P)
       2. In drop-down list Select "git clone" and type "https://github.com/ronybeck/ApolloExplorer"
       3. Click "Terminal" and "New Terminal" to open a Terminal Window
