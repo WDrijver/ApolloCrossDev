@@ -4,6 +4,9 @@
 			"name": "ApolloCrossDev",
 			"path": "."
 		},
+		{
+			"path": "../ApolloSVN"
+		}
 	],
 	"settings": {
 		"files.associations": {

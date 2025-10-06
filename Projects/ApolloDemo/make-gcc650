@@ -80,6 +80,8 @@ EXE		= $(PROJECT_DIR)/$(PROJECT_NAME)
 # Make Project (Init -> Build -> Clean -> Exit)
 all: init cleanbefore build upload cleanafter exit
 
+noupload: init cleanbefore build cleanafter exit
+
 init:
 	clear
 	@echo "\e[37m------------------------------------------------------------------\e[0m"

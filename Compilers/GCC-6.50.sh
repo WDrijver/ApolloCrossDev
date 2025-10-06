@@ -66,7 +66,6 @@ cd $PREFIX
 cp -r -f $PREFIX/include/GL $PREFIX/$TARGET/include/GL >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cp -r -f $PREFIX/include/gdb $PREFIX/$TARGET/include/GDB >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cp -r -f $PREFIX/include/SDL $PREFIX/$TARGET/include/SDL >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-cp -r -f $PREFIX/include/SDL_*.* $PREFIX/$TARGET/include/SDL  >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cp -r -f $PREFIX/lib/libSDL* $PREFIX/$TARGET/lib >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 rm -r -f $PREFIX/lib/libSDL* >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 rm -r -f $PREFIX/include >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
