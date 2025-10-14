@@ -15,7 +15,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.163:2345",
+            "miDebuggerServerAddress": "127.0.0.1:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {

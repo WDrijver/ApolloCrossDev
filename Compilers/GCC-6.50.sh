@@ -86,6 +86,7 @@ lha -xw=$PREFIX/$TARGET/ndk32-include NDK3.2.lha >>$LOGFILES/part7.log 2>>$LOGFI
 
 # PART 8: Cleanup
 echo -e "\e[1m\e[37m8. Cleanup\e[0m\e[36m"
+rm -f -r $ARCHIVES
 cd $PREFIX
 rm -rf info
 rm -rf man
