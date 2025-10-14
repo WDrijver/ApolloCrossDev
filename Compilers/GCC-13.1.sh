@@ -1,8 +1,8 @@
-# ApolloCrossDev GCC-6.50 - Install Script v0.91
+# ApolloCrossDev GCC-13.1 - Install Script v0.91
 
 EDITION=GCC-13.1
-VERSION=0.9
-CPU=-j16
+VERSION=0.91
+CPU=-j8
 
 WORKSPACE="`pwd`"
 COMPILER=GCC-13.1
@@ -54,29 +54,27 @@ echo -e "\e[0m\e[36m   * Clean Amiga-GCC\e[0m"
 make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
-
 echo -e "\e[0m\e[36m   * Build Amiga-GCC 13.1 First \e[0m"
 make branch branch=amiga13.1 mod=gcc $CPU PREFIX=$PREFIX >>$LOGFILES/part4gcc.log 2>>$LOGFILES/part4gcc_err.log
-
 echo -e "\e[0m\e[36m   * Build Amiga-GCC Other Modules (be patient)\e[0m"
 make all $CPU PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
-# Part 5: SDL
-echo -e "\e[1m\e[37m5. Adding Open-GL, SDL, TTF and FreeType\e[0m\e[36m"
-cd $PREFIX
-cp -r -f $PREFIX/include/GL $PREFIX/$TARGET/include/GL >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-cp -r -f $PREFIX/include/gdb $PREFIX/$TARGET/include/GDB >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-cp -r -f $PREFIX/include/SDL $PREFIX/$TARGET/include/SDL >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-cp -r -f $PREFIX/lib/libSDL* $PREFIX/$TARGET/lib >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-rm -r -f $PREFIX/lib/libSDL* >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-rm -r -f $PREFIX/include >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-cd $ARCHIVES
-cp -r -f SDL/* $PREFIX/$TARGET >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-
-# Part 6: MUI
-echo -e "\e[1m\e[37m6. Adding MUI5\e[0m\e[36m"
+# Part 5: MUI
+echo -e "\e[1m\e[37m5. Adding MUI5\e[0m\e[36m"
 cd $SOURCES/amiga-gcc
-make sdk=mui PREFIX=$PREFIX >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make sdk=mui PREFIX=$PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+
+# Part 6: SDL
+echo -e "\e[1m\e[37m6. Adding Open-GL, SDL, TTF and FreeType\e[0m\e[36m"
+cd $PREFIX
+cp -r -f $PREFIX/include/GL $PREFIX/$TARGET/include/GL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f $PREFIX/include/gdb $PREFIX/$TARGET/include/GDB >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f $PREFIX/include/SDL $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f $PREFIX/lib/libSDL* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+rm -r -f $PREFIX/lib/libSDL* >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+rm -r -f $PREFIX/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cd $ARCHIVES
+cp -r -f SDL/* $PREFIX/$TARGET >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 # PART 7: NDK
 echo -e "\e[1m\e[37m7. Development Kits\e[0m\e[36m"
