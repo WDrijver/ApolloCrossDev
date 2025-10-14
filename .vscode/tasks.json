@@ -79,7 +79,19 @@
         {
             "label": "Build ApolloDemo",
             "type": "shell",
-            "command": "make -f Projects/ApolloDemo/make-gcc650",
+            "command": "make -f Projects/ApolloDemo/make-gcc650 noupload",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build ApolloDemo (GCC-13.1)",
+            "type": "shell",
+            "command": "make -f Projects/ApolloDemo/make-gcc131 noupload",
             "group": {
                 "kind": "build",
                 "isDefault": false
