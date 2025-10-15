@@ -19,7 +19,6 @@ Requirements:
    - Microsoft C/C++ Themes (semantic colorization)
    - Microsoft Makefile Tools (support for C/C++ Makefiles)
    - Amiga Assembly by Paul Raingeard (Amiga ASM Support) 
-5. Optional: ApolloExplorer by @RonyBeck (see below)
 
 Installation:
 1. Open VS-Code Click "View" and select "Open Command Palette" (or press CTRL+Shift+P)
@@ -30,17 +29,6 @@ Installation:
 6. In the terminal windows type "./GCC-6.50.sh" to install the Toolchain
 7. Open .vscode folder, select tasks.json and change "APOLLO_V4_HOST" variable to match your Apollo V4 target path
 8. Also select launch.json and change all "miDebuggerServerAddress" variables to match your Apollo V4 target path
-
-Installation ApolloExplorer (optional for network file transfer)
-1. Copy "https://github.com/ronybeck/ApolloExplorer" to Clipboard (Ctrl+c)
-2. Open VS-Code Click "View" and select "Open Command Palette" (or press Ctrl+Shift+P)
-3. In drop-down list Select "git clone" and Paste the Clipboard content (Ctrl+v)
-4. Choose ApolloCrossDev/Projects Folder as destination and Click "Cancel" after Clone is finished
-5. Right-Click ApolloExplorer folder in VS-Code Explorer (left) and choose "Open in Integsrated Terminal"
-6. Copy "sudo apt install build-essential devscripts debhelper qtbase5-dev qtbase5-dev-tools qt5-qmake libqt5x11extras5-dev qttools5-dev-tools" (Ctrl+v)
-7. Paste the Clipboard content in the Terminal Window (Ctrl+v) and hit Return key
-8. Type "qmake" and hit Return key to configure the Compile and then Type "make" and hit Return key to start the Compile
-9. Type "acp/acp -v" to test
 
 Test Compiler and File-Transfer:
 1. Click "Terminal" in menu and select "Run Build Task" (or press CTRL-Shift-B)

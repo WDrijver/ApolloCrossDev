@@ -2,18 +2,20 @@
 
 EDITION=GCC-6.50
 VERSION=0.91
-CPU=-j8
+CPU=-j4
 
 WORKSPACE="`pwd`"
+COMPILERS=Compilers
+PROJECTS=Projects
 COMPILER=GCC-6.50
-
-ARCHIVES=$WORKSPACE/_archives
-BUILDS=$WORKSPACE/$COMPILER/_builds
-SOURCES=$WORKSPACE/$COMPILER/_sources
-PATCHES=$WORKSPACE/$COMPILER/_install/patches
-LOGFILES=$WORKSPACE/$COMPILER/_logs
-PREFIX=$WORKSPACE/$COMPILER
 TARGET=m68k-amigaos
+
+PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
+ARCHIVES=$PREFIX
+LOGFILES=$PREFIX/_logs
+BUILDS=$PREFIX/_builds
+SOURCES=$PREFIX/_sources
+
 export PATH=$PREFIX/bin:$PATH
 
 NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
@@ -29,13 +31,10 @@ echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
 # PART 1: Clean the House
 sudo echo -e "\e[1m\e[37m1. Clean the House\e[0m\e[36m"
 rm -f -r $PREFIX
-mkdir $PREFIX
-rm -f -r $LOGFILES
+mkdir -p $PREFIX
 mkdir -p $LOGFILES
-rm -f -r $BUILDS
 mkdir -p $BUILDS
-rm -f -r $SOURCES
-mkdir $SOURCES
+mkdir -p $SOURCES
 cd $SOURCES
 
 # PART 2: Update Linux Packages 
@@ -84,8 +83,17 @@ wget -nc $NDK32_DOWNLOAD -a  $LOGFILES/part7.log
 mkdir $PREFIX/$TARGET/ndk32-include
 lha -xw=$PREFIX/$TARGET/ndk32-include NDK3.2.lha >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 
-# PART 8: Cleanup
-echo -e "\e[1m\e[37m8. Cleanup\e[0m\e[36m"
+# Part 8: ApolloExplorer
+echo -e "\e[1m\e[37m8. ApolloExplorer\e[0m\e[36m"
+cd $WORKSPACE/$PROJECTS
+git clone --progress https://github.com/ronybeck/ApolloExplorer >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+sudo apt -y install build-essential devscripts debhelper qtbase5-dev qtbase5-dev-tools qt5-qmake libqt5x11extras5-dev qttools5-dev-tools >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+cd $WORKSPACE/$PROJECTS/ApolloExplorer
+qmake >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+make >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+
+# PART 9: Cleanup
+echo -e "\e[1m\e[37m9. Cleanup\e[0m\e[36m"
 cd $PREFIX
 rm -rf info
 rm -rf man
