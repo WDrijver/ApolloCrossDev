@@ -2,15 +2,16 @@
 # 13-10-2025
 # Willem Drijver
 
-# Define Shell Environment
-PWD = $(shell pwd)
-DIR = $(notdir $(shell pwd))
-
 # Define ApolloCrossDev
-PREFIX 	= Compilers/GCC-6.50
-TARGET 	= m68k-amigaos
-ACP 	= ./.vscode/acp
-GDB		= ./.vscode/bgdbserver
+WORKSPACE=$(shell pwd)
+COMPILERS=Compilers
+PROJECTS=Projects
+COMPILER=GCC-6.50
+TARGET=m68k-amigaos
+PREFIX=$(WORKSPACE)/$(COMPILERS)/$(COMPILER)
+
+ACP 	= $(PROJECTS)/ApolloExplorer/acp/acp
+GDB		= $(PROJECTS)/bgdbserver/bgdbserver
 
 #Define Project Name and Directory
 PROJECT_NAME	= ApolloDemo

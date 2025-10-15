@@ -9,9 +9,9 @@ COMPILERS=Compilers
 PROJECTS=Projects
 COMPILER=GCC-6.50
 TARGET=m68k-amigaos
-
 PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
-ARCHIVES=$PREFIX
+
+ARCHIVES=$PREFIX/_archives
 LOGFILES=$PREFIX/_logs
 BUILDS=$PREFIX/_builds
 SOURCES=$PREFIX/_sources
@@ -92,8 +92,15 @@ cd $WORKSPACE/$PROJECTS/ApolloExplorer
 qmake >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 make >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 
-# PART 9: Cleanup
-echo -e "\e[1m\e[37m9. Cleanup\e[0m\e[36m"
+# Part 9: BGDBServer
+echo -e "\e[1m\e[37m9. BGDG Server\e[0m\e[36m"
+cd $WORKSPACE/$PROJECTS
+git clone --progress https://franke.ms/git/bebbo/bgdbserver >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
+cd $WORKSPACE/$PROJECTS/bgdbserver
+make >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
+
+# PART 10: Cleanup
+echo -e "\e[1m\e[37m10s. Cleanup\e[0m\e[36m"
 cd $PREFIX
 rm -rf info
 rm -rf man

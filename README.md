@@ -24,11 +24,10 @@ Installation:
 1. Open VS-Code Click "View" and select "Open Command Palette" (or press CTRL+Shift+P)
 2. In drop-down list Select "git clone" and type "https://github.com/WDrijver/ApolloCrossDev"  
 3. After download Click "Open" and accept "trust the authors" and Click "Open Workspace" in the right corner popup window
-4. Click "Compilers" in the Explorer (left) to collapse all supported Compiler Toolchains
-5. Right-Click on the Compilers Folder and Select "Open in integrated Terminal"
-6. In the terminal windows type "./GCC-6.50.sh" to install the Toolchain
-7. Open .vscode folder, select tasks.json and change "APOLLO_V4_HOST" variable to match your Apollo V4 target path
-8. Also select launch.json and change all "miDebuggerServerAddress" variables to match your Apollo V4 target path
+4. Select "Terminal" in the menu and then "New Terminal Window"
+5. In the terminal windows type "./GCC-6.50.sh" to install the Toolchain
+6. Open .vscode folder, select tasks.json and change "APOLLO_V4_HOST" variable to match your Apollo V4 target path
+7. Also select launch.json and change all "miDebuggerServerAddress" variables to match your Apollo V4 target path
 
 Test Compiler and File-Transfer:
 1. Click "Terminal" in menu and select "Run Build Task" (or press CTRL-Shift-B)
@@ -44,8 +43,7 @@ Test Remote GDB Debugger:
 6. Open 
 
 Test Serial Terminal Debugger:
-(NOTE: Serial Debug requires PL2303 USB to Serial cable + TTY Terminal Program | Settings: 115200-8-1-N)
-
+(NOTE: Serial Debug requires PL2303 USB to Serial cable + TTY Terminal Program | Settings: 115200-8-1-N)zs qe2qq222a 
 
 Create new Project:
 1. Right-Click Projects Folder and select "New Folder..." to create a new <projectname> Folder
