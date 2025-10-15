@@ -24,7 +24,7 @@ Installation:
 1. Open VS-Code Click "View" and select "Open Command Palette" (or press CTRL+Shift+P)
 2. In drop-down list Select "git clone" and type "https://github.com/WDrijver/ApolloCrossDev"  
 3. After download Click "Open" and accept "trust the authors" and Click "Open Workspace" in the right corner popup window
-4. Select "Terminal" in the menu and then "New Terminal Window"
+4. Select "Terminal" in the menu and then "New Terminal"
 5. In the terminal windows type "./GCC-6.50.sh" to install the Toolchain
 6. Open .vscode folder, select tasks.json and change "APOLLO_V4_HOST" variable to match your Apollo V4 target path
 7. Also select launch.json and change all "miDebuggerServerAddress" variables to match your Apollo V4 target path
