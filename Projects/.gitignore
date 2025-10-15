@@ -1,5 +1,6 @@
 *.o
 log*.*
+ApolloExplorer
 ApolloDemo/ApolloDemo
 ApolloCoreDisplay/ApolloCoreDisplay
 bgdbserver/bgdbserver
