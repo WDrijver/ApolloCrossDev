@@ -1,15 +1,17 @@
-# ApolloCrossDev Makefile template for GCC-6.50 v0.8 - ASM only
-# 11-2-2024
+# ApolloCrossDev Makefile template (ASM only)
+# 15-10-2025
 # Willem Drijver
 
 # Define Shell Environment
 PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
 
-# Define ApolloCrossDev
+# Define ApolloCrossDev (Default = GCC 6.50, optional change to GCC 13.10 --> NO 68080 support yet!)
 PREFIX 	= Compilers/GCC-6.50
+# PREFIX 	= Compilers/GCC-13.10
 TARGET 	= m68k-amigaos
-ACP 	= ./.vscode/acp
+ACP 	= ./Projects/ApolloExplorer/acp/acp
+GDB		= ./Projects/bgdbserver/bgdbserver
 
 #Define Project Name and Directory (replace <project-name> and <directory-name>)
 PROJECT_NAME	= SAGAModes
@@ -25,7 +27,8 @@ S_INCLUDE = $(PREFIX)/$(TARGET)/include
 S_FLAGS = -Fhunk -m68080 -m68881 -opt-speed -I$(S_INCLUDE)
 
 # Define Object Linker
-O_LINKER = $(PREFIX)/bin/vlink
+#O_LINKER = $(PREFIX)/bin/vlink
+O_LINKER = $(PREFIX)/bin/m68k-amigaos-gcc
 
 # Define Source and Object Directory
 S_SOURCEDIR = $(PROJECT_DIR)
@@ -57,11 +60,11 @@ build: $(EXE)
 
 # Link all Objects from Filelist together
 $(EXE) : $(O_FILES) 
-	$(O_LINKER) $(O_FILES) -o $(EXE) >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
+	$(O_LINKER) $(O_FILES) -nostdlib -o $(EXE) >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
 
 # Compile all ASM-Sources to Objects
 $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
-	$(S_COMPILER) $(S_FLAGS) -linedebug -o $@ $< >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
+	$(S_COMPILER) $(S_FLAGS) -o $@ $< >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
 
 upload:
 	@echo "\e[37m------------------------------------------------------------------\e[0m"

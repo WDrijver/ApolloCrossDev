@@ -14,8 +14,8 @@ ACP 	= ./Projects/ApolloExplorer/acp/acp
 GDB		= ./Projects/bgdbserver/bgdbserver
 
 #Define Project Name and Directory (replace <project-name> and <directory-name>)
-PROJECT_NAME	= DebugTest
-PROJECT_DIR		= Projects/DebugTest
+PROJECT_NAME	= ApolloCoreDisplay
+PROJECT_DIR		= Projects/ApolloCoreDisplay
 
 # Define GNU C-Compiler Type (C = Default, switch comment to change to C++)
 C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc

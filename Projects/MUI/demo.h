@@ -23,9 +23,6 @@
 
 /* System */
 #include <dos/dos.h>
-#if defined(__amigaos4__)
-#include <dos/obsolete.h>
-#endif
 #include <exec/types.h>
 #include <graphics/gfxmacros.h>
 #include <workbench/workbench.h>
@@ -37,36 +34,14 @@
 
 /* Compiler specific stuff */
 
-#ifdef _DCC
-
-#define REG(x) __ ## x
-#define ASM
-#define SAVEDS __geta4
-
-#else
-
-#include "amiga_compiler.h"
-
-#if defined(__amigaos4__)
-extern struct Library *SysBase;
-extern struct Library *IntuitionBase;
-extern struct Library *UtilityBase;
-extern struct Library *GfxBase;
-extern struct Library *DOSBase;
-extern struct Library *IconBase;
-#else
 struct IntuitionBase *IntuitionBase;
 struct Library *UtilityBase;
 struct GfxBase *GfxBase;
 extern struct DosLibrary *DOSBase;
 struct Library *IconBase;
-#endif
 struct Library *MUIMasterBase;
-#if defined(__amigaos4__)
-struct MUIMasterIFace *IMUIMaster;
-#endif
 
-#endif /* ifdef _DCC */
+
 
 /*************************/
 /* Init & Fail Functions */

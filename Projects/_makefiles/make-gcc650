@@ -44,7 +44,8 @@ C_INCL_MUI	= $(PREFIX)/$(TARGET)/include/MUI
 C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK32)
 
 # Define C Options
-C_OPTIONS 	= -O3 -m68080 -m68881 -fomit-frame-pointer -ffast-math -DREGPARM=4 -DM68K=1 -w
+C_OPTIONS 	= -O3 -m68080 -m68881 -ffast-math -DREGPARM=4 -DM68K=1 -w
+# -fomit-frame-pointer
 C_DEFINES 	= -DNO_INLINE_STDARG -D_TIMEVAL_DEFINED
 C_DEBUG		= -g
 C_FLAGS = $(C_LIB) $(C_OPTIONS) $(C_DEBUG) $(C_DEFINES) $(C_INCL_ALL) $(C_LIBS_ALL)
@@ -94,7 +95,7 @@ build: $(EXE)
 
 # Link all Objects to one Executable
 $(EXE) : $(O_FILES) 
-	@$(O_LINKER) $(C_FLAGS) $(O_FILES) -g -o $(EXE) >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
+	@$(O_LINKER) $(O_FILES) $(C_FLAGS) -o $(EXE) >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
 
 # Compile all C-Sources to Objects 
 $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c

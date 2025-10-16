@@ -53,18 +53,6 @@
             ]
         },
         {
-            "label": "Build GDB Server",
-            "type": "shell",
-            "command": "make -f Projects/GDBServer/make-gcc650",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": [
-                "$gcc"
-            ]
-        },
-        {
             "label": "Build Mul-by-Ten",
             "type": "shell",
             "command": "make -f Projects/Mul-by-Ten/make-gcc650",
