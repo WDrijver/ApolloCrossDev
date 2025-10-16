@@ -41,6 +41,7 @@ cd $SOURCES
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
 sudo apt -y update >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 sudo apt -y install make wget git gcc g++ lhasa libgmp-dev libmpfr-dev libmpc-dev flex bison gettext texinfo ncurses-dev autoconf rsync libreadline-dev >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
+sudo apt -y install build-essential devscripts debhelper qtbase5-dev qtbase5-dev-tools qt5-qmake libqt5x11extras5-dev qttools5-dev-tools >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
@@ -87,7 +88,6 @@ lha -xw=$PREFIX/$TARGET/ndk32-include NDK3.2.lha >>$LOGFILES/part7.log 2>>$LOGFI
 echo -e "\e[1m\e[37m8. ApolloExplorer\e[0m\e[36m"
 cd $WORKSPACE/$PROJECTS
 git clone --progress https://github.com/ronybeck/ApolloExplorer >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
-sudo apt -y install build-essential devscripts debhelper qtbase5-dev qtbase5-dev-tools qt5-qmake libqt5x11extras5-dev qttools5-dev-tools >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 cd $WORKSPACE/$PROJECTS/ApolloExplorer
 qmake >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 make >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
