@@ -1,17 +1,17 @@
 # ApolloCrossDev Makefile template
-# 14-10-2025
+# 15-10-2025
 # Willem Drijver
 
 # Define Shell Environment
 PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
 
-# Define ApolloCrossDev (Default = GCC 6.50, optional change to GCC 13.10 - NO 68080 support yet!)
+# Define ApolloCrossDev (Default = GCC 6.50, optional change to GCC 13.10 --> NO 68080 support yet!)
 PREFIX 	= Compilers/GCC-6.50
 # PREFIX 	= Compilers/GCC-13.10
 TARGET 	= m68k-amigaos
 ACP 	= ./Projects/ApolloExplorer/acp/acp
-GDB		= ./Projects/BGDBServer/bgdbserver
+GDB		= ./Projects/bgdbserver/bgdbserver
 
 #Define Project Name and Directory (replace <project-name> and <directory-name>)
 PROJECT_NAME	= <project-name>

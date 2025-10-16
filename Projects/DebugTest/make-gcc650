@@ -1,20 +1,21 @@
-# ApolloCrossDev Makefile template for GCC-6.50 v0.91
-# 20-9-2024
+# ApolloCrossDev Makefile template
+# 15-10-2025
 # Willem Drijver
 
 # Define Shell Environment
 PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
 
-# Define ApolloCrossDev
+# Define ApolloCrossDev (Default = GCC 6.50, optional change to GCC 13.10 --> NO 68080 support yet!)
 PREFIX 	= Compilers/GCC-6.50
+# PREFIX 	= Compilers/GCC-13.10
 TARGET 	= m68k-amigaos
-ACP 	= ./.vscode/acp
-GDB		= ./.vscode/bgdbserver
+ACP 	= ./Projects/ApolloExplorer/acp/acp
+GDB		= ./Projects/bgdbserver/bgdbserver
 
 #Define Project Name and Directory (replace <project-name> and <directory-name>)
-PROJECT_NAME	= ApolloCoreDisplay
-PROJECT_DIR		= Projects/ApolloCoreDisplay
+PROJECT_NAME	= DebugTest
+PROJECT_DIR		= Projects/DebugTest
 
 # Define GNU C-Compiler Type (C = Default, switch comment to change to C++)
 C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc
@@ -22,9 +23,7 @@ C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc
 
 # Define Standard C-Libraries and Headers (libnix = Default, switch comments to change to clib2)
 C_LIB		= -noixemul
-# C_LIB = -mcrt=clib2
-C_LIBS_CLB	= $(PREFIX)/$(TARGET)/libnix/lib
-# C_LIBS_CLB = $(PREFIX)/$(TARGET)/clib2/lib
+# C_LIB 	= -mcrt=clib2
 C_INCL_CLB	= $(PREFIX)/$(TARGET)/libnix/include
 # C_INCL_CLB  = $(PREFIX)/$(TARGET)/clib2/include
 

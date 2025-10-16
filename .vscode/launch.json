@@ -5,6 +5,48 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug Hello-Amiga",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Projects/Hello-Amiga/Hello-Amiga",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerServerAddress": "192.168.92.1:2345",
+            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "Debug DebugTest",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/Projects/DebugTest/DebugTest",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerServerAddress": "192.168.92.1:2345",
+            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
             "name": "Debug BubbleSort",
             "type": "cppdbg",
             "request": "launch",
@@ -15,7 +57,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "127.0.0.1:2345",
+            "miDebuggerServerAddress": "192.168.92.1:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
@@ -78,7 +120,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.163:2345",
+            "miDebuggerServerAddress": "192.168.92.1:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "miDebuggerArgs": "-q",
             "targetArchitecture": "x64",

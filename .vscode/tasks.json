@@ -29,6 +29,18 @@
             ]
         },
         {
+            "label": "Build DebugTest",
+            "type": "shell",
+            "command": "make -f Projects/DebugTest/make-gcc650",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
             "label": "Build Hello-Amiga",
             "type": "shell",
             "command": "make -f Projects/Hello-Amiga/make-gcc650",
@@ -79,7 +91,7 @@
         {
             "label": "Build ApolloDemo",
             "type": "shell",
-            "command": "make -f Projects/ApolloDemo/make-gcc650 noupload",
+            "command": "make -f Projects/ApolloDemo/make-gcc650",
             "group": {
                 "kind": "build",
                 "isDefault": false

@@ -1,16 +1,17 @@
-# ApolloCrossDev Makefile template for GCC-6.50 v0.91
-# 20-9-2024
+# ApolloCrossDev Makefile template
+# 15-10-2025
 # Willem Drijver
 
 # Define Shell Environment
 PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
 
-# Define ApolloCrossDev
+# Define ApolloCrossDev (Default = GCC 6.50, optional change to GCC 13.10 --> NO 68080 support yet!)
 PREFIX 	= Compilers/GCC-6.50
+# PREFIX 	= Compilers/GCC-13.10
 TARGET 	= m68k-amigaos
-ACP 	= ./.vscode/acp
-GDB		= ./.vscode/bgdbserver
+ACP 	= ./Projects/ApolloExplorer/acp/acp
+GDB		= ./Projects/bgdbserver/bgdbserver
 
 #Define Project Name and Directory (replace <project-name> and <directory-name>)
 PROJECT_NAME	= BubbleSort
@@ -22,9 +23,7 @@ C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc
 
 # Define Standard C-Libraries and Headers (libnix = Default, switch comments to change to clib2)
 C_LIB		= -noixemul
-# C_LIB = -mcrt=clib2
-C_LIBS_CLB	= $(PREFIX)/$(TARGET)/libnix/lib
-# C_LIBS_CLB = $(PREFIX)/$(TARGET)/clib2/lib
+# C_LIB 	= -mcrt=clib2
 C_INCL_CLB	= $(PREFIX)/$(TARGET)/libnix/include
 # C_INCL_CLB  = $(PREFIX)/$(TARGET)/clib2/include
 
@@ -45,7 +44,7 @@ C_INCL_MUI	= $(PREFIX)/$(TARGET)/include/MUI
 C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK32)
 
 # Define C Options
-C_OPTIONS 	= -O2 -m68040 -m68881 -fomit-frame-pointer -ffast-math -DREGPARM=4 -DM68K=1 -w
+C_OPTIONS 	= -O3 -m68080 -m68881 -fomit-frame-pointer -ffast-math -DREGPARM=4 -DM68K=1 -w
 C_DEFINES 	= -DNO_INLINE_STDARG -D_TIMEVAL_DEFINED
 C_DEBUG		= -g
 C_FLAGS = $(C_LIB) $(C_OPTIONS) $(C_DEBUG) $(C_DEFINES) $(C_INCL_ALL) $(C_LIBS_ALL)
@@ -59,7 +58,7 @@ S_LIBS		= $(PREFIX)/$(TARGET)/DevPac/Libs
 
 # Define ASM Options
 S_DEBUG		= -linedebug -kick1hunks
-S_FLAGS 	= -Fhunk -m68040 -m68881 -opt-speed $(S_DEBUG) -I$(S_INCLUDE)
+S_FLAGS 	= -Fhunk -m68080 -m68881 -opt-speed $(S_DEBUG) -I$(S_INCLUDE)
 
 # Define Object Linker
 O_LINKER = $(PREFIX)/bin/m68k-amigaos-gcc
@@ -112,6 +111,8 @@ upload:
 	@$(ACP) $(GDB) "$(APOLLO_V4_HOST)"
 	@cp Projects/_icons/ApolloIcon.info $(PROJECT_DIR)/$(PROJECT_NAME).info
 	@cp Projects/_icons/ApolloIcon_Debug.info $(PROJECT_DIR)/$(PROJECT_NAME)_Debug.info
+	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME).info "$(APOLLO_V4_HOST)"
+	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME)_Debug.info "$(APOLLO_V4_HOST)"	
 	@echo "bgdbserver $(PROJECT_NAME)" > $(EXE)_Debug
 	@$(ACP) $(EXE)_Debug "$(APOLLO_V4_HOST)"
 

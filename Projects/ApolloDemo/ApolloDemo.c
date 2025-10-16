@@ -41,7 +41,7 @@
 int main(void)
 {
     // Close Workbench
-    // ApolloTakeOver();
+    ApolloTakeOver();
     ApolloDebugInit();         
 
     #ifdef APOLLODEBUG

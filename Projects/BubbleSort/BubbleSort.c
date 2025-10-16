@@ -1,5 +1,4 @@
 #include <stdio.h>
-void bubbleSort(short *arr, unsigned short n);
 
 void bubbleSort(short *arr, unsigned short n)
 {   short cont=1, swap, *pt_arr;
