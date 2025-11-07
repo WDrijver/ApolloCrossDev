@@ -7,15 +7,14 @@ PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
 
 # Define ApolloCrossDev (Default = GCC 6.50, optional change to GCC 13.10 --> NO 68080 support yet!)
-PREFIX 	= Compilers/GCC-6.50
-# PREFIX 	= Compilers/GCC-13.10
+PREFIX 	= Compilers/GCC-13.1
 TARGET 	= m68k-amigaos
 ACP 	= ./Projects/ApolloExplorer/acp/acp
 GDB		= ./Projects/bgdbserver/bgdbserver
 
 #Define Project Name and Directory (replace <project-name> and <directory-name>)
-PROJECT_NAME	= Hello
-PROJECT_DIR		= Projects/Hello-C
+PROJECT_NAME	= Hello-Intuition
+PROJECT_DIR		= Projects/Hello-Intuition
 
 # Define GNU C-Compiler Type (C = Default, switch comment to change to C++)
 C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc
@@ -44,7 +43,7 @@ C_INCL_MUI	= $(PREFIX)/$(TARGET)/include/MUI
 C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK32)
 
 # Define C Options
-C_OPTIONS 	= -m68080 -m68881 -ffast-math -DREGPARM=4 -DM68K=1 -w
+C_OPTIONS 	= -O2 -m68040 -m68881 -ffast-math -DREGPARM=4 -DM68K=1 -w
 # -fomit-frame-pointer
 C_DEFINES 	= -DNO_INLINE_STDARG -D_TIMEVAL_DEFINED
 C_DEBUG		= -g
@@ -95,15 +94,15 @@ build: $(EXE)
 
 # Link all Objects to one Executable
 $(EXE) : $(O_FILES) 
-	@$(O_LINKER) $(O_FILES) $(C_FLAGS) -o $(EXE) >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
+	@$(O_LINKER) $(O_FILES) $(C_FLAGS) -o $(EXE) >>$(PROJECT_DIR)/log-131.txt 2>>$(PROJECT_DIR)/log-err-131.txt
 
 # Compile all C-Sources to Objects 
 $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
-	@$(C_COMPILER) -c $(C_FLAGS) -o $@ $< >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
+	@$(C_COMPILER) -c $(C_FLAGS) -o $@ $< >>$(PROJECT_DIR)/log-131.txt 2>>$(PROJECT_DIR)/log-err-131.txt
 
 # Compile all ASM-Sources to Objects
 $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
-	@$(S_COMPILER) $(S_FLAGS) -o $@ $< >>$(PROJECT_DIR)/log-650.txt 2>>$(PROJECT_DIR)/log-err-650.txt
+	@$(S_COMPILER) $(S_FLAGS) -o $@ $< >>$(PROJECT_DIR)/log-131.txt 2>>$(PROJECT_DIR)/log-err-131.txt
 
 upload:
 	@echo "\e[37m------------------------------------------------------------------\e[0m"

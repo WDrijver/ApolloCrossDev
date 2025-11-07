@@ -5,15 +5,17 @@ VERSION=0.91
 CPU=-j8
 
 WORKSPACE="`pwd`"
+COMPILERS=Compilers
+PROJECTS=Projects
 COMPILER=GCC-13.1
-
-ARCHIVES=$WORKSPACE/_archives
-BUILDS=$WORKSPACE/$COMPILER/_builds
-SOURCES=$WORKSPACE/$COMPILER/_sources
-PATCHES=$WORKSPACE/$COMPILER/_install/patches
-LOGFILES=$WORKSPACE/$COMPILER/_logs
-PREFIX=$WORKSPACE/$COMPILER
 TARGET=m68k-amigaos
+PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
+
+ARCHIVES=$WORKSPACE/$COMPILERS/_archives
+LOGFILES=$PREFIX/_logs
+BUILDS=$PREFIX/_builds
+SOURCES=$PREFIX/_sources
+
 export PATH=$PREFIX/bin:$PATH
 
 NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
@@ -29,13 +31,10 @@ echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
 # PART 1: Clean the House
 sudo echo -e "\e[1m\e[37m1. Clean the House\e[0m\e[36m"
 rm -f -r $PREFIX
-mkdir $PREFIX
-rm -f -r $LOGFILES
+mkdir -p $PREFIX
 mkdir -p $LOGFILES
-rm -f -r $BUILDS
 mkdir -p $BUILDS
-rm -f -r $SOURCES
-mkdir $SOURCES
+mkdir -p $SOURCES
 cd $SOURCES
 
 # PART 2: Update Linux Packages 

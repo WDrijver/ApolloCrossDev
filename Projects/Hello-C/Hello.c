@@ -2,13 +2,10 @@
 
 int main()
 {
+    //unsigned short* buffer;
+    //buffer = (unsigned short*)malloc(1024);
+    //memset(buffer, 1, 1024);
 
-    char    test[50];
-    FILE    *testfile;
-
-
-    printf("Hello world!\n");
-    fprintf(stderr,"Hello world!");
-
-    return(0);
+    fprintf(stderr,"Hello world! - Compiled with GCC 13.1");
 }
+

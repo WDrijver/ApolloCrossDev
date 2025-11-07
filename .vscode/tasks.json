@@ -1,7 +1,7 @@
 {
     "version": "2.0.0",
     "options": {
-    "env": { "APOLLO_V4_HOST": "192.168.92.1:Ram Disk/" }
+    "env": { "APOLLO_V4_HOST": "192.168.2.143:Ram Disk/" }
     },
     "tasks": [
         {
@@ -113,9 +113,33 @@
             ]
         },
         {
+            "label": "Build Hello-C (GCC 13.1)",
+            "type": "shell",
+            "command": "make -f Projects/Hello-C/make-gcc131",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
             "label": "Build Hello-Intuition",
             "type": "shell",
             "command": "make -f Projects/Hello-Intuition/make-gcc650",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build Hello-Intuition (GCC-13.1)",
+            "type": "shell",
+            "command": "make -f Projects/Hello-Intuition/make-gcc131",
             "group": {
                 "kind": "build",
                 "isDefault": false
