@@ -41,7 +41,7 @@
 int main(void)
 {
     // Close Workbench
-    ApolloTakeOver();
+    // ApolloTakeOver();
     ApolloDebugInit();         
 
     #ifdef APOLLODEBUG
@@ -129,4 +129,7 @@ int main(void)
     // Load and Show Stop Screen
     ApolloLoad("Data/Stop.16.dds", &Screen_Video_Buffer, &Screen_Video_Lenght, DDS_OFFSET, true);
     ApolloShow(Screen_Video_Buffer, Screen_Video_Lenght, SAGA_MODE, SAGA_MODULO);
+
+    ApolloCPUDelay(5000);
+    return;
 }

@@ -41,14 +41,13 @@ C_INCL_NDK32= $(PREFIX)/$(TARGET)/ndk32-include/Include_H
 C_INCL_GL	= $(PREFIX)/$(TARGET)/include/GL
 C_INCL_SDL	= $(PREFIX)/$(TARGET)/include/SDL
 C_INCL_MUI	= $(PREFIX)/$(TARGET)/include/MUI
-C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK32)
+C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK39)
 
 # Define C Options
-C_OPTIONS 	= -O3 -m68080 -m68881 -ffast-math -DREGPARM=4 -DM68K=1 -w
-# -fomit-frame-pointer 
-C_DEFINES 	= -DNO_INLINE_STDARG -D_TIMEVAL_DEFINED
+C_OPTIONS 	= -O2 -m68080 -m68881 -ffast-math -DREGPARM=4 -DM68K=1 -w -fomit-frame-pointer -noixemul
+C_DEFINES 	= -DNO_INLINE_STDARG 
 C_DEBUG		= -g
-C_FLAGS = $(C_LIB) $(C_OPTIONS) $(C_DEBUG) $(C_DEFINES) $(C_INCL_ALL) $(C_LIBS_ALL)
+C_FLAGS = $(C_LIB) $(C_OPTIONS) $(C_DEFINES) $(C_INCL_ALL) $(C_LIBS_ALL)
 
 # Define ASM Compiler
 S_COMPILER = $(PREFIX)/bin/vasmm68k_mot
@@ -109,13 +108,13 @@ upload:
 	@echo "\e[37m------------------------------------------------------------------\e[0m"
 	@echo "\e[1;31mApollo\e[1;30mExplorer\e[37m Upload\e[30m"
 	@$(ACP) $(EXE) "$(APOLLO_V4_HOST)"
-	@$(ACP) $(GDB) "$(APOLLO_V4_HOST)"
+#@$(ACP) $(GDB) "$(APOLLO_V4_HOST)"
 	@cp Projects/_icons/ApolloIcon.info $(PROJECT_DIR)/$(PROJECT_NAME).info
-	@cp Projects/_icons/ApolloIcon_Debug.info $(PROJECT_DIR)/$(PROJECT_NAME)_Debug.info
+#@cp Projects/_icons/ApolloIcon_Debug.info $(PROJECT_DIR)/$(PROJECT_NAME)_Debug.info
 	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME).info "$(APOLLO_V4_HOST)"
-	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME)_Debug.info "$(APOLLO_V4_HOST)"	
-	@echo "bgdbserver $(PROJECT_NAME)" > $(EXE)_Debug
-	@$(ACP) $(EXE)_Debug "$(APOLLO_V4_HOST)"
+#@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME)_Debug.info "$(APOLLO_V4_HOST)"	
+#@echo "bgdbserver $(PROJECT_NAME)" > $(EXE)_Debug
+#@$(ACP) $(EXE)_Debug "$(APOLLO_V4_HOST)"
 
 cleanafter:
 	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/*.info $(EXE)_Debug

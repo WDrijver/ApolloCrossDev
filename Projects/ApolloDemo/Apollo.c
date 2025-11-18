@@ -36,8 +36,8 @@ void ApolloLoad(const UBYTE *filename, UBYTE **buffer, ULONG *buffer_lenght, UWO
 	fseek(file_handle, offset, SEEK_SET);
 	file_size-=offset;
 
-	file_buffer = (UBYTE*)AllocMem(file_size+15, MEMF_ANY);
-    file_buffer_aligned = (UBYTE*)(((ULONG)(file_buffer+15) & 0xFFFFFFF0));
+	file_buffer = (UBYTE*)AllocMem(file_size+31, MEMF_ANY);
+    file_buffer_aligned = (UBYTE*)(((ULONG)(file_buffer+31) & 0xFFFFFFE0));
 
     #ifdef APOLLODEBUG
     ApolloMemoryFree = AvailMem(MEMF_ANY); 
