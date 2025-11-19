@@ -1,6 +1,0 @@
-;vc -c extheader_68k.s
-
-vc -O0 -lvc -g -DAMIGA -c99 -o XFD.68k extheader_68k.o 7z.c 
-
-echo "build finished"
-

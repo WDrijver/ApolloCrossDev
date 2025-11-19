@@ -1,7 +1,0 @@
-g++  -Wall -O3  -mcrt=newlib -D__USE_INLINE__ -DNNDEBUG   -c -o Rar_Extractor-0.2.1/unrarlib/unrarlib.o Rar_Extractor-0.2.1/unrarlib/unrarlib.cpp
-gcc  -Wall -O3  -mcrt=newlib -D__USE_INLINE__ -DNDEBUG   -c -o extheader.o extheader_os4.c
-gcc  -Wall -O3  -mcrt=newlib -D__USE_INLINE__ -DNDEBUG   -c -o xad_rar.o xad_rar.c
-g++  -Tdata=0 -O3 -mcrt=newlib -nostartfiles -o RAR extheader.o xad_rar.o Rar_Extractor-0.2.1/unrarlib/unrarlib.o -L Rar_Extractor-0.2.1/unrar -lrarextract -lstdc++
-;copy RAR libs:xad
-;flush
-

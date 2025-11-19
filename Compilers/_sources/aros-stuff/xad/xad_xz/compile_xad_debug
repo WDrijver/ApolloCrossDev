@@ -1,7 +1,0 @@
-stack 500000
-
-gcc -std=c99 -mcrt=newlib -D__USE_INLINE__ -nostartfiles -o XZ extheader.c xz.c -g -ggdb
-
-copy XZ libs:xad
-echo "build finished"
-expunge all

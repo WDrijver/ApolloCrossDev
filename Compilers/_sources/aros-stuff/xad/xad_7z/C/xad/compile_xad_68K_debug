@@ -1,9 +1,0 @@
-;vc -c extheader_68k.s
-
-vc +aos68k -O0 -lmieee -lbz2 -lvc -g -hunkdebug -DAMIGA -D_7ZIP_PPMD_SUPPPORT -c99 -o 7z.68k extheader_68k.o 7z.c 7zAlloc.c /7zBuf.c /7zCrc.c /7zDec.c /7zIn.c /7zStream.c /LzmaDec.c /Lzma2Dec.c /Bra86.c /Bcj2.c /Ppmd7.c /Ppmd7Dec.c
-
-;vc -O3 -c99 -o 7z.68K -nostartfiles extheader_68k.o 7z.o 7zAlloc.o 7zBuffer.o 7zCrc.o 7zDecode.o 7zExtract.o 7zHeader.o 7zIn.o 7zItem.o 7zMethodID.o LzmaDecode.o BranchX86.o BranchX86_2.o
-;strip 7z
-;copy 7z libs:xad
-echo "build finished"
-

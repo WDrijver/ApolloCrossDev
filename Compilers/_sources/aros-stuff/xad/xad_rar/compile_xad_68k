@@ -1,8 +1,0 @@
-m68k-amigaos-g++  -Wall -O3 -D__USE_INLINE__ -DNDEBUG   -c -o Rar_Extractor-0.2.1/unrarlib/unrarlib.o Rar_Extractor-0.2.1/unrarlib/unrarlib.cpp  -noixemul
-m68k-amigaos-g++ -Wall -O3 -D__USE_INLINE__ -DNDEBUG   -c -o extheader.o extheader.c -noixemul
-m68k-amigaos-gcc -Wall -O3 -D__USE_INLINE__ -DNDEBUG   -c -o xad_rar.o xad_rar.c -noixemul
-m68k-amigaos-gcc -Wall -O3 -D__USE_INLINE__ -DNDEBUG   -c -o libnixstuff.o libnixstuff.c -noixemul
-m68k-amigaos-g++ -nostartfiles -o RAR extheader.o xad_rar.o libnixstuff.o Rar_Extractor-0.2.1/unrarlib/unrarlib.o Rar_Extractor-0.2.1/unrar/librarextract.a -lstdc++ -noixemul
-;copy RAR libs:xad
-;flush
-
