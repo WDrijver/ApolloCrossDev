@@ -34,6 +34,7 @@ rm -f -r $PREFIX
 mkdir -p $PREFIX
 mkdir -p $LOGFILES
 rm -f -r $PROJECTS/bgdbserver
+rm -f -r $SOURCES
 mkdir -p $SOURCES
 cd $SOURCES
 
