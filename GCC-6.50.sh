@@ -14,7 +14,7 @@ PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
 ARCHIVES=$WORKSPACE/$COMPILERS/_archives
 LOGFILES=$PREFIX/_logs
 #BUILDS=$PREFIX/_builds
-SOURCES=$COMPILERS/_sources
+SOURCES=$WORKSPACE/../ApolloCrossDev.Sources
 
 export PATH=$PREFIX/bin:$PATH
 
@@ -45,8 +45,8 @@ sudo apt -y install make wget git gcc g++ lhasa libgmp-dev libmpfr-dev libmpc-de
 sudo apt -y install build-essential devscripts debhelper qtbase5-dev qtbase5-dev-tools qt5-qmake libqt5x11extras5-dev qttools5-dev-tools >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 
 # PART 3: Clone Amiga-GCC
-# echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-# git clone --progress https://franke.ms/git/bebbo/amiga-gcc 2>>$LOGFILES/part3_err.log
+echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
+git clone --progress https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile Amiga-GCC
 echo -e "\e[1m\e[37m4. Compile Amiga-GCC\e[0m\e[36m"
