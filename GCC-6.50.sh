@@ -34,8 +34,7 @@ rm -f -r $PREFIX
 mkdir -p $PREFIX
 mkdir -p $LOGFILES
 rm -f -r $PROJECTS/bgdbserver
-#mkdir -p $BUILDS
-#mkdir -p $SOURCES
+mkdir -p $SOURCES
 cd $SOURCES
 
 # PART 2: Update Linux Packages 
