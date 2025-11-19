@@ -1,0 +1,3 @@
+; AmiUpdate AutoInstall for XAD XZ Client
+cd xad_xz
+Installer Install APPNAME XADXZAutoInstall DEFUSER NOVICE

@@ -1,0 +1,51 @@
+#### Start of system configuration section. ####
+
+srcdir =	@srcdir@
+VPATH =		@srcdir@
+
+CC =		@CC@
+CPP =		@CPP@
+AS =		@AS@
+
+AR =		@AR@
+RANLIB =	@RANLIB@
+AWK =		@AWK@
+
+#### End system configuration section ####
+
+ifneq ($(TARGET),clean)
+include ../../sources/stubs/filelist
+endif
+
+CURDIR = $(shell pwd)
+
+OPTIONS=-I$(srcdir)/../headers $(CFLAGS)
+
+OBJECTS2=$(OBJECTS) ../nix/misc/__request.o
+
+SUBDIRS2=$(SUBDIRS) ../nix/misc
+SUBDIRSP=$(patsubst %,%/.created,$(SUBDIRS2))
+
+%.o: %.c $(SUBDIRSP)
+	$(CC) $(OPTIONS) -c $(filter-out $(SUBDIRSP), $^) -o $@ 2>&1|tee $*.err
+	-if test ! -s $*.err; then rm $*.err; fi
+
+.PHONY: all clean veryclean
+
+all: libstubs.a
+
+clean:
+	rm -rf $(SUBDIRS)
+
+veryclean:
+	rm -rf *
+
+$(SUBDIRSP):
+	mkdir -p $(@D)
+	echo "" >$@
+
+libstubs.a: $(OBJECTS2) ../../sources/stubs/Makefile ../../sources/stubs/filelist
+	rm -f $@
+	$(AR) -q $@ $(OBJECTS2)
+	$(RANLIB) $@
+#	echo "\\$$$(V)" >>$@

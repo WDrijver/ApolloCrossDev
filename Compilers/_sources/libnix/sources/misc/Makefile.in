@@ -1,0 +1,43 @@
+#### Start of system configuration section. ####
+
+srcdir =	@srcdir@
+VPATH =		@srcdir@
+
+CC =		@CC@
+CPP =		@CPP@
+AS =		@AS@
+
+AR =		@AR@
+RANLIB =	@RANLIB@
+AWK =		@AWK@
+
+#### End system configuration section ####
+
+OBJECTS=detach.o swapstack.o
+
+OPTIONS=-I$(srcdir)/../headers $(CFLAGS)
+
+vpath %.c $(SOURCEDIR)
+
+REDEF=-D_DOSBase=___DOSBase \
+      -D_UtilityBase=___UtilityBase \
+      -D_MathIeeeSingBasBase=___MathIeeeSingBasBase \
+      -D_MathIeeeSingTransBase=___MathIeeeSingTransBase \
+      -D_MathIeeeDoubBasBase=___MathIeeeDoubBasBase \
+      -D_MathIeeeDoubTransBase=___MathIeeeDoubTransBase \
+      -D_LocaleBase=___LocaleBase
+
+#Use private library bases to avoid naming collisions
+%.o: %.c
+	$(CC) $(OPTIONS) -c $^ -o $*.o
+
+.PHONY: all filelist clean veryclean
+
+all: $(OBJECTS)
+
+filelist:
+
+clean:
+	-rm -f *.o *.err
+
+veryclean: clean

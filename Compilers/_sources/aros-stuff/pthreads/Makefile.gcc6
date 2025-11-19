@@ -1,0 +1,143 @@
+# simple pthread Makefile.gcc6 - for Bebbo's gcc-6
+
+HEADERS =
+SOURCES =
+
+PREFIX ?= /opt/amiga
+
+CC = m68k-amigaos-gcc
+AR = m68k-amigaos-ar
+AS = m68k-amigaos-as
+
+uname := $(shell uname)
+root ?= $(shell echo $$PWD)
+export root
+
+MAKEFILES=$(root)/Makefile.gcc6
+
+# special path handling for msys2 started from Eclipse
+ifneq (,$(findstring MSYS_NT,$(uname)))
+ifneq (,$(findstring /cygdrive/,$(root)))
+troot := $(root)
+tdrive := $(word 2,$(subst /, ,$(troot)))
+root = $(subst /cygdrive/$(tdrive)/,$(tdrive):/,$(troot))
+endif
+endif
+
+ifneq (,$(lib))
+ifeq (,$(libname))
+libname=$(lib)
+endif
+endif
+
+# extend CFLAGS on first invokation
+ifeq (,$(kind))
+CFLAGS ?= -Os -fomit-frame-pointer
+CFLAGS += -noixemul -I$(root)
+endif
+
+.PHONY: all one clean install install_one
+
+.PHONY: lib libb libm020 libm020bb libm020bb32
+all: info lib libb libm020 libm020bb libm020bb32
+
+# the desired kinds to be build
+lib:
+	@mkdir -p $@
+	$(MAKE) one kind=$@
+		
+libb:
+	@mkdir -p $@
+	$(MAKE) one kind=$@ flags="-fbaserel  -save-temps"
+
+libm020:
+	@mkdir -p $@
+	$(MAKE) one kind=$@ flags="-m68020"
+
+libm020bb:
+	@mkdir -p $@
+	$(MAKE) one kind=$@ flags="-fbaserel -m68020"
+
+libm020bb32:
+	@mkdir -p $@
+	$(MAKE) one kind=$@ flags="-fbaserel32 -m68020"
+
+# the libs to build for each kind
+one: pthread
+
+# install all kinds into the prefix
+.PHONY: install_lib install_libb install_libm020 install_libm020bb install_libm020bb32
+install: install_lib install_libb install_libm020 install_libm020bb install_libm020bb32
+	
+install_lib:
+	$(MAKE) install_one kind=lib to=""
+install_libb:
+	$(MAKE) install_one kind=libb to="libb/"
+install_libm020:
+	$(MAKE) install_one kind=libm020 to="libm020/"
+install_libm020bb:
+	$(MAKE) install_one kind=libm020bb to="libb/libm020/"
+install_libm020bb32:
+	$(MAKE) install_one kind=libm020bb32 to="libb32/libm020/"
+
+# install the files for the given $(kind) into $(to)
+install_one:
+	mkdir -p $(PREFIX)/m68k-amigaos/lib/$(to)
+	cp $(kind)/*.a $(PREFIX)/m68k-amigaos/lib/$(to)
+	cp $(kind)/*.o $(PREFIX)/m68k-amigaos/lib/$(to)
+	
+
+# startup stuff
+.PHONY: libdir
+libdir:
+	@mkdir -p lib
+
+lib/devinit.o: $(root)/$(SOURCES)/startup/devinit.c libdir
+	$(CC) -c $(CFLAGS) $(flags) $< -o $@
+
+lib/libinit.o: $(root)/$(SOURCES)/startup/libinit.c libdir
+	$(CC) -c $(CFLAGS) $(flags) $< -o $@
+
+lib/libinitr.o: $(root)/$(SOURCES)/startup/libinitr.c libdir
+	$(CC) -c $(CFLAGS) $(flags) $< -o $@
+
+lib/ncrt0.o: $(root)/$(SOURCES)/startup/ncrt0.S libdir
+	$(AS) $< -o $@
+
+lib/nbcrt0.o: $(root)/$(SOURCES)/startup/nbcrt0.S libdir
+	$(AS) $< -o $@
+
+lib/nlbcrt0.o: $(root)/$(SOURCES)/startup/nlbcrt0.S libdir
+	$(AS) $< -o $@
+
+lib/nrcrt0.o: $(root)/$(SOURCES)/startup/nrcrt0.S libdir
+	$(AS) $< -o $@
+
+lib/nlrcrt0.o: $(root)/$(SOURCES)/startup/nlrcrt0.S libdir
+	$(AS) $< -o $@
+
+.PHONY: pthread
+pthread:
+	$(MAKE) -C $(kind) libpthread.a lib=pthread
+
+# build the lib base on $(lib), $(kind) and $(flags)
+lib$(libname).a: $(shell find $(root)/$(SOURCES)/* -name '*.c') $(stolen) $(shell find $(root)/$(HEADERS)/* -name '*.h') $(root)/Makefile.gcc6
+	@mkdir -p $(lib)
+	@echo compiling for $(kind)/$@ using $(CC) -c $(CFLAGS) $(flags)
+	@touch -t 0001010000 $(lib)/stamp && if [ -e $@ ]; then touch -r $@ $(lib)/stamp; fi
+	@if [ "$$(find $(root)/$(HEADERS)/* -newer $(lib)/stamp)" != "" ]; then rm -f $(lib)/*.o $@; touch -t 0001010000 $(lib)/stamp; fi
+	@if [ "$$(find $(root)/Makefile.gcc6 -newer $(lib)/stamp)" != "" ]; then rm -f $(lib)/*.o $@; touch -t 0001010000 $(lib)/stamp; fi
+	@cd $(lib) && files="$$(find $^ -name '*.c' -newer stamp)" && echo "$(CC) -c $(CFLAGS) $(flags) $$files" && $(CC) -c $(CFLAGS) $(flags) $$files 
+	@#echo archive $(kind)/$@
+	@$(AR) rcs $@ $$(find ./$(lib)/* -name '*.o' -newer $(lib)/stamp)
+
+
+# cleanup
+clean:
+	find * -name '*.o' -delete
+	find * -name '*.a' -delete
+	find * -name stamp -delete
+
+info:
+	@echo "$(uname)"
+	@echo "root=$(root)"

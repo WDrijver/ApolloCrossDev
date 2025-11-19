@@ -1,0 +1,72 @@
+#### Start of system configuration section. ####
+
+srcdir =	@srcdir@
+VPATH =		@srcdir@
+
+CC =		@CC@
+CPP =		@CPP@
+AS =		@AS@
+
+AR =		@AR@
+RANLIB =	@RANLIB@
+AWK =		@AWK@
+
+#### End system configuration section ####
+
+ifneq ($(TARGET),clean)
+include ../../sources/nix13/filelist
+endif
+
+CURDIR = $(shell pwd)
+
+OPTIONS=-I$(srcdir)/../headers $(CFLAGS) -mcrt=nix13
+
+REDEF=-D_DOSBase=___DOSBase \
+      -D_UtilityBase=___UtilityBase \
+      -D_MathIeeeSingBasBase=___MathIeeeSingBasBase \
+      -D_MathIeeeSingTransBase=___MathIeeeSingTransBase \
+      -D_MathIeeeDoubBasBase=___MathIeeeDoubBasBase \
+      -D_MathIeeeDoubTransBase=___MathIeeeDoubTransBase \
+      -D_LocaleBase=___LocaleBase
+
+
+OBJECTS2= \
+	amiga/misc/ArgArray.o \
+	misc/swapstack.o \
+	nix/extra/dirent.o \
+	nix/stdlib/system.o \
+	nix/string/strcoll.o \
+	nix/string/strxfrm.o \
+	nix/time/strftime.o \
+	nixmain/__nocommandline.o \
+	nix20/stdio/open.o 
+
+SUBDIRS2=$(SUBDIRS) misc nixmain
+SUBDIRSP=$(patsubst %,%/.created,$(SUBDIRS2))
+
+%.o: %.c $(SUBDIRSP)
+	$(CC) $(OPTIONS) -c $(filter-out $(SUBDIRSP), $^) -o $*.o
+
+.PHONY: all clean veryclean
+
+all: libnix13.a
+
+clean:
+	-rm -rf $(SUBDIRS2)
+
+veryclean:
+	-rm -rf *
+
+$(OBJECTS2): $(patsubst %.o,$(srcdir)/../../sources/%.c,$(OBJECTS2))
+	mkdir -p $(@D)
+	$(CC) $(OPTIONS) $(patsubst %.o,$(srcdir)/../../sources/%.c,$@) -c -o $@
+
+$(SUBDIRSP):
+	mkdir -p $(@D)
+	echo "" >$@
+	
+libnix13.a:  $(SUBDIRSP) $(OBJECTS) $(OBJECTS2) ../../sources/nix13/Makefile ../../sources/nix13/filelist
+	-rm -f $@
+	$(AR) -q $@ $(OBJECTS) $(OBJECTS2)
+	$(RANLIB) $@
+#	echo "\\$$$(V)" >>$@
