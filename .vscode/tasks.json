@@ -17,18 +17,6 @@
             ]
         },
         {
-            "label": "Build BubbleSort",
-            "type": "shell",
-            "command": "make -f Projects/BubbleSort/make-gcc650",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": [
-                "$gcc"
-            ]
-        },
-        {
             "label": "Build DebugTest",
             "type": "shell",
             "command": "make -f Projects/DebugTest/make-gcc650",
@@ -89,18 +77,6 @@
             ]
         },
         {
-            "label": "Build ApolloDemo (GCC-13.1)",
-            "type": "shell",
-            "command": "make -f Projects/ApolloDemo/make-gcc131 noupload",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": [
-                "$gcc"
-            ]
-        },
-        {
             "label": "Build Hello-C",
             "type": "shell",
             "command": "make -f Projects/Hello-C/make-gcc650",
@@ -113,33 +89,9 @@
             ]
         },
         {
-            "label": "Build Hello-C (GCC 13.1)",
-            "type": "shell",
-            "command": "make -f Projects/Hello-C/make-gcc131",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": [
-                "$gcc"
-            ]
-        },
-        {
             "label": "Build Hello-Intuition",
             "type": "shell",
             "command": "make -f Projects/Hello-Intuition/make-gcc650",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": [
-                "$gcc"
-            ]
-        },
-        {
-            "label": "Build Hello-Intuition (GCC-13.1)",
-            "type": "shell",
-            "command": "make -f Projects/Hello-Intuition/make-gcc131",
             "group": {
                 "kind": "build",
                 "isDefault": false

@@ -1,7 +1,7 @@
-ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup a Cross Compiler in a Virtual Ubuntu Linux.
+ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup a Cross Compiler in a Virtual Ubuntu or Debian Linux.
 
 Content:
-1. GCC 6.5.0 / 13.1 Toolchain (Apollo optimised Fork from excellent Amiga-GCC by Stefan -Bebbo- Franke)
+1. GCC 6.5.0 Toolchain (Apollo optimised Fork from excellent Amiga-GCC by Stefan -Bebbo- Franke)
 2. VASM Assembler (Apollo optimised Assembler from Dr. Volker Barthelsmann & Frank Wille) 
 3. Amiga OS Native Development Kits (1.3, 3.9 and 3.2)
 4. Additional Software Development Kits (SDL, FreeType, Open-GL, MUI5)

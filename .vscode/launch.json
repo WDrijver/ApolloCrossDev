@@ -47,27 +47,6 @@
             ]
         },
         {
-            "name": "Debug BubbleSort",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/Projects/BubbleSort/BubbleSort",
-            "args": [],
-            "stopAtEntry": true,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.92.1:2345",
-            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
-        },
-        {
             "name": "Debug Mul-by-Ten",
             "type": "cppdbg",
             "request": "launch",

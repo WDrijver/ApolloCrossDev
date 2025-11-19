@@ -56,12 +56,13 @@ make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
-make all $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+make all $CPU PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Part 5: MUI
 echo -e "\e[1m\e[37m5. Adding MUI5\e[0m\e[36m"
 cd $SOURCES/amiga-gcc
 make sdk=mui PREFIX=$PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+cp -r -f $SOURCES/amiga-gcc/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/include/mui >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
 # Part 6: SDL
 echo -e "\e[1m\e[37m6. Adding Open-GL, GDB, SDL, TTF and FreeType\e[0m\e[36m"
@@ -76,16 +77,14 @@ cd $ARCHIVES
 cp -r -f SDL/* $PREFIX/$TARGET >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 # PART 7: NDK
-#echo -e "\e[1m\e[37m7. Development Kits\e[0m\e[36m"
-#mv $PREFIX/$TARGET/ndk-include $PREFIX/$TARGET/ndk39-include
-
+echo -e "\e[1m\e[37m7. Development Kits\e[0m\e[36m"
+mv $PREFIX/$TARGET/ndk-include $PREFIX/$TARGET/ndk39-include
 cd $PREFIX/$TARGET
 git clone --progress https://github.com/WDrijver/DevPac >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
-
-#cd $SOURCES
-#wget -nc $NDK32_DOWNLOAD -a $LOGFILES/part7.log
-#mkdir $PREFIX/$TARGET/ndk32-include
-#lha -xw=$PREFIX/$TARGET/ndk32-include NDK3.2.lha >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
+cd $SOURCES
+wget -nc $NDK32_DOWNLOAD -a $LOGFILES/part7.log
+mkdir $PREFIX/$TARGET/ndk32-include
+lha -xw=$PREFIX/$TARGET/ndk32-include NDK3.2.lha >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 
 # Part 8: ApolloExplorer
 echo -e "\e[1m\e[37m8. ApolloExplorer\e[0m\e[36m"

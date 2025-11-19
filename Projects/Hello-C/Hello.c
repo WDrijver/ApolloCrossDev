@@ -6,6 +6,6 @@ int main()
     //buffer = (unsigned short*)malloc(1024);
     //memset(buffer, 1, 1024);
 
-    fprintf(stderr,"Hello world! - Compiled with GCC 13.1");
+    fprintf(stderr,"Hello world!");
 }
 

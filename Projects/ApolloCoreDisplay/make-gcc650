@@ -44,7 +44,7 @@ C_INCL_MUI	= $(PREFIX)/$(TARGET)/include/MUI
 C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK32)
 
 # Define C Options
-C_OPTIONS 	= -O3 -m68080 -m68881 -ffast-math -DREGPARM=4 -DM68K=1 -w
+C_OPTIONS 	= -O2 -m68080 -m68881 -ffast-math -DREGPARM=4 -DM68K=1 -w
 # -fomit-frame-pointer
 C_DEFINES 	= -DNO_INLINE_STDARG -D_TIMEVAL_DEFINED
 C_DEBUG		= -g
