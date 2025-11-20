@@ -1,7 +1,7 @@
 {
     "version": "2.0.0",
     "options": {
-    "env": { "APOLLO_V4_HOST": "192.168.2.143:Ram Disk/" }
+    "env": { "APOLLO_V4_HOST": "${env:AMIGAHOST}:Ram Disk/" }
     },
     "tasks": [
         {

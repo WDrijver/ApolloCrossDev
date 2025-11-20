@@ -26,8 +26,9 @@ Installation:
 3. After download Click "Open" and accept "trust the authors" and Click "Open Workspace" in the right corner popup window
 4. Select "Terminal" in the menu and then "New Terminal"
 5. In the terminal windows type "./GCC-6.50.sh" to install the Toolchain
-6. Open .vscode folder, select tasks.json and change "APOLLO_V4_HOST" variable to match your Apollo V4 target path
-7. Also select launch.json and change all "miDebuggerServerAddress" variables to match your Apollo V4 target path
+6. After the installation is finished type "sudo nano ~/.bashrc"
+7. At the end of the file add: export AMIGAHOST="IP-ADDRESS" and save (for example: export AMIGAHOST ="192.168.2.100")
+8. Close the terminal window, close Visual Studio Code 
 
 Test Compiler and File-Transfer:
 1. Click "Terminal" in menu and select "Run Build Task" (or press CTRL-Shift-B)

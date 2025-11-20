@@ -15,7 +15,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.92.1:2345",
+            "miDebuggerServerAddress": "${env:AMIGAHOST}:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
@@ -36,7 +36,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.92.1:2345",
+            "miDebuggerServerAddress": "${env:AMIGAHOST}:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
@@ -57,7 +57,7 @@
             "environment": [],
             "externalConsole": true,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.163:2345",
+            "miDebuggerServerAddress": "${env:AMIGAHOST}:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
@@ -78,7 +78,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.163:2345",
+            "miDebuggerServerAddress": "${env:AMIGAHOST}:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
@@ -99,7 +99,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.92.1:2345",
+            "miDebuggerServerAddress": "${env:AMIGAHOST}:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "miDebuggerArgs": "-q",
             "targetArchitecture": "x64",
@@ -122,7 +122,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.163:2345",
+            "miDebuggerServerAddress": "${env:AMIGAHOST}:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
@@ -143,7 +143,7 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerServerAddress": "192.168.2.163:2345",
+            "miDebuggerServerAddress": "${env:AMIGAHOST}:2345",
             "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
