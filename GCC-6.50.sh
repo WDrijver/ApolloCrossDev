@@ -13,8 +13,9 @@ PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
 
 ARCHIVES=$WORKSPACE/$COMPILERS/_archives
 LOGFILES=$PREFIX/_logs
-#BUILDS=$PREFIX/_builds
+
 SOURCES=$WORKSPACE/$COMPILERS/_sources
+#SOURCES=/home/willem/ApolloCrossDev.Sources
 
 export PATH=$PREFIX/bin:$PATH
 
@@ -85,6 +86,8 @@ cd $SOURCES
 wget -nc $NDK32_DOWNLOAD -a $LOGFILES/part7.log
 mkdir $PREFIX/$TARGET/ndk32-include
 lha -xw=$PREFIX/$TARGET/ndk32-include NDK3.2.lha >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
+cd $ARCHIVES
+cp -r -f P96/* $PREFIX/$TARGET/include >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 
 # Part 8: ApolloExplorer
 echo -e "\e[1m\e[37m8. ApolloExplorer\e[0m\e[36m"
