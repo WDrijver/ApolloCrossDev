@@ -15,7 +15,6 @@ ARCHIVES=$WORKSPACE/$COMPILERS/_archives
 LOGFILES=$PREFIX/_logs
 
 SOURCES=$WORKSPACE/$COMPILERS/_sources
-#SOURCES=/home/willem/ApolloCrossDev.Sources
 
 export PATH=$PREFIX/bin:$PATH
 
@@ -47,7 +46,8 @@ sudo apt -y install build-essential devscripts debhelper qtbase5-dev qtbase5-dev
 
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-git clone --progress https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
+#git clone --progress https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
+git clone --progress -b amiga-gcc-stable /home/willem/ApolloCrossDev.Sources/amiga-gcc 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile Amiga-GCC
 echo -e "\e[1m\e[37m4. Compile Amiga-GCC\e[0m\e[36m"
@@ -56,8 +56,10 @@ echo -e "\e[0m\e[36m   * Clean Amiga-GCC\e[0m"
 make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+echo -e "\e[0m\e[36m   * Cloning Amiga-GCC (be patient)\e[0m"
+make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
-make all $CPU PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+make all $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Part 5: MUI
 echo -e "\e[1m\e[37m5. Adding MUI5\e[0m\e[36m"
@@ -79,13 +81,8 @@ cp -r -f SDL/* $PREFIX/$TARGET >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 # PART 7: NDK
 echo -e "\e[1m\e[37m7. Development Kits\e[0m\e[36m"
-mv $PREFIX/$TARGET/ndk-include $PREFIX/$TARGET/ndk39-include
 cd $PREFIX/$TARGET
 git clone --progress https://github.com/WDrijver/DevPac >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
-cd $SOURCES
-wget -nc $NDK32_DOWNLOAD -a $LOGFILES/part7.log
-mkdir $PREFIX/$TARGET/ndk32-include
-lha -xw=$PREFIX/$TARGET/ndk32-include NDK3.2.lha >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 cd $ARCHIVES
 cp -r -f P96/* $PREFIX/$TARGET/include >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 
