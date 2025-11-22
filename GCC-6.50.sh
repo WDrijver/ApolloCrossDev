@@ -46,8 +46,8 @@ sudo apt -y install build-essential devscripts debhelper qtbase5-dev qtbase5-dev
 
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-#git clone --progress https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
-git clone --progress -b amiga-gcc-stable /home/willem/ApolloCrossDev.Sources/amiga-gcc 2>>$LOGFILES/part3_err.log
+git clone --progress https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
+#git clone --progress -b amiga-gcc-stable /home/willem/ApolloCrossDev.Sources/amiga-gcc 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile Amiga-GCC
 echo -e "\e[1m\e[37m4. Compile Amiga-GCC\e[0m\e[36m"
