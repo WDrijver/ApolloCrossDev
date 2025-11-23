@@ -2,7 +2,7 @@
 
 EDITION=GCC-6.50
 VERSION=0.91
-CPU=-j1
+CPU=-j16
 
 WORKSPACE="`pwd`"
 COMPILERS=Compilers
