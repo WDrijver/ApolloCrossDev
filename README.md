@@ -10,7 +10,7 @@ Content:
 7. Apollo Library with some basic Apollo C++ and ASM routines, including Debug on Serial Output (TTY)
 
 Requirements:
-1. Ubuntu 24.x LTS amd64 (Intel) | Debian 13.x arm64 (Mac Silicon) installed in a VM (8Gb+ RAM|50Gb+ HD|4+ Cores) 
+1. Ubuntu 24.04.3 LTS amd64 (Intel) is the supported Linux (25.10 will fail) installed in a VM (8Gb+ RAM|50Gb+ HD|4+ Cores) 
 2. Git tools installed from CLI (open terminal and type "sudo apt install git")
 3. Microsoft Visual Studio Code (VS-Code) downloaded and installed (https://code.visualstudio.com)
 4. Microsoft Visual Studio Code Extensions:
