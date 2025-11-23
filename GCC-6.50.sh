@@ -2,7 +2,7 @@
 
 EDITION=GCC-6.50
 VERSION=0.91
-CPU=-j16
+CPU=-j1
 
 WORKSPACE="`pwd`"
 COMPILERS=Compilers
@@ -13,12 +13,10 @@ PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
 
 ARCHIVES=$WORKSPACE/$COMPILERS/_archives
 LOGFILES=$PREFIX/_logs
-
-SOURCES=$WORKSPACE/$COMPILERS/_sources
+BUILDS=$PREFIX/_builds
+SOURCES=$PREFIX/_sources
 
 export PATH=$PREFIX/bin:$PATH
-
-NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
 
 # INIT Terminal
 clear
@@ -42,12 +40,11 @@ cd $SOURCES
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
 sudo apt -y update >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 sudo apt -y install make wget git gcc g++ lhasa libgmp-dev libmpfr-dev libmpc-dev flex bison gettext texinfo ncurses-dev autoconf rsync libreadline-dev >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
-sudo apt -y install build-essential devscripts debhelper qtbase5-dev qtbase5-dev-tools qt5-qmake libqt5x11extras5-dev qttools5-dev-tools >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+sudo apt -y install build-essential devscripts debhelper qtbase5-dev qtbase5-dev-tools qt5-qmake libqt5x11extras5-dev qttools5-dev-tools >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
 git clone --progress https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
-#git clone --progress -b amiga-gcc-stable /home/willem/ApolloCrossDev.Sources/amiga-gcc 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile Amiga-GCC
 echo -e "\e[1m\e[37m4. Compile Amiga-GCC\e[0m\e[36m"
