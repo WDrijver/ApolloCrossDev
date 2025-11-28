@@ -46,15 +46,17 @@ Test Remote GDB Debugger:
 Test Serial Terminal Debugger:
 (NOTE: Serial Debug requires PL2303 USB to Serial cable + TTY Terminal Program | Settings: 115200-8-1-N)zs qe2qq222a 
 
-Create new Project:
+Create a new Project:
 1. Right-Click Projects Folder and select "New Folder..." to create a new <projectname> Folder
 2. Right-Click <projectname> Folder and select "New File..." to create .c .cpp and .s source files
 3. Copy make-gcc650 template from Projects/_makefiles to <projectname> Folder
-4. Change the Project/<projectname> line and make other customaizations to make-gcc650 if needed
+4. Change the Project/<projectname> line and make other customizations to make-gcc650 if needed
+5. Create your C and/or Assembler code using .c for C, .cpp for C++ and .s for ASM
+6. Right-Click <projectname> Folder and select "Open in integrated Terminal"
+7. Type "make -f make-gcc650" to Compile
 
-Compile new Project
-5. Right-Click <projectname> Folder and select "Open in integrated Terminal"
-5. Customize makefile to your project needs and Type "make -f make-gcc650" to Compile or 
+TIP:  make-gcc contains additional information on Compiler Options
+      please take you time to read this information carefully if your new to GCC/Amiga
 
 --------------------------------------------------------------------------------------------------------------------
 

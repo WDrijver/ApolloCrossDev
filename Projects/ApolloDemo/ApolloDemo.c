@@ -4,7 +4,7 @@
 #include "stdint.h"
 #include "stdlib.h"
 #include "stdbool.h"
-#include "../_apollo/Apollo.h"  
+#include "Apollo.h"  
 
 #include "clib/exec_protos.h"
 
@@ -38,7 +38,7 @@
 #define	SAGA_SCROLL			8
 
 
-int main(void)
+void main(void)
 {
     // Close Workbench
     // ApolloTakeOver();

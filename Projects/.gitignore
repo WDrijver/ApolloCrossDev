@@ -1,5 +1,5 @@
 *.o
-log*.*
+*-log.txt
 ApolloExplorer
 bgdbserver
 ApolloDemo/ApolloDemo

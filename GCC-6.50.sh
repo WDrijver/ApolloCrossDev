@@ -1,4 +1,4 @@
-# ApolloCrossDev GCC-6.50 - Install Script v0.91
+# ApolloCrossDev GCC-6.50 - Install Script v1.0
 
 EDITION=GCC-6.50
 VERSION=0.91

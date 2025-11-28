@@ -658,7 +658,7 @@ void ApolloDebugPutStr(register const UBYTE *buff)
 
 void ApolloDebugPutDec(const UBYTE *what, ULONG val)
 {
-	UWORD i, num;
+	ULONG i, num;
 	ApolloDebugPutStr(what);
 	ApolloDebugPutStr(": ");
 	if (val == 0) {

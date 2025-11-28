@@ -14,7 +14,7 @@ extern "C"{
 #include <exec/types.h>
 #include "ApolloRegParam.h"
 
-extern void ApolloEndianSwap8(_A0(UWORD *s), _D0(ULONG l));
+extern void ApolloEndianSwap8(_A0(UBYTE *s), _D0(ULONG l));
 
 #ifdef __cplusplus
 }

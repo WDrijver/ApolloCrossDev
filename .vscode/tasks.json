@@ -7,58 +7,13 @@
         {
             "label": "Build ApolloCoreDisplay",
             "type": "shell",
-            "command": "make -f Projects/ApolloCoreDisplay/make-gcc650",
+            "command": "make",
             "group": {
                 "kind": "build",
-                "isDefault": false
+                "isDefault": false,
             },
-            "problemMatcher": [
-                "$gcc"
-            ]
-        },
-        {
-            "label": "Build DebugTest",
-            "type": "shell",
-            "command": "make -f Projects/DebugTest/make-gcc650",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": [
-                "$gcc"
-            ]
-        },
-        {
-            "label": "Build Hello-Amiga",
-            "type": "shell",
-            "command": "make -f Projects/Hello-Amiga/make-gcc650",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": [
-                "$gcc"
-            ]
-        },
-        {
-            "label": "Build Mul-by-Ten",
-            "type": "shell",
-            "command": "make -f Projects/Mul-by-Ten/make-gcc650",
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": [
-                "$gcc"
-            ]
-        },
-        {
-            "label": "Build SAGAModes",
-            "type": "shell",
-            "command": "make -f Projects/SAGAModes/make-gcc650",
-            "group": {
-                "kind": "build",
-                "isDefault": false
+            "options": {
+                "cwd": "Projects/ApolloCoreDisplay"
             },
             "problemMatcher": [
                 "$gcc"
@@ -67,10 +22,43 @@
         {
             "label": "Build ApolloDemo",
             "type": "shell",
-            "command": "make -f Projects/ApolloDemo/make-gcc650",
+            "command": "make",
             "group": {
                 "kind": "build",
                 "isDefault": false
+            },
+            "options": {
+                "cwd": "Projects/ApolloDemo"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build DebugTest",
+            "type": "shell",
+            "command": "make",
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "Projects/DebugTest"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "Build Hello-Amiga",
+            "type": "shell",
+            "command": "make"
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "Projects/Hello-Amiga"
             },
             "problemMatcher": [
                 "$gcc"
@@ -79,62 +67,107 @@
         {
             "label": "Build Hello-C",
             "type": "shell",
-            "command": "make -f Projects/Hello-C/make-gcc650",
+            "command": "make"
             "group": {
                 "kind": "build",
                 "isDefault": false
             },
+            "options": {
+                "cwd": "Projects/Hello-C"
+            },
             "problemMatcher": [
                 "$gcc"
             ]
-        },
+        },      
         {
             "label": "Build Hello-Intuition",
             "type": "shell",
-            "command": "make -f Projects/Hello-Intuition/make-gcc650",
+            "command": "make"
             "group": {
                 "kind": "build",
                 "isDefault": false
             },
+            "options": {
+                "cwd": "Projects/Hello-Intuition"
+            },
             "problemMatcher": [
                 "$gcc"
             ]
-        },
+        },          
         {
             "label": "Build Hello-MUI",
             "type": "shell",
-            "command": "make -f Projects/Hello-MUI/make-gcc650",
+            "command": "make"
             "group": {
                 "kind": "build",
                 "isDefault": false
+            },
+            "options": {
+                "cwd": "Projects/Hello-MUI"
             },
             "problemMatcher": [
                 "$gcc"
             ]
         },
         {
-            "label": "Build MUI Demos",
+            "label": "Build MUI-Examples",
             "type": "shell",
-            "command": "make -f Projects/MUI/make-gcc650",
+            "command": "make"
             "group": {
                 "kind": "build",
                 "isDefault": false
             },
+            "options": {
+                "cwd": "Projects/MUI-Examples"
+            },
             "problemMatcher": [
                 "$gcc"
             ]
-        },
+        },     
+        {
+            "label": "Build Mul-by-Ten",
+            "type": "shell",
+            "command": "make"
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "Projects/Mul-by-Ten"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },  
         {
             "label": "Build OpenScreen",
             "type": "shell",
-            "command": "make -f Projects/OpenScreen/make-gcc650",
+            "command": "make"
             "group": {
                 "kind": "build",
                 "isDefault": false
             },
+            "options": {
+                "cwd": "Projects/OpenScreen"
+            },
             "problemMatcher": [
                 "$gcc"
             ]
-        }
+        }, 
+        {
+            "label": "Build SAGAModes",
+            "type": "shell",
+            "command": "make"
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "options": {
+                "cwd": "Projects/SAGAModes"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ]
+        }, 
     ]
 }

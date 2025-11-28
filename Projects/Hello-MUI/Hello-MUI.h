@@ -55,11 +55,3 @@ void Close_Libs(void)
     CloseLibrary(MUIMasterBase);
 }
 
-ULONG SetAttrs( APTR object, ULONG tag1, ... )
-{ return SetAttrsA(object, (struct TagItem *)&tag1); }
-
-APTR NewObject( struct IClass *classPtr, CONST_STRPTR classID, ULONG tag1, ... )
-{ return NewObjectA(classPtr, classID, (const struct TagItem *)&tag1); }
-
-struct Process *CreateNewProcTags( ULONG tag1, ... )
-{ return CreateNewProc((struct TagItem *)&tag1); }
