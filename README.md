@@ -16,9 +16,7 @@ ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup a C
 4. Microsoft Visual Studio Code Extensions:
    - Microsoft C/C++ (Intellisense, debugging and code browsing)
    - Microsoft C/C++ Extension Pack (collection of popular extensions)
-   - Microsoft C/C++ Themes (semantic colorization)
    - Microsoft Makefile Tools (support for C/C++ Makefiles)
-   - Amiga Assembly by Paul Raingeard (Amiga ASM Support) 
 
 **Installation:**
 1. Open VS-Code Click "View" and select "Open Command Palette" (or press CTRL+Shift+P)
