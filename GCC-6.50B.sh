@@ -50,11 +50,11 @@ git clone --progress https://franke.ms/git/bebbo/amiga-gcc
 echo -e "\e[1m\e[37m4. Compile Amiga-GCC\e[0m\e[36m"
 cd $SOURCES/amiga-gcc
 echo -e "\e[0m\e[36m   * Clean Amiga-GCC\e[0m"
-make clean 2>>$LOGFILES/part4_err.log
+make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
-make drop-prefix PREFIX=$PREFIX 2>>$LOGFILES/part4_err.log
+make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36m   * Cloning Amiga-GCC (be patient)\e[0m"
-make update $CPU NDK=3.2 PREFIX=$PREFIX 2>>$LOGFILES/part4_err.log
+make update $CPU NDK=3.2 2>>$LOGFILES/part4.log
 echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
 make all $CPU NDK=3.2 PREFIX=$PREFIX 2>>$LOGFILES/part4_err.log
 
