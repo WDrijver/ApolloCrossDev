@@ -63,9 +63,9 @@ make libdebug PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Part 5: MUI
 echo -e "\e[1m\e[37m5. Adding MUI5\e[0m\e[36m"
-cd $SOURCES/amiga-gcc-stable
+cd $SOURCES/amiga-gcc
 make sdk=mui PREFIX=$PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-cp -r -f $SOURCES/amiga-gcc-stable/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/include/mui >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+cp -r -f $SOURCES/amiga-gcc/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/include/mui >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
 # Part 6: PortLibs (amiga-gcc takes care of Open-GL, SDL and GDB - we add Freetype, ZLib and BZip2)
 echo -e -n "\e[1m\e[37m6. Adding Porting Libs: "
