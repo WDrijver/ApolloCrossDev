@@ -1,0 +1,2912 @@
+--------------------
+./configure
+Tue Dec 30 03:58:27 PM CET 2025
+Checking for gcc...
+=== ztest2025162.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+gcc -c ztest2025162.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2025162.c ===
+int foo() { return 0; }
+===
+gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025162.c
+gcc: error: unrecognized command-line option ‘-m68040’
+(exit code 1)
+Compiler error reporting is too harsh for ./configure (perhaps remove -Werror).
+** ./configure aborting.
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 03:58:49 PM CET 2025
+Checking for gcc...
+=== ztest2025303.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+gcc -c ztest2025303.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2025303.c ===
+int foo() { return 0; }
+===
+gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025303.c
+gcc: error: unrecognized command-line option ‘-m68040’
+(exit code 1)
+Compiler error reporting is too harsh for ./configure (perhaps remove -Werror).
+** ./configure aborting.
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 03:59:00 PM CET 2025
+Checking for gcc...
+=== ztest2025394.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+gcc -c ztest2025394.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2025394.c ===
+int foo() { return 0; }
+===
+gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025394.c
+gcc: error: unrecognized command-line option ‘-m68040’
+(exit code 1)
+Compiler error reporting is too harsh for ./configure (perhaps remove -Werror).
+** ./configure aborting.
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 03:59:25 PM CET 2025
+=== ztest2025536.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c ztest2025536.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2025536.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025536.c
+
+Checking for shared library support...
+=== ztest2025536.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC ztest2025536.c
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -shared -Wl,-soname,libz.so.1,--version-script,zlib.map -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -o ztest2025536.so ztest2025536.o
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/lib/crt0.o: in function `____start':
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/lib/crt0.o:(.text+0x74): undefined reference to `main'
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/lib/crt0.o:(.text+0xb4): undefined reference to `main'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc.
+
+=== ztest2025536.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025536.c
+Checking for size_t... Yes.
+
+=== ztest2025536.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -D_LARGEFILE64_SOURCE=1 ztest2025536.c
+ztest2025536.c:2:1: error: unknown type name 'off64_t'; did you mean '_off64_t'?
+    2 | off64_t dummy = 0;
+      | ^~~~~~~
+      | _off64_t
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest2025536.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2025536 ztest2025536.c
+Checking for fseeko... Yes.
+
+=== ztest2025536.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2025536 ztest2025536.c
+Checking for strerror... Yes.
+
+=== ztest2025536.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025536.c
+Checking for unistd.h... Yes.
+
+=== ztest2025536.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025536.c
+Checking for stdarg.h... Yes.
+
+=== ztest2025536.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025536.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest2025536.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2025536 ztest2025536.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest2025536.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025536.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest2025536.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025536.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+CFLAGS = -m68040 -O2 -ffast-math -fomit-frame-pointer -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = ranlib
+SFLAGS = -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 04:01:12 PM CET 2025
+=== ztest2025933.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c ztest2025933.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2025933.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025933.c
+
+Checking for shared library support...
+=== ztest2025933.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC ztest2025933.c
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -shared -Wl,-soname,libz.so.1,--version-script,zlib.map -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -o ztest2025933.so ztest2025933.o
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/lib/crt0.o: in function `____start':
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/lib/crt0.o:(.text+0x74): undefined reference to `main'
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/lib/crt0.o:(.text+0xb4): undefined reference to `main'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc.
+
+=== ztest2025933.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025933.c
+Checking for size_t... Yes.
+
+=== ztest2025933.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -D_LARGEFILE64_SOURCE=1 ztest2025933.c
+ztest2025933.c:2:1: error: unknown type name 'off64_t'; did you mean '_off64_t'?
+    2 | off64_t dummy = 0;
+      | ^~~~~~~
+      | _off64_t
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest2025933.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2025933 ztest2025933.c
+Checking for fseeko... Yes.
+
+=== ztest2025933.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2025933 ztest2025933.c
+Checking for strerror... Yes.
+
+=== ztest2025933.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025933.c
+Checking for unistd.h... Yes.
+
+=== ztest2025933.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025933.c
+Checking for stdarg.h... Yes.
+
+=== ztest2025933.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025933.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest2025933.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2025933 ztest2025933.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest2025933.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025933.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest2025933.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2025933.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+CFLAGS = -m68040 -O2 -ffast-math -fomit-frame-pointer -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = CC=/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ranlib
+SFLAGS = -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 04:02:11 PM CET 2025
+=== ztest2026322.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c ztest2026322.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2026322.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2026322.c
+
+Checking for shared library support...
+=== ztest2026322.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC ztest2026322.c
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -shared -Wl,-soname,libz.so.1,--version-script,zlib.map -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -o ztest2026322.so ztest2026322.o
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/lib/crt0.o: in function `____start':
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/lib/crt0.o:(.text+0x74): undefined reference to `main'
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/lib/crt0.o:(.text+0xb4): undefined reference to `main'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc.
+
+=== ztest2026322.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2026322.c
+Checking for size_t... Yes.
+
+=== ztest2026322.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -D_LARGEFILE64_SOURCE=1 ztest2026322.c
+ztest2026322.c:2:1: error: unknown type name 'off64_t'; did you mean '_off64_t'?
+    2 | off64_t dummy = 0;
+      | ^~~~~~~
+      | _off64_t
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest2026322.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2026322 ztest2026322.c
+Checking for fseeko... Yes.
+
+=== ztest2026322.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2026322 ztest2026322.c
+Checking for strerror... Yes.
+
+=== ztest2026322.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2026322.c
+Checking for unistd.h... Yes.
+
+=== ztest2026322.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2026322.c
+Checking for stdarg.h... Yes.
+
+=== ztest2026322.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2026322.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest2026322.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2026322 ztest2026322.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest2026322.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2026322.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest2026322.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2026322.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+CFLAGS = -m68040 -O2 -ffast-math -fomit-frame-pointer -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = CC=/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ranlib
+SFLAGS = -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 04:08:54 PM CET 2025
+=== ztest2027402.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c ztest2027402.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2027402.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2027402.c
+
+Checking for shared library support...
+=== ztest2027402.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC ztest2027402.c
+/tmp/ccRBf4pL.s: Assembler messages:
+/tmp/ccRBf4pL.s:6: Error: syntax error -- statement `bra.l _getchar@PLTPC' ignored
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc.
+
+=== ztest2027402.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2027402.c
+Checking for size_t... Yes.
+
+=== ztest2027402.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -D_LARGEFILE64_SOURCE=1 ztest2027402.c
+ztest2027402.c:2:1: error: unknown type name 'off64_t'
+ off64_t dummy = 0;
+ ^~~~~~~
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest2027402.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2027402 ztest2027402.c
+Checking for fseeko... Yes.
+
+=== ztest2027402.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2027402 ztest2027402.c
+Checking for strerror... Yes.
+
+=== ztest2027402.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2027402.c
+Checking for unistd.h... Yes.
+
+=== ztest2027402.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2027402.c
+Checking for stdarg.h... Yes.
+
+=== ztest2027402.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2027402.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest2027402.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2027402 ztest2027402.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest2027402.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2027402.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest2027402.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2027402.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc
+CFLAGS = -m68040 -O2 -ffast-math -fomit-frame-pointer -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = CC=/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-ranlib
+SFLAGS = -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 04:09:22 PM CET 2025
+=== ztest2027684.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c ztest2027684.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2027684.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -lc ztest2027684.c
+
+Checking for shared library support...
+=== ztest2027684.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -fPIC ztest2027684.c
+/tmp/cckNxGQh.s: Assembler messages:
+/tmp/cckNxGQh.s:6: Error: syntax error -- statement `bra.l _getchar@PLTPC' ignored
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc.
+
+=== ztest2027684.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -lc ztest2027684.c
+Checking for size_t... Yes.
+
+=== ztest2027684.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -D_LARGEFILE64_SOURCE=1 ztest2027684.c
+ztest2027684.c:2:1: error: unknown type name 'off64_t'
+ off64_t dummy = 0;
+ ^~~~~~~
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest2027684.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -o ztest2027684 ztest2027684.c
+Checking for fseeko... Yes.
+
+=== ztest2027684.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -o ztest2027684 ztest2027684.c
+Checking for strerror... Yes.
+
+=== ztest2027684.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -lc ztest2027684.c
+Checking for unistd.h... Yes.
+
+=== ztest2027684.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -lc ztest2027684.c
+Checking for stdarg.h... Yes.
+
+=== ztest2027684.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -lc ztest2027684.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest2027684.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -o ztest2027684 ztest2027684.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest2027684.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -lc ztest2027684.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest2027684.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -m68040 -O2 -ffast-math -fomit-frame-pointer -lc ztest2027684.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc
+CFLAGS = -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = CC=/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-ranlib
+SFLAGS = -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -fPIC -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 04:11:45 PM CET 2025
+=== ztest2028200.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c ztest2028200.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2028200.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -lc ztest2028200.c
+
+Checking for shared library support...
+=== ztest2028200.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -fPIC ztest2028200.c
+/tmp/ccbWZo3A.s: Assembler messages:
+/tmp/ccbWZo3A.s:6: Error: syntax error -- statement `bra.l _getchar@PLTPC' ignored
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc.
+
+=== ztest2028200.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -lc ztest2028200.c
+Checking for size_t... Yes.
+
+=== ztest2028200.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -D_LARGEFILE64_SOURCE=1 ztest2028200.c
+ztest2028200.c:2:1: error: unknown type name 'off64_t'
+ off64_t dummy = 0;
+ ^~~~~~~
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest2028200.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -o ztest2028200 ztest2028200.c
+ztest2028200.c: In function 'main':
+ztest2028200.c:3:3: warning: implicit declaration of function 'fseeko' [-Wimplicit-function-declaration]
+   fseeko(NULL, 0, 0);
+   ^~~~~~
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/lib/gcc/m68k-amigaos/6.5.0b/../../../../m68k-amigaos/bin/ld: /tmp/ccuoNqtT.o: in function `main':
+/tmp/ccuoNqtT.o:(.text+0x8): undefined reference to `fseeko'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+Checking for fseeko... No.
+
+=== ztest2028200.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -DNO_FSEEKO -o ztest2028200 ztest2028200.c
+Checking for strerror... Yes.
+
+=== ztest2028200.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -DNO_FSEEKO ztest2028200.c
+Checking for unistd.h... Yes.
+
+=== ztest2028200.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -DNO_FSEEKO ztest2028200.c
+Checking for stdarg.h... Yes.
+
+=== ztest2028200.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -DNO_FSEEKO ztest2028200.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest2028200.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -DNO_FSEEKO -o ztest2028200 ztest2028200.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest2028200.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -DNO_FSEEKO ztest2028200.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest2028200.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -DNO_FSEEKO ztest2028200.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc
+CFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -DNO_FSEEKO -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = CC=/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-ranlib
+SFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -lc -fPIC -DNO_FSEEKO -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 04:11:59 PM CET 2025
+=== ztest2028457.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c ztest2028457.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2028457.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2028457.c
+
+Checking for shared library support...
+=== ztest2028457.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC ztest2028457.c
+/tmp/ccqUizSY.s: Assembler messages:
+/tmp/ccqUizSY.s:6: Error: syntax error -- statement `bra.l _getchar@PLTPC' ignored
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc.
+
+=== ztest2028457.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2028457.c
+Checking for size_t... Yes.
+
+=== ztest2028457.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -D_LARGEFILE64_SOURCE=1 ztest2028457.c
+ztest2028457.c:2:1: error: unknown type name 'off64_t'
+ off64_t dummy = 0;
+ ^~~~~~~
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest2028457.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2028457 ztest2028457.c
+ztest2028457.c: In function 'main':
+ztest2028457.c:3:3: warning: implicit declaration of function 'fseeko' [-Wimplicit-function-declaration]
+   fseeko(NULL, 0, 0);
+   ^~~~~~
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/lib/gcc/m68k-amigaos/6.5.0b/../../../../m68k-amigaos/bin/ld: /tmp/cc5s8AqN.o: in function `main':
+/tmp/cc5s8AqN.o:(.text+0x8): undefined reference to `fseeko'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+Checking for fseeko... No.
+
+=== ztest2028457.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2028457 ztest2028457.c
+Checking for strerror... Yes.
+
+=== ztest2028457.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2028457.c
+Checking for unistd.h... Yes.
+
+=== ztest2028457.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2028457.c
+Checking for stdarg.h... Yes.
+
+=== ztest2028457.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2028457.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest2028457.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2028457 ztest2028457.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest2028457.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2028457.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest2028457.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2028457.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc
+CFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = CC=/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-ranlib
+SFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -DNO_FSEEKO -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 04:14:15 PM CET 2025
+=== ztest2028897.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c ztest2028897.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2028897.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2028897.c
+
+Checking for shared library support...
+=== ztest2028897.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC ztest2028897.c
+/tmp/cc8R5dFa.s: Assembler messages:
+/tmp/cc8R5dFa.s:6: Error: syntax error -- statement `bra.l _getchar@PLTPC' ignored
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc.
+
+=== ztest2028897.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2028897.c
+Checking for size_t... Yes.
+
+=== ztest2028897.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -D_LARGEFILE64_SOURCE=1 ztest2028897.c
+ztest2028897.c:2:1: error: unknown type name 'off64_t'
+ off64_t dummy = 0;
+ ^~~~~~~
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest2028897.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2028897 ztest2028897.c
+ztest2028897.c: In function 'main':
+ztest2028897.c:3:3: warning: implicit declaration of function 'fseeko' [-Wimplicit-function-declaration]
+   fseeko(NULL, 0, 0);
+   ^~~~~~
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/lib/gcc/m68k-amigaos/6.5.0b/../../../../m68k-amigaos/bin/ld: /tmp/ccSIZNL0.o: in function `main':
+/tmp/ccSIZNL0.o:(.text+0x8): undefined reference to `fseeko'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+Checking for fseeko... No.
+
+=== ztest2028897.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2028897 ztest2028897.c
+Checking for strerror... Yes.
+
+=== ztest2028897.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2028897.c
+Checking for unistd.h... Yes.
+
+=== ztest2028897.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2028897.c
+Checking for stdarg.h... Yes.
+
+=== ztest2028897.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2028897.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest2028897.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2028897 ztest2028897.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest2028897.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2028897.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest2028897.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2028897.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc
+CFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = CC=/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-ranlib
+SFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -DNO_FSEEKO -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 04:14:59 PM CET 2025
+=== ztest2029170.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c ztest2029170.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2029170.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2029170.c
+
+Checking for shared library support...
+=== ztest2029170.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC ztest2029170.c
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -shared -Wl,-soname,libz.so.1,--version-script,zlib.map -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -o ztest2029170.so ztest2029170.o
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o: in function `__so_xlib_init':
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o:(.text+0x2bc): undefined reference to `__export_stubs_start'
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o:(.text+0x2c8): undefined reference to `__export_stubs_end'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc.
+
+=== ztest2029170.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2029170.c
+Checking for size_t... Yes.
+
+=== ztest2029170.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -D_LARGEFILE64_SOURCE=1 ztest2029170.c
+ztest2029170.c:2:1: error: unknown type name 'off64_t'; did you mean '_off64_t'?
+    2 | off64_t dummy = 0;
+      | ^~~~~~~
+      | _off64_t
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest2029170.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2029170 ztest2029170.c
+ztest2029170.c: In function 'main':
+ztest2029170.c:3:3: warning: implicit declaration of function 'fseeko'; did you mean 'fseek'? [-Wimplicit-function-declaration]
+    3 |   fseeko(NULL, 0, 0);
+      |   ^~~~~~
+      |   fseek
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /tmp/ccd14sIz.o: in function `main':
+/tmp/ccd14sIz.o:(.text+0x8): undefined reference to `fseeko'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+Checking for fseeko... No.
+
+=== ztest2029170.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2029170 ztest2029170.c
+Checking for strerror... Yes.
+
+=== ztest2029170.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029170.c
+Checking for unistd.h... Yes.
+
+=== ztest2029170.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029170.c
+Checking for stdarg.h... Yes.
+
+=== ztest2029170.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029170.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest2029170.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2029170 ztest2029170.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest2029170.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029170.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest2029170.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029170.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+CFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = CC=/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ranlib
+SFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -DNO_FSEEKO -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 04:15:16 PM CET 2025
+=== ztest2029350.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c ztest2029350.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2029350.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2029350.c
+
+Checking for shared library support...
+=== ztest2029350.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC ztest2029350.c
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -shared -Wl,-soname,libz.so.1,--version-script,zlib.map -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -o ztest2029350.so ztest2029350.o
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o: in function `__so_xlib_init':
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o:(.text+0x2bc): undefined reference to `__export_stubs_start'
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o:(.text+0x2c8): undefined reference to `__export_stubs_end'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc.
+
+=== ztest2029350.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2029350.c
+Checking for size_t... Yes.
+
+=== ztest2029350.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -D_LARGEFILE64_SOURCE=1 ztest2029350.c
+ztest2029350.c:2:1: error: unknown type name 'off64_t'; did you mean '_off64_t'?
+    2 | off64_t dummy = 0;
+      | ^~~~~~~
+      | _off64_t
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest2029350.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2029350 ztest2029350.c
+ztest2029350.c: In function 'main':
+ztest2029350.c:3:3: warning: implicit declaration of function 'fseeko'; did you mean 'fseek'? [-Wimplicit-function-declaration]
+    3 |   fseeko(NULL, 0, 0);
+      |   ^~~~~~
+      |   fseek
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /tmp/cckXaNAn.o: in function `main':
+/tmp/cckXaNAn.o:(.text+0x8): undefined reference to `fseeko'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+Checking for fseeko... No.
+
+=== ztest2029350.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2029350 ztest2029350.c
+Checking for strerror... Yes.
+
+=== ztest2029350.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029350.c
+Checking for unistd.h... Yes.
+
+=== ztest2029350.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029350.c
+Checking for stdarg.h... Yes.
+
+=== ztest2029350.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029350.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest2029350.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2029350 ztest2029350.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest2029350.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029350.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest2029350.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029350.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+CFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = CC=/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ranlib
+SFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -DNO_FSEEKO -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 04:15:27 PM CET 2025
+=== ztest2029541.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c ztest2029541.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2029541.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2029541.c
+
+Checking for shared library support...
+=== ztest2029541.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC ztest2029541.c
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -shared -Wl,-soname,libz.so.1,--version-script,zlib.map -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -o ztest2029541.so ztest2029541.o
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o: in function `__so_xlib_init':
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o:(.text+0x2bc): undefined reference to `__export_stubs_start'
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o:(.text+0x2c8): undefined reference to `__export_stubs_end'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc.
+
+=== ztest2029541.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2029541.c
+Checking for size_t... Yes.
+
+=== ztest2029541.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -D_LARGEFILE64_SOURCE=1 ztest2029541.c
+ztest2029541.c:2:1: error: unknown type name 'off64_t'; did you mean '_off64_t'?
+    2 | off64_t dummy = 0;
+      | ^~~~~~~
+      | _off64_t
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest2029541.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2029541 ztest2029541.c
+ztest2029541.c: In function 'main':
+ztest2029541.c:3:3: warning: implicit declaration of function 'fseeko'; did you mean 'fseek'? [-Wimplicit-function-declaration]
+    3 |   fseeko(NULL, 0, 0);
+      |   ^~~~~~
+      |   fseek
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /tmp/cc5hl7aR.o: in function `main':
+/tmp/cc5hl7aR.o:(.text+0x8): undefined reference to `fseeko'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+Checking for fseeko... No.
+
+=== ztest2029541.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2029541 ztest2029541.c
+Checking for strerror... Yes.
+
+=== ztest2029541.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029541.c
+Checking for unistd.h... Yes.
+
+=== ztest2029541.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029541.c
+Checking for stdarg.h... Yes.
+
+=== ztest2029541.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029541.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest2029541.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2029541 ztest2029541.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest2029541.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029541.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest2029541.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029541.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+CFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = CC=/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ranlib
+SFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -DNO_FSEEKO -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 04:18:09 PM CET 2025
+=== ztest2029986.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c ztest2029986.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2029986.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2029986.c
+
+Checking for shared library support...
+=== ztest2029986.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC ztest2029986.c
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -shared -Wl,-soname,libz.so.1,--version-script,zlib.map -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -o ztest2029986.so ztest2029986.o
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o: in function `__so_xlib_init':
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o:(.text+0x2bc): undefined reference to `__export_stubs_start'
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o:(.text+0x2c8): undefined reference to `__export_stubs_end'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc.
+
+=== ztest2029986.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2029986.c
+Checking for size_t... Yes.
+
+=== ztest2029986.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -D_LARGEFILE64_SOURCE=1 ztest2029986.c
+ztest2029986.c:2:1: error: unknown type name 'off64_t'; did you mean '_off64_t'?
+    2 | off64_t dummy = 0;
+      | ^~~~~~~
+      | _off64_t
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest2029986.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2029986 ztest2029986.c
+ztest2029986.c: In function 'main':
+ztest2029986.c:3:3: warning: implicit declaration of function 'fseeko'; did you mean 'fseek'? [-Wimplicit-function-declaration]
+    3 |   fseeko(NULL, 0, 0);
+      |   ^~~~~~
+      |   fseek
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /tmp/ccmu9Ukk.o: in function `main':
+/tmp/ccmu9Ukk.o:(.text+0x8): undefined reference to `fseeko'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+Checking for fseeko... No.
+
+=== ztest2029986.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2029986 ztest2029986.c
+Checking for strerror... Yes.
+
+=== ztest2029986.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029986.c
+Checking for unistd.h... Yes.
+
+=== ztest2029986.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029986.c
+Checking for stdarg.h... Yes.
+
+=== ztest2029986.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029986.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest2029986.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2029986 ztest2029986.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest2029986.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029986.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest2029986.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2029986.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+CFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = CC=/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ranlib
+SFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -DNO_FSEEKO -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 04:39:39 PM CET 2025
+=== ztest2032805.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c ztest2032805.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2032805.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2032805.c
+
+Checking for shared library support...
+=== ztest2032805.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC ztest2032805.c
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -shared -Wl,-soname,libz.so.1,--version-script,zlib.map -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -o ztest2032805.so ztest2032805.o
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o: in function `__so_xlib_init':
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o:(.text+0x2bc): undefined reference to `__export_stubs_start'
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o:(.text+0x2c8): undefined reference to `__export_stubs_end'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc.
+
+=== ztest2032805.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2032805.c
+Checking for size_t... Yes.
+
+=== ztest2032805.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -D_LARGEFILE64_SOURCE=1 ztest2032805.c
+ztest2032805.c:2:1: error: unknown type name 'off64_t'; did you mean '_off64_t'?
+    2 | off64_t dummy = 0;
+      | ^~~~~~~
+      | _off64_t
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest2032805.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2032805 ztest2032805.c
+ztest2032805.c: In function 'main':
+ztest2032805.c:3:3: warning: implicit declaration of function 'fseeko'; did you mean 'fseek'? [-Wimplicit-function-declaration]
+    3 |   fseeko(NULL, 0, 0);
+      |   ^~~~~~
+      |   fseek
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /tmp/cc470zBG.o: in function `main':
+/tmp/cc470zBG.o:(.text+0x8): undefined reference to `fseeko'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+Checking for fseeko... No.
+
+=== ztest2032805.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2032805 ztest2032805.c
+Checking for strerror... Yes.
+
+=== ztest2032805.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2032805.c
+Checking for unistd.h... Yes.
+
+=== ztest2032805.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2032805.c
+Checking for stdarg.h... Yes.
+
+=== ztest2032805.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2032805.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest2032805.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2032805 ztest2032805.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest2032805.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2032805.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest2032805.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2032805.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+CFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = CC=/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ranlib
+SFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -DNO_FSEEKO -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Tue Dec 30 04:47:47 PM CET 2025
+=== ztest2034357.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c ztest2034357.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest2034357.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2034357.c
+
+Checking for shared library support...
+=== ztest2034357.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC ztest2034357.c
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -shared -Wl,-soname,libz.so.1,--version-script,zlib.map -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -o ztest2034357.so ztest2034357.o
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o: in function `__so_xlib_init':
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o:(.text+0x2bc): undefined reference to `__export_stubs_start'
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o:(.text+0x2c8): undefined reference to `__export_stubs_end'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc.
+
+=== ztest2034357.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest2034357.c
+Checking for size_t... Yes.
+
+=== ztest2034357.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -D_LARGEFILE64_SOURCE=1 ztest2034357.c
+ztest2034357.c:2:1: error: unknown type name 'off64_t'; did you mean '_off64_t'?
+    2 | off64_t dummy = 0;
+      | ^~~~~~~
+      | _off64_t
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest2034357.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest2034357 ztest2034357.c
+ztest2034357.c: In function 'main':
+ztest2034357.c:3:3: warning: implicit declaration of function 'fseeko'; did you mean 'fseek'? [-Wimplicit-function-declaration]
+    3 |   fseeko(NULL, 0, 0);
+      |   ^~~~~~
+      |   fseek
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /tmp/ccKMlb1X.o: in function `main':
+/tmp/ccKMlb1X.o:(.text+0x8): undefined reference to `fseeko'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+Checking for fseeko... No.
+
+=== ztest2034357.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2034357 ztest2034357.c
+Checking for strerror... Yes.
+
+=== ztest2034357.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2034357.c
+Checking for unistd.h... Yes.
+
+=== ztest2034357.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2034357.c
+Checking for stdarg.h... Yes.
+
+=== ztest2034357.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2034357.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest2034357.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest2034357 ztest2034357.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest2034357.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2034357.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest2034357.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest2034357.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+CFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = CC=/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ranlib
+SFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -DNO_FSEEKO -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Thu Jan  1 09:05:44 PM CET 2026
+=== ztest654353.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c ztest654353.c
+... using gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest654353.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest654353.c
+
+Checking for shared library support...
+=== ztest654353.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC ztest654353.c
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -shared -Wl,-soname,libz.so.1,--version-script,zlib.map -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -o ztest654353.so ztest654353.o
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o: in function `__so_xlib_init':
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o:(.text+0x2bc): undefined reference to `__export_stubs_start'
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /home/willem/ApolloCrossDev/Compilers/GCC-13.2/m68k-amigaos/libnix/lib/init_shared.o:(.text+0x2c8): undefined reference to `__export_stubs_end'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+No shared library support; try without defining CC and CFLAGS
+Building static library libz.a version 1.3.1 with /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc.
+
+=== ztest654353.c ===
+#include <stdio.h>
+#include <stdlib.h>
+size_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest654353.c
+Checking for size_t... Yes.
+
+=== ztest654353.c ===
+#include <sys/types.h>
+off64_t dummy = 0;
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -D_LARGEFILE64_SOURCE=1 ztest654353.c
+ztest654353.c:2:1: error: unknown type name 'off64_t'; did you mean '_off64_t'?
+    2 | off64_t dummy = 0;
+      | ^~~~~~~
+      | _off64_t
+(exit code 1)
+Checking for off64_t... No.
+
+=== ztest654353.c ===
+#include <stdio.h>
+int main(void) {
+  fseeko(NULL, 0, 0);
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -o ztest654353 ztest654353.c
+ztest654353.c: In function 'main':
+ztest654353.c:3:3: warning: implicit declaration of function 'fseeko'; did you mean 'fseek'? [-Wimplicit-function-declaration]
+    3 |   fseeko(NULL, 0, 0);
+      |   ^~~~~~
+      |   fseek
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/lib/gcc/m68k-amigaos/13.2.0/../../../../m68k-amigaos/bin/ld: /tmp/ccgOydZx.o: in function `main':
+/tmp/ccgOydZx.o:(.text+0x8): undefined reference to `fseeko'
+collect2: error: ld returned 1 exit status
+(exit code 1)
+Checking for fseeko... No.
+
+=== ztest654353.c ===
+#include <string.h>
+#include <errno.h>
+int main() { return strlen(strerror(errno)); }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest654353 ztest654353.c
+Checking for strerror... Yes.
+
+=== ztest654353.c ===
+#include <unistd.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest654353.c
+Checking for unistd.h... Yes.
+
+=== ztest654353.c ===
+#include <stdarg.h>
+int main() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest654353.c
+Checking for stdarg.h... Yes.
+
+=== ztest654353.c ===
+#include <stdio.h>
+#include <stdarg.h>
+#include "zconf.h"
+int main()
+{
+#ifndef STDC
+  choke me
+#endif
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest654353.c
+Checking whether to use vs[n]printf() or s[n]printf()... using vs[n]printf().
+
+=== ztest654353.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return 0;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -o ztest654353 ztest654353.c
+Checking for vsnprintf() in stdio.h... Yes.
+
+=== ztest654353.c ===
+#include <stdio.h>
+#include <stdarg.h>
+int mytest(const char *fmt, ...)
+{
+  int n;
+  char buf[20];
+  va_list ap;
+  va_start(ap, fmt);
+  n = vsnprintf(buf, sizeof(buf), fmt, ap);
+  va_end(ap);
+  return n;
+}
+int main()
+{
+  return (mytest("Hello%d\n", 1));
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest654353.c
+Checking for return value of vsnprintf()... Yes.
+
+=== ztest654353.c ===
+#define ZLIB_INTERNAL __attribute__((visibility ("hidden")))
+int ZLIB_INTERNAL foo;
+int main()
+{
+  return 0;
+}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO ztest654353.c
+Checking for attribute(visibility) support... Yes.
+
+ALL = static
+AR = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ar
+ARFLAGS = rc
+CC = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+CFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -DNO_FSEEKO -DHAVE_HIDDEN
+CPP =
+EXE =
+LDCONFIG = ldconfig
+LDFLAGS =
+LDSHARED = /home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-gcc
+LDSHAREDLIBC = -lc
+OBJC = $(OBJZ) $(OBJG)
+PIC_OBJC = $(PIC_OBJZ) $(PIC_OBJG)
+RANLIB = CC=/home/willem/ApolloCrossDev/Compilers/GCC-13.2/bin/m68k-amigaos-ranlib
+SFLAGS = -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer -fPIC -DNO_FSEEKO -DHAVE_HIDDEN
+SHAREDLIB =
+SHAREDLIBM =
+SHAREDLIBV =
+STATICLIB = libz.a
+TEST = all teststatic
+VER = 1.3.1
+SRCDIR =
+exec_prefix = ${prefix}
+includedir = ${prefix}/include
+libdir = ${exec_prefix}/lib
+mandir = ${prefix}/share/man
+prefix = /usr/local
+sharedlibdir = ${libdir}
+uname = Linux
+--------------------
+
+
+--------------------
+./configure
+Sun Jan  4 09:47:00 AM CET 2026
+=== ztest213802.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Stable/bin/m68k-amigaos-gcc -c ztest213802.c
+./configure: 196: /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Stable/bin/m68k-amigaos-gcc: not found
+... using /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Stable/bin/m68k-amigaos-gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest213802.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Stable/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest213802.c
+./configure: 1: /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Stable/bin/m68k-amigaos-gcc: not found
+(exit code 127)
+Compiler error reporting is too harsh for ./configure (perhaps remove -Werror).
+** ./configure aborting.
+--------------------
+
+
+--------------------
+./configure
+Sun Jan  4 10:01:36 AM CET 2026
+=== ztest316648.c ===
+extern int getchar();
+int hello() {return getchar();}
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Stable/bin/m68k-amigaos-gcc -c ztest316648.c
+./configure: 196: /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Stable/bin/m68k-amigaos-gcc: not found
+... using /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Stable/bin/m68k-amigaos-gcc
+
+Checking for obsessive-compulsive compiler options...
+=== ztest316648.c ===
+int foo() { return 0; }
+===
+/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Stable/bin/m68k-amigaos-gcc -c -noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer ztest316648.c
+./configure: 1: /home/willem/ApolloCrossDev/Compilers/GCC-6.50-Stable/bin/m68k-amigaos-gcc: not found
+(exit code 127)
+Compiler error reporting is too harsh for ./configure (perhaps remove -Werror).
+** ./configure aborting.
+--------------------
+
+
