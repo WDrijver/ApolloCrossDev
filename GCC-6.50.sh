@@ -43,7 +43,8 @@ sudo apt -y install build-essential devscripts debhelper qtbase5-dev qtbase5-dev
 
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-git clone --progress https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
+git clone --progress https://github.com/WDrijver/amiga-gcc-stable 2>>$LOGFILES/part3_err.log
+mv amiga-gcc-stable amiga-gcc
 
 # Part 4: Compile Amiga-GCC
 echo -e -n "\e[1m\e[37m4. Compile Amiga-GCC: \e[0m\e[36m"
@@ -54,6 +55,7 @@ echo -e -n "\e[0m\e[36mDrop Prefix | "
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e -n "\e[0m\e[36mClone Repos (>1 min) | "
 make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+mv projects/gcc-stable gcc
 echo -e -n "\e[0m\e[36mBuild Compiler (>5 min) | "
 make all $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36mAdd LibDebug\e[0m]"
@@ -61,9 +63,9 @@ make libdebug PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Part 5: MUI
 echo -e "\e[1m\e[37m5. Adding MUI5\e[0m\e[36m"
-cd $SOURCES/amiga-gcc
+cd $SOURCES/amiga-gcc-stable
 make sdk=mui PREFIX=$PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-cp -r -f $SOURCES/amiga-gcc/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/include/mui >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+cp -r -f $SOURCES/amiga-gcc-stable/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/include/mui >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
 # Part 6: PortLibs (amiga-gcc takes care of Open-GL, SDL and GDB - we add Freetype, ZLib and BZip2)
 echo -e -n "\e[1m\e[37m6. Adding Porting Libs: "
