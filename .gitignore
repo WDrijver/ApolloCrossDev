@@ -1,5 +1,4 @@
 ApolloCrossDev.code-workspace
-GCC-15.2.sh
-GCC-13.2.sh
-GCC-13.3.sh
+GCC-13*
+GCC-15*
 GCC-6.50-*

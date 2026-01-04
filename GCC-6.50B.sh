@@ -6,7 +6,7 @@ CPU=-j16
 WORKSPACE="`pwd`"
 COMPILERS=Compilers
 PROJECTS=Projects
-COMPILER=GCC-6.50
+COMPILER=GCC-6.50B
 TARGET=m68k-amigaos
 PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
 
@@ -43,7 +43,7 @@ sudo apt -y install build-essential devscripts debhelper qtbase5-dev qtbase5-dev
 
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-git clone --progress https://github.com/WDrijver/amiga-gcc 2>>$LOGFILES/part3_err.log
+git clone --progress https://franke.ms/git/bebbo/amiga-gcc 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile Amiga-GCC
 echo -e -n "\e[1m\e[37m4. Compile Amiga-GCC: \e[0m\e[36m"
@@ -57,7 +57,7 @@ make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4
 echo -e -n "\e[0m\e[36mBuild Compiler (>5 min) | "
 make all $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36mAdd LibDebug\e[0m]"
-make libdebug PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+make libdebug $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Part 5: MUI
 echo -e "\e[1m\e[37m5. Adding MUI5\e[0m\e[36m"
@@ -104,7 +104,8 @@ cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/pa
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 echo -e "\e[0m\e[36mZLib\e[0m"
-cd $ARCHIVES/zlib-source
+cp -r -f $ARCHIVES/zlib-source $SOURCES/zlib-source
+cd $SOURCES/zlib-source
 CC=$PREFIX/bin/m68k-amigaos-gcc \
 AR=$PREFIX/bin/m68k-amigaos-ar \
 RANLIB=CC=$PREFIX/bin/m68k-amigaos-ranlib \
