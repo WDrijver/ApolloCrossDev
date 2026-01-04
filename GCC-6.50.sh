@@ -104,7 +104,8 @@ cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/pa
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 echo -e "\e[0m\e[36mZLib\e[0m"
-cd $ARCHIVES/zlib-source
+cp -r -f $ARCHIVES/zlib-source $SOURCES/zlib-source
+cd $SOURCES/zlib-source
 CC=$PREFIX/bin/m68k-amigaos-gcc \
 AR=$PREFIX/bin/m68k-amigaos-ar \
 RANLIB=CC=$PREFIX/bin/m68k-amigaos-ranlib \
