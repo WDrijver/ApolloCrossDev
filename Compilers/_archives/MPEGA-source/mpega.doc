@@ -1,0 +1,254 @@
+TABLE OF CONTENTS
+
+mpega/MPEGA_close
+mpega/MPEGA_decode_frame
+mpega/MPEGA_find_sync
+mpega/MPEGA_open
+mpega/MPEGA_scale
+mpega/MPEGA_seek
+mpega/MPEGA_time
+mpega/MPEGA_close                                           mpega/MPEGA_close
+
+   NAME
+        MPEGA_close -- close an MPEG Audio stream.
+
+   SYNOPSIS
+        MPEGA_close( mpega_stream );
+                          a0
+
+        void MPEGA_close( MPEGA_STREAM * );
+
+   FUNCTION
+        Closes an MPEG Audio stream. Once this call has been made, the
+        stream can no longer be accessed.
+
+   INPUTS
+        mpega_stream - the MPEG Audio stream to close.
+
+   RESULT
+
+   SEE ALSO
+        MPEGA_open()
+
+   BUGS
+
+mpega/MPEGA_decode_frame                             mpega/MPEGA_decode_frame
+
+   NAME
+        MPEGA_decode_frame -- Decode one frame of MPEG Audio stream.
+
+   SYNOPSIS
+        sample_count = MPEGA_decode_frame( mpega_stream, pcm );
+             d0                                 a0       a1
+
+        LONG MPEGA_decode_frame( MPEGA_STREAM *, WORD *pcm[ MPEGA_MAX_CHANNELS ] );
+
+   FUNCTION
+        This function decodes one frame of MPEG Audio stream. Decoded audio
+        samples are stored in given pcm buffers (16-bit samples). The function
+        returns the number of decoded samples (for one channel) or an error code
+        (negative number). The maximum number of decoded samples will not exceed
+        MPEGA_PCM_SIZE. The number of samples depend on the MPEG Audio stream
+        type (norm and layer) and on the decoded frequency output division.
+        The channel 0 is Left or Mono, channel 1 is Right.
+
+   INPUTS
+        mpega_stream - Opened MPEG Audio stream obtain from MPEGA_open()
+        pcm - Array of MPEGA_MAX_CHANNELS buffers of MPEGA_PCM_SIZE WORD's.
+
+   RESULT
+        pcm - These arrays will be filled with audio pcm samples if sample_count > 0.
+        sample_count - number of samples decoded for each channel. This number
+            may be 0 if current frame was skipped because decoder is not yet
+            synchronized, this is * NOT * a decoding error.
+            If this number is < 0, end of stream is reached (= MPEGA_ERR_EOF)
+            or an error was found (MPEGA_ERR_BADFRAME).
+
+   SEE ALSO
+        MPEGA_open(), MPEGA_close()
+
+   BUGS
+
+mpega/MPEGA_find_sync                                   mpega/MPEGA_find_sync
+
+   NAME
+        MPEGA_find_sync -- Find an MPEG Audio sync word in a buffer.
+
+   SYNOPSIS
+        sync_pos = MPEGA_find_sync( buffer, buffer_size );
+           d0                         a0         d0
+
+        LONG MPEGA_find_sync( BYTE *, LONG );
+
+   FUNCTION
+        This function searches for an MPEG Audio sync word in a buffer.
+        You can use this function to see if a file contains MPEG Audio data.
+        If the function returns >= 0 value, a valid MPEG Audio header was found.
+
+   INPUTS
+        buffer - BYTE buffer to watch
+        buffer_size - Number of bytes of given buffer
+
+   RESULT
+        sync_pos - sync postion of a valid MPEG Audio frame or MPEGA_ERR_NO_SYNC
+            if no valid frame found.
+
+   SEE ALSO
+
+   BUGS
+
+mpega/MPEGA_open                                             mpega/MPEGA_open
+
+   NAME
+        MPEGA_open -- Open an MPEG Audio stream.
+
+   SYNOPSIS
+        mpega_stream = MPEGA_open( stream_name, ctrl );
+             d0                         A0       a1
+
+        MPEGA_STREAM *MPEGA_open( char *, MPEGA_CTRL * );
+
+   FUNCTION
+        Opens an MPEG Audio stream and returns an mpeg audio stream structure.
+        The stream name is the MPEG Audio filename if standard file access is used.
+        The ctrl structure controls the stream access and the decoding
+        parameters. If you want a standard file access to the streams, set the
+        bs_access field of MPEGA_CTRL to NULL. Otherwise, set it to a pointer
+        to a Hook that specifies your custom access to the stream. It this case,
+        your Hook function will be called in this way:
+
+         ULONG __saveds __asm HookFunc( register __a0 struct Hook  *hook,
+                                        register __a2 APTR          handle,
+                                        register __a1 MPEGA_ACCESS *access );
+
+         MPEGA_ACCESS struct specifies bitstream access function & parameters
+
+         access->func == MPEGA_BSFUNC_OPEN
+            open the bitstream
+            access->data.open.buffer_size is the i/o block size your read function can use
+            access->data.open.stream_size is the total size of the current stream
+                                          (in bytes, set it to 0 if unknown)
+            return your file handle (or NULL if failed)
+         access->func == MPEGA_BSFUNC_CLOSE
+            close the bitstream
+            return 0 if ok
+         access->func == MPEGA_BSFUNC_READ
+            read bytes from bitstream.
+            access->data.read.buffer is the destination buffer.
+            access->data.read.num_bytes is the number of bytes requested for read.
+            return # of bytes read or 0 if EOF.
+         access->func == MPEGA_BSFUNC_SEEK
+            seek into the bitstream
+            access->data.seek.abs_byte_seek_pos is the absolute byte position to reach.
+            return 0 if ok
+
+        Control structure contains Layers decoding settings, one for Layers I & II and
+        one for Layer III (which is more CPU intensive). These settings controls the
+        audio quality, the output frequency division and the stereo to mono conversion.
+        Control structure allows also to choose the stream buffer size, which set the
+        amount of bytes read for stream in a block.
+        For more details about this structure see <libraries/mpega.h> .
+
+        If the returned value is NULL, the stream can't be opened (if it's not an
+        MPEG Audio stream for example). Otherwise, mpega_stream (read only) contains
+        informations about current stream and actual decoding values.
+
+        * WARNING * Only the task that called MPEGA_open can safely call the other functions
+        that use the mpega_stream.
+
+   INPUTS
+        stream_name - Name of the stream to open.
+        ctrl - Decoding control.
+
+   RESULTS
+        mpega_stream - The stream structure, use it to get information about
+            current stream. You should pass this to other functions.
+
+   SEE ALSO
+        MPEGA_close(), MPEGA_decode_frame()
+
+   BUGS
+
+mpega/MPEGA_scale                                           mpega/MPEGA_scale
+
+   NAME
+        MPEGA_scale -- Set the output scale for the current stream (V2)
+
+   SYNOPSIS
+        error = MPEGA_scale( mpega_stream, scale_percent );
+          d0                      a0            d0
+
+        LONG MPEGA_scale( MPEGA_STREAM *, LONG );
+
+   FUNCTION
+        This function set the output scale of the decoded samples.
+        It is possible to increase or to decrease the output samples dynamic.
+        A scale_percent of 200 will double the output sample values and
+        a scale_percent of 50 will halve the values.
+
+   INPUT
+        mpega_stream - Opened MPEG Audio stream obtain from MPEGA_open()
+        scale_percent - The scaling factor in %
+
+   RESULT
+        error - 0 if Ok or < 0 if error (see MPEGA_ERR_xxx)
+
+   SEE ALSO
+
+   BUGS
+
+mpega/MPEGA_seek                                             mpega/MPEGA_seek
+
+   NAME
+        MPEGA_seek -- Seek into an MPEG Audio stream.
+
+   SYNOPSIS
+        error = MPEGA_seek( mpega_stream, ms_time_position );
+          d0                     a0              d0
+
+        LONG MPEGA_seek( MPEGA_STREAM *, ULONG );
+
+   FUNCTION
+        This function allows to seek into an opened stream. The seek
+        position is a time position in milliseconds. If the seek failed,
+        the function returns an error (MPEGA_ERR_EOF if outside of stream).
+
+   INPUTS
+        mpega_stream - Opened MPEG Audio stream obtain from MPEGA_open()
+        ms_time_position - Time position of seek.
+
+   RESULT
+        error - 0 if Ok or < 0 if error (see MPEGA_ERR_xxx)
+
+   SEE ALSO
+        MPEGA_time()
+
+   BUGS
+
+mpega/MPEGA_time                                             mpega/MPEGA_time
+
+   NAME
+        MPEGA_time -- Get the current time position of an MPEG Audio stream
+
+   SYNOPSIS
+        error = MPEGA_time( mpega_stream, ms_time_position );
+          d0                     a0             a1
+
+        LONG MPEGA_time( MPEGA_STREAM *, ULONG * );
+
+   FUNCTION
+        This function gets the current time position of an opened stream.
+        The return time position is given in milliseconds.
+
+   INPUTS
+        mpega_stream - Opened MPEG Audio stream obtain from MPEGA_open()
+
+   RESULT
+        ms_time_position - Current time position.
+        error - 0 if Ok or < 0 if error (see MPEGA_ERR_xxx)
+
+   SEE ALSO
+        MPEGA_seek()
+
+   BUGS
+

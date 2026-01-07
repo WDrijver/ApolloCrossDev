@@ -1,0 +1,17 @@
+.c.o:
+      SC WITH=SCOPTIONS.060 NOLINK IDIR=/MPEGDEC_Lib $*.c DEF=CPU_VERSION="68060"
+
+TARGET = mpega060.library
+MPEGLIB = /MPEGDEC_Lib/MPEGDEC_060.lib
+MATHLIB = LIB:scm.lib
+
+$(TARGET): StartUp.o LibInit.o MPEGAfuncs.o
+   SLINK FROM StartUp.o LibInit.o MPEGAfuncs.o\
+   LIB $(MPEGLIB) lib:amiga.lib lib:sc.lib lib:amiga.lib $(MATHLIB) TO $(TARGET) NODEBUG NOICONS
+
+StartUp.o: StartUp.c
+
+LibInit.o: LibInit.c
+
+MPEGAfuncs.o: MPEGAfuncs.c MPEGAfuncs.h
+

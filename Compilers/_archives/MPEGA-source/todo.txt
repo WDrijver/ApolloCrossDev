@@ -1,0 +1,20 @@
+
+TODO:
+----
+
+
+DONE:
+----
+
+Mettre les bonnes valeurs de version (fpu/int)
+
+Support du tag VBR Xing
+
+Documenter le pb multitache: 1 seule tache par stream.
+Supprimer les variables globales dans les decodeurs (mp3 surtout ???)
+
+Rassembler les sources M68k et PPC dans un seul repertoire.
+Test de synchro à l'ouverture pour verifier validité MPEG Audio.
+   Synchro à l'ouverture + indexation sur la premiere frame valide.
+   -> memoriser pos 1ere frame valide et s'en servir comme origine.
+

@@ -1,0 +1,17 @@
+#
+# Makefile for MPEGA_demo
+# Stéphane TAVENARD 25/10/1997
+#
+
+.c.o:
+      SC WITH=SCOPTIONS.020 NOLINK $*.c
+
+TARGET = MPEGA_demo
+
+all: $(TARGET)
+
+MPEGDEC_demo.o: MPEGA_demo.c
+
+$(TARGET) : MPEGA_demo.o
+   sc link MPEGA_demo.o to $(TARGET) NOICONS LIB LIB:scm.lib LIB:sc.lib LIB:amiga.lib
+

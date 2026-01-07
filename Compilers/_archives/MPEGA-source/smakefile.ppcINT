@@ -1,0 +1,81 @@
+#--- Amiga PowerUP---
+# SAS Makefile
+# For PPC mpega library
+# Stéphane Tavenard 14/06/1998
+#
+
+#####################################################################
+#
+# Options
+#
+
+IPATH           =       IDIR=/include/ IDIR=PowerUP:src/include IDIR=include:
+GCCIPATH        =       -Iade:ppc-amigaos/include -IPowerUP:src/include -Iinclude: -I../include/ -I../MPEGDEC_Lib
+GCCOPTS         =       -UAMIGA -DLIBRARY
+ASMFLAGS        =       -sa -w2- -wo- -M4000 -x -d$(CODETYPE)=1 -dEXEC_68060=0
+APATH           =       -iasm: -i/include -iinclude/
+
+#####################################################################
+#
+# Machine Configuration
+#
+
+
+ASM             =       basm $(ASMFLAGS) $(APATH)
+DEBUG           =       NODEBUG
+OPTFLAGS        =       OPTIMIZEPEEP OPTIMIZE
+#OPTFLAGS       =
+CFLAGS          =       STRINGMERGE NOSTACKCHECK PARMS=REGISTER CPU=68040 MATH=68881 DATA=FARONLY CODE=NEAR
+CPPFLAGS        =
+CC              =       sc $(CFLAGS) $(OPTFLAGS) $(DEBUG) $(IPATH)
+LINK            =       slink
+OBJECT          =       OBJNAME=
+
+
+
+#####################################################################
+#
+# Default rules
+#
+
+PPCCC = ppc-amigaos-gcc -O3 -fomit-frame-pointer $(GCCOPTS) $(GCCIPATH) -v -S
+PPCAS = ppc-amigaos-gas
+
+.c.o$(TARGET):
+        $(CC) $(OBJECT)$*.o$(TARGET) $*.c
+
+
+.asm.o$(TARGET):
+        $(ASM) -o$*.o$(TARGET) $*.asm
+
+.c.o:
+      SC WITH=SCOPTIONS.020 NOLINK DEF=_PPC IDIR=/MPEGDEC_Lib $*.c
+
+.c.oPPC:
+        $(PPCCC) $*.c
+        $(PPCAS) -o$*.oPPC $*.s
+
+
+all:    mpegaPPC.library    \
+        mpegappcINT_library.elf
+
+PPCSRC = mpegappc_library.c
+
+PPCOBJS = mpegappc_library.oPPC
+
+mpegappcINT_library.elf: $(PPCOBJS)
+        ppc-amigaos-ld -r $(PPCOBJS) -Lade:/PPC-Dev/LibMoto -L../MPEGDEC_Lib -lmpegdecint -lmoto -lm -o $@
+#        ppc-amigaos-objdump --section-headers --all-headers --reloc --disassemble-all --line-numbers $@ >$@.dump
+        ppc-amigaos-objdump --section-headers --all-headers --reloc --line-numbers $@ >$@.dump
+
+StartUp.o: StartUp.c
+
+LibInit.o: LibInit.c
+
+MPEGAfuncs.o: MPEGAfuncs.c MPEGAfuncs.h
+
+mpegaPPC.library: Startup.o LibInit.o MPEGAfuncs.o
+   SLINK FROM StartUp.o LibInit.o MPEGAfuncs.o\
+   LIB lib:amiga.lib lib:sc.lib lib:amiga.lib LIB:scm.lib TO mpegaPPC.library NODEBUG NOICONS
+
+

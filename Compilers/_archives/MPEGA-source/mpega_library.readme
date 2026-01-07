@@ -1,0 +1,36 @@
+Short:    MPEG Audio decoder library V2.4 (68020+)
+Uploader: stephane.tavenard@wanadoo.fr (Stephane TAVENARD)
+Author:   stephane.tavenard@wanadoo.fr (Stephane TAVENARD)
+Type:     util/libs
+
+This library can decode MPEG 1,2 layers I, II & III to
+audio pcm samples. This package contains '020 & '040
+integer decoder versions and '020 & '040 floating
+point decoder versions (slower, but more accurate).
+
+New from V2.3:
+
+   Added Xing VBR tag support
+
+               *** IMPORTANT ***
+   Please, note that FPU versions are more acurrate
+   that integer ones, but they consume more CPU !!!
+   So, don't e-mail me that mpega.library is slower
+   than mpega before you check this !!!
+               *** IMPORTANT ***
+
+The PPC version needs Phase 5 ppc library
+
+               *** WARNING ***
+   SongPlayer V1.2 or older release don't work with
+   the PPC library version because of a bug into the
+   audio task. V1.3 of SongPlayer works.
+               *** WARNING ***
+
+This library need at least a 68020 and OS 3.0
+
+I hope this library will encourage Amiga developers to
+make great programs including MPEG Audio support !
+
+AMIGA, forever
+

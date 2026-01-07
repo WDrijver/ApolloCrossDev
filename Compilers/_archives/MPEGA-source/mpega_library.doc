@@ -1,0 +1,104 @@
+-------------------------------------------------------------------------------
+
+              mpega.library 2.4  (13-Sep-1999) (68020+) (GIFTWARE)
+
+-------------------------------------------------------------------------------
+
+
+Distribution Conditions
+-----------------------
+
+  This program is copyright (c)1997-99 by Stephane TAVENARD.
+It may be distributed freely under the condition that no profit is
+gained from its distribution, nor from any other program distributed
+in the same package.
+
+  Permission is granted to distribute this package by Bulletin Board
+systems or network sites, under the condition that no fee is charged
+on downloading it.
+
+  All files that are part of this package have to be distributed
+together and none of them may be changed in any way other than
+archiving or crunching.  The only exception to this rule are the
+icons, including the tooltypes, which may be changed to accommodate
+them to the rest of the disk it is distributed on.
+
+  This program is distributed as freeware (and giftware).
+
+Disclamer
+---------
+
+  This package is provided "as is" without warranty of any kind.
+The author assumes no responsibility or liability whatsoever
+for any damage or dataloss caused by using this package.
+
+Requirements
+------------
+
+  An Amiga :^)
+  A 68020 or better
+  OS 3.0
+  A PPC is better !!!
+
+Description
+-----------
+
+  This package contains a lib directory with several versions. Copy
+the desired version to your LIBS: directory and rename it to "mpega.library".
+  * WARNING * FPU versions of these libraries are slower than others, but they
+are more accurate. FPU versions can be used to convert MPEGA Audio file to
+pcm files with maximum quality. Integer versions (without 'FPU' in the library
+name) are very fast and provide very good quality (very near to FPU version).
+
+  In order to install the PPC version, you must copy mpegaPPC.library to LIBS:
+  and rename it to mpega.library, then copy mpegappcXXX_library.elf to LIBS:
+  (XXX is either FPU or INT, depending on the version you want).
+  V2.1 need absolutly ppc.library from Phase 5 to work.
+
+  The developer directory contains includes for SAS/C like compiler. For other
+compilers, you can use the .fd file to build your programming interface.
+
+  You can also find a short example to see how to use this library in the
+developer/demo directory.
+
+
+  Enjoy it !
+
+History
+-------
+
+V1.0    02-Nov-1997     First aminet release
+V1.1    02-Jun-1998     Fixed bug in variable rate synchronization
+                        Added PPC version !
+V2.0    22-Jun-1998     Enhanced MPEG Audio recognition
+                        Added MPEGA_scale() function
+                        PPC version bump priority of PPC message task of Phase'5 to 19
+V2.1    18-Sep-1998     Added INTEGER library version for ppc
+                        Enhanced ppc cache usage
+V2.3    24-May-1999     Fixed some bug when decoding more than one stream at once
+                        68060 Version added
+V2.4    13-Sep-1999     Added Xing VBR tag support
+
+Credits
+-------
+
+Thanks to my friend, AMIGA, the best computer ever made.
+
+           / /
+          / /
+         / /
+   \ \  / /
+    \ \/ /
+     \/\/
+
+Stéphane TAVENARD (ANGERS/France)
+Email: stephane.tavenard@wanadoo.fr
+IRC: Tatav
+
+Send your gifts here :^)
+
+Stéphane TAVENARD
+La Bezanière
+49070 Saint Jean de Linières
+FRANCE
+

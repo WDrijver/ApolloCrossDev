@@ -1,0 +1,46 @@
+/*------------------------------------------------------------------------------
+
+    File    :   MPEGAfuncs.h
+
+    Author  :   Stéphane TAVENARD
+
+    (C) Copyright 1997-1997 Stéphane TAVENARD
+        All Rights Reserved
+
+    #Rev|   Date   |                      Comment
+    ----|----------|--------------------------------------------------------
+    0   |25/10/1997| Initial revision                                     ST
+
+    ------------------------------------------------------------------------
+
+    MPEGA library functions definition
+
+------------------------------------------------------------------------------*/
+
+#ifndef MPEGAFUNCS_H
+#define MPEGAFUNCS_H
+
+//#include "mpega.h"
+#include <libraries/mpega.h>
+#include "compiler.h"
+
+MPEGA_STREAM* __saveds __asm MPEGA_open( register __a0 char *filename,
+                                         register __a1 MPEGA_CTRL *ctrl );
+
+void  __saveds __asm MPEGA_close( register __a0 MPEGA_STREAM *mpds );
+
+LONG  __saveds __asm MPEGA_decode_frame( register __a0 MPEGA_STREAM *mpds,
+                                         register __a1 WORD *pcm[ MPEGA_MAX_CHANNELS ] );
+
+LONG  __saveds __asm MPEGA_seek( register __a0 MPEGA_STREAM *mpds,
+                                 register __d0 ULONG ms_time_position );
+
+LONG  __saveds __asm MPEGA_time( register __a0 MPEGA_STREAM *mpds,
+                                 register __a1 ULONG *ms_time_position );
+
+LONG  __saveds __asm MPEGA_find_sync( register __a0 BYTE *buffer,
+                                      register __d0 LONG buffer_size );
+
+
+#endif /* MPEGAFUNCS_H */
+

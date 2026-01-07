@@ -105,20 +105,16 @@ cd $ARCHIVES/vorbis
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
+echo -e -n "\e[0m\e[36mMPEGA (Dynamic) | "
+cd $ARCHIVES/MPEGA-source/include
+cp -r -f clib/* $PREFIX/$TARGET/include/clib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f libraries/* $PREFIX/$TARGET/include/libraries >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+$PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 38 -t $PREFIX/$TARGET/include/proto
+$PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 40 -t $PREFIX/$TARGET/include/inline
+
 echo -e -n "\e[0m\e[36mZLib | "
 cp -r -f $ARCHIVES/zlib-source $SOURCES/zlib-source
 cd $SOURCES/zlib-source
-CC=$PREFIX/bin/m68k-amigaos-gcc \
-AR=$PREFIX/bin/m68k-amigaos-ar \
-RANLIB=CC=$PREFIX/bin/m68k-amigaos-ranlib \
-CFLAGS="-noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer" \
-./configure >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-make all $CPU >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r -f libz.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-mkdir -p $PREFIX/$TARGET/include/zlib
-cp -r zlib.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r zconf.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-
 CC=$PREFIX/bin/m68k-amigaos-gcc \
 AR=$PREFIX/bin/m68k-amigaos-ar \
 RANLIB=CC=$PREFIX/bin/m68k-amigaos-ranlib \
@@ -136,7 +132,7 @@ cd $SOURCES/timidity-source
 make -f Makefile.apollocrossdev >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp libtimidity.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 mkdir -p $PREFIX/$TARGET/include/timidity
-cp *.h $PREFIX/$TARGET/include/timidity
+cp -f *.h $PREFIX/$TARGET/include/timidity
 
 # PART 7: NDK
 echo -e "\e[1m\e[37m7. Development Kits\e[0m\e[36m"

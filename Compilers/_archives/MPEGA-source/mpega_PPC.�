@@ -1,0 +1,313 @@
+Storm Shell Project (0013)
+Settings (Start)
+C/C++ Environment
+"StormC:include"
+Includepath (End)
+0 "" 80
+1 "objects_ppc_debug"
+C/C++ Preprozessor
+0 "NDEBUG" ""
+1 "__MIXEDBINARY__" ""
+1 "HOOKS" ""
+1 "STORM" ""
+1 "AMIGA" ""
+Defines (End)
+1 0 1
+C/C++ Options
+0 1 1 0 0 0 2 0 1 0 0 5 1 4 1
+C/C++ Optimizer
+9
+C/C++ Warnings
+1 1 1 1 1 1 0 1
+Assembler
+0 ""
+0 "CON://640/200/Storm Assembler/AUTO/WAIT/SCREEN StormScreen"
+0 0
+0 1 60 0 1 0 0 20 0
+Sets (End)
+0 1 0 0 0 2 1 0 0
+1 1 1 1 0 0 0 0 0
+1 0
+0 0 0 0 0
+Linker
+1 0 "PROGDIR:startup.o" 0 0 1 0 1 0 0
+"StormC:lib/" 0 "StormC:lib/logfile" 0 0 0
+0 "_WizardSurface"
+0 0 50 0 50 0 50 0 0
+0 0 0 0 0 0 0 0
+Run
+30 "" "" "" 0
+""
+
+1 "CON://400/180/Storm Console/AUTO/WAIT/SCREEN StormScreen" "RAM:Output" "RAM:Input"
+1 0
+0 0 0 "" ""
+Settings (End)
+File
+1 "voll:mpeglib24/bitstr.c"
+"voll:mpeglib24/bitstr.c"
+"TheGiant:voll/mpeglib24/defs.h"
+"TheGiant:voll/mpeglib24/bitstr.h"
+Storm Shell Project (Dependencies)
+"objects_ppc_debug/bitstr.o" "objects_ppc_debug/bitstr.debug"
+""
+"objects_ppc_debug/bitstr.o" "objects_ppc_debug/bitstr.debug"
+File
+1 "voll:mpeglib24/huff.c"
+"voll:mpeglib24/huff.c"
+"TheGiant:voll/mpeglib24/defs.h"
+"TheGiant:voll/mpeglib24/mpegaud.h"
+"TheGiant:voll/mpeglib24/bitstr.h"
+"TheGiant:voll/mpeglib24/huff.h"
+"TheGiant:voll/mpeglib24/mpegsub.h"
+"TheGiant:voll/mpeglib24/mpegtab.h"
+"TheGiant:voll/mpeglib24/mpegimdc.h"
+Storm Shell Project (Dependencies)
+"objects_ppc_debug/huff.o" "objects_ppc_debug/huff.debug"
+""
+"objects_ppc_debug/huff.o" "objects_ppc_debug/huff.debug"
+File
+1 "voll:mpeglib24/mpeg1dec.c"
+"voll:mpeglib24/mpeg1dec.c"
+"TheGiant:voll/mpeglib24/defs.h"
+"TheGiant:voll/mpeglib24/bitstr.h"
+"TheGiant:voll/mpeglib24/mpegaud.h"
+"TheGiant:voll/mpeglib24/huff.h"
+"TheGiant:voll/mpeglib24/mpegsub.h"
+"TheGiant:voll/mpeglib24/mpegtab.h"
+"TheGiant:voll/mpeglib24/mpegimdc.h"
+"TheGiant:voll/mpeglib24/mpegdec.h"
+"TheGiant:voll/mpeglib24/mpeg1dec.h"
+Storm Shell Project (Dependencies)
+"objects_ppc_debug/mpeg1dec.o" "objects_ppc_debug/mpeg1dec.debug"
+""
+"objects_ppc_debug/mpeg1dec.o" "objects_ppc_debug/mpeg1dec.debug"
+File
+1 "voll:mpeglib24/mpeg2dec.c"
+"voll:mpeglib24/mpeg2dec.c"
+"TheGiant:voll/mpeglib24/defs.h"
+"TheGiant:voll/mpeglib24/bitstr.h"
+"TheGiant:voll/mpeglib24/mpegaud.h"
+"TheGiant:voll/mpeglib24/huff.h"
+"TheGiant:voll/mpeglib24/mpegsub.h"
+"TheGiant:voll/mpeglib24/mpegtab.h"
+"TheGiant:voll/mpeglib24/mpegimdc.h"
+"TheGiant:voll/mpeglib24/mpegdec.h"
+"TheGiant:voll/mpeglib24/mpeg2dec.h"
+Storm Shell Project (Dependencies)
+"objects_ppc_debug/mpeg2dec.o" "objects_ppc_debug/mpeg2dec.debug"
+""
+"objects_ppc_debug/mpeg2dec.o" "objects_ppc_debug/mpeg2dec.debug"
+File
+1 "voll:mpeglib24/mpeg3dec.c"
+"voll:mpeglib24/mpeg3dec.c"
+"TheGiant:voll/mpeglib24/defs.h"
+"TheGiant:voll/mpeglib24/bitstr.h"
+"TheGiant:voll/mpeglib24/mpegaud.h"
+"TheGiant:voll/mpeglib24/huff.h"
+"TheGiant:voll/mpeglib24/mpegsub.h"
+"TheGiant:voll/mpeglib24/mpegtab.h"
+"TheGiant:voll/mpeglib24/mpegimdc.h"
+"TheGiant:voll/mpeglib24/mpegdec.h"
+"TheGiant:voll/mpeglib24/mpeg3dec.h"
+Storm Shell Project (Dependencies)
+"objects_ppc_debug/mpeg3dec.o" "objects_ppc_debug/mpeg3dec.debug"
+""
+"objects_ppc_debug/mpeg3dec.o" "objects_ppc_debug/mpeg3dec.debug"
+File
+1 "voll:mpeglib24/mpegdec.c"
+"voll:mpeglib24/mpegdec.c"
+"TheGiant:voll/mpeglib24/defs.h"
+"TheGiant:voll/mpeglib24/mpegaud.h"
+"TheGiant:voll/mpeglib24/bitstr.h"
+"TheGiant:voll/mpeglib24/huff.h"
+"TheGiant:voll/mpeglib24/mpegsub.h"
+"TheGiant:voll/mpeglib24/mpegtab.h"
+"TheGiant:voll/mpeglib24/mpegimdc.h"
+"TheGiant:voll/mpeglib24/mpeg1dec.h"
+"TheGiant:voll/mpeglib24/mpeg2dec.h"
+"TheGiant:voll/mpeglib24/mpeg3dec.h"
+"TheGiant:voll/mpeglib24/mpegdec.h"
+Storm Shell Project (Dependencies)
+"objects_ppc_debug/mpegdec.o" "objects_ppc_debug/mpegdec.debug"
+""
+"objects_ppc_debug/mpegdec.o" "objects_ppc_debug/mpegdec.debug"
+File
+1 "voll:mpeglib24/mpegimdc.c"
+"voll:mpeglib24/mpegimdc.c"
+"TheGiant:voll/mpeglib24/defs.h"
+"TheGiant:voll/mpeglib24/mpegaud.h"
+"TheGiant:voll/mpeglib24/bitstr.h"
+"TheGiant:voll/mpeglib24/huff.h"
+"TheGiant:voll/mpeglib24/mpegsub.h"
+"TheGiant:voll/mpeglib24/mpegtab.h"
+"TheGiant:voll/mpeglib24/mpegimdc.h"
+Storm Shell Project (Dependencies)
+"objects_ppc_debug/mpegimdc.o" "objects_ppc_debug/mpegimdc.debug"
+""
+"objects_ppc_debug/mpegimdc.o" "objects_ppc_debug/mpegimdc.debug"
+File
+1 "voll:mpeglib24/mpegsub.c"
+"voll:mpeglib24/mpegsub.c"
+"TheGiant:voll/mpeglib24/defs.h"
+"TheGiant:voll/mpeglib24/mpegaud.h"
+"TheGiant:voll/mpeglib24/bitstr.h"
+"TheGiant:voll/mpeglib24/huff.h"
+"TheGiant:voll/mpeglib24/mpegsub.h"
+"TheGiant:voll/mpeglib24/mpegtab.h"
+"TheGiant:voll/mpeglib24/mpegimdc.h"
+Storm Shell Project (Dependencies)
+"objects_ppc_debug/mpegsub.o" "objects_ppc_debug/mpegsub.debug"
+""
+"objects_ppc_debug/mpegsub.o" "objects_ppc_debug/mpegsub.debug"
+File
+1 "voll:mpeglib24/mpegtab.c"
+"voll:mpeglib24/mpegtab.c"
+"TheGiant:voll/mpeglib24/defs.h"
+"TheGiant:voll/mpeglib24/mpegaud.h"
+"TheGiant:voll/mpeglib24/bitstr.h"
+"TheGiant:voll/mpeglib24/huff.h"
+"TheGiant:voll/mpeglib24/mpegsub.h"
+"TheGiant:voll/mpeglib24/mpegtab.h"
+"TheGiant:voll/mpeglib24/mpegimdc.h"
+Storm Shell Project (Dependencies)
+"objects_ppc_debug/mpegtab.o" "objects_ppc_debug/mpegtab.debug"
+""
+"objects_ppc_debug/mpegtab.o" "objects_ppc_debug/mpegtab.debug"
+Section
+1 1 100
+File
+2 "voll:mpeglib/defs.h"
+"voll:mpeglib/defs.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "voll:mpeglib/bitstr.h"
+"voll:mpeglib/bitstr.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "voll:mpeglib/mpegaud.h"
+"voll:mpeglib/mpegaud.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "voll:mpeglib/huff.h"
+"voll:mpeglib/huff.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "voll:mpeglib/mpegsub.h"
+"voll:mpeglib/mpegsub.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "voll:mpeglib/mpegtab.h"
+"voll:mpeglib/mpegtab.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "voll:mpeglib/mpegimdc.h"
+"voll:mpeglib/mpegimdc.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "voll:mpeglib/mpegdec.h"
+"voll:mpeglib/mpegdec.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "voll:mpeglib/mpeg1dec.h"
+"voll:mpeglib/mpeg1dec.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "voll:mpeglib/mpeg2dec.h"
+"voll:mpeglib/mpeg2dec.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "voll:mpeglib/mpeg3dec.h"
+"voll:mpeglib/mpeg3dec.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "TheGiant:voll/mpeglib24/defs.h"
+"TheGiant:voll/mpeglib24/defs.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "TheGiant:voll/mpeglib24/bitstr.h"
+"TheGiant:voll/mpeglib24/bitstr.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "TheGiant:voll/mpeglib24/mpegaud.h"
+"TheGiant:voll/mpeglib24/mpegaud.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "TheGiant:voll/mpeglib24/huff.h"
+"TheGiant:voll/mpeglib24/huff.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "TheGiant:voll/mpeglib24/mpegsub.h"
+"TheGiant:voll/mpeglib24/mpegsub.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "TheGiant:voll/mpeglib24/mpegtab.h"
+"TheGiant:voll/mpeglib24/mpegtab.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "TheGiant:voll/mpeglib24/mpegimdc.h"
+"TheGiant:voll/mpeglib24/mpegimdc.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "TheGiant:voll/mpeglib24/mpegdec.h"
+"TheGiant:voll/mpeglib24/mpegdec.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "TheGiant:voll/mpeglib24/mpeg1dec.h"
+"TheGiant:voll/mpeglib24/mpeg1dec.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "TheGiant:voll/mpeglib24/mpeg2dec.h"
+"TheGiant:voll/mpeglib24/mpeg2dec.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+File
+2 "TheGiant:voll/mpeglib24/mpeg3dec.h"
+"TheGiant:voll/mpeglib24/mpeg3dec.h"
+Storm Shell Project (Dependencies)
+"" ""
+""
+Section
+2 1 95
+Storm Shell Project (End)
