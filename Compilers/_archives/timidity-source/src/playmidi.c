@@ -666,7 +666,7 @@ char *mid_song_get_meta(MidSong *song, MidSongMetaId what)
   return (what < 0 || what >= MID_META_MAX)? NULL : song->meta_data[what];
 }
 
-size_t mid_song_read_wave(MidSong *song, sint8 *ptr, size_t size)
+size_t mid_song_read_wave(MidSong *song, unsigned char *ptr, size_t size)
 {
   sint32 start_sample, end_sample, samples;
 

@@ -109,8 +109,8 @@ echo -e -n "\e[0m\e[36mMPEGA (Dynamic) | "
 cd $ARCHIVES/MPEGA-source/include
 cp -r -f clib/* $PREFIX/$TARGET/include/clib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f libraries/* $PREFIX/$TARGET/include/libraries >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-$PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 38 -t $PREFIX/$TARGET/include/proto
-$PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 40 -t $PREFIX/$TARGET/include/inline
+$PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 38 -t $PREFIX/$TARGET/include/proto >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+$PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 40 -t $PREFIX/$TARGET/include/inline >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 echo -e -n "\e[0m\e[36mZLib | "
 cp -r -f $ARCHIVES/zlib-source $SOURCES/zlib-source
@@ -127,7 +127,8 @@ cp -r zlib.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_er
 cp -r zconf.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 echo -e "\e[0m\e[36mTimidity\e[0m"
-cp -r -f $ARCHIVES/timidity-source/src $SOURCES/timidity-source
+mkdir $SOURCES/timidity-source
+cp -r -f $ARCHIVES/timidity-source/src/* $SOURCES/timidity-source
 cd $SOURCES/timidity-source
 make -f Makefile.apollocrossdev >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp libtimidity.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
