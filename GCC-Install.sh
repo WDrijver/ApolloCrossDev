@@ -1,21 +1,4 @@
-# ApolloCrossDev Install Script v1.0
-
-VERSION=1.0
-CPU=-j16
-
-WORKSPACE="`pwd`"
-COMPILERS=Compilers
-PROJECTS=Projects
-COMPILER=GCC-6.50-Latest
-TARGET=m68k-amigaos
-PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
-
-ARCHIVES=$WORKSPACE/$COMPILERS/_archives
-LOGFILES=$PREFIX/_logs
-BUILDS=$PREFIX/_builds
-SOURCES=$PREFIX/_sources
-
-export PATH=$PREFIX/bin:$PATH
+# ApolloCrossDev Secondary Install Script v1.0
 
 # INIT Terminal
 clear
@@ -43,7 +26,7 @@ sudo apt -y install build-essential devscripts debhelper qtbase5-dev qtbase5-dev
 
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-git clone --progress -b master /home/willem/ApolloCrossDev.Sources/amiga-gcc 2>>$LOGFILES/part3_err.log
+git clone --progress -b $BRANCH $MASTER 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile Amiga-GCC
 echo -e -n "\e[1m\e[37m4. Compile Amiga-GCC: \e[0m\e[36m"
@@ -103,6 +86,13 @@ cd $ARCHIVES/vorbis
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
+echo -e -n "\e[0m\e[36mMPEGA (Dynamic) | "
+cd $ARCHIVES/MPEGA-source/include
+cp -r -f clib/* $PREFIX/$TARGET/include/clib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f libraries/* $PREFIX/$TARGET/include/libraries >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+$PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 38 -t $PREFIX/$TARGET/include/proto >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+$PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 40 -t $PREFIX/$TARGET/include/inline >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
 echo -e -n "\e[0m\e[36mZLib | "
 cp -r -f $ARCHIVES/zlib-source $SOURCES/zlib-source
 cd $SOURCES/zlib-source
@@ -118,12 +108,13 @@ cp -r zlib.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_er
 cp -r zconf.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 echo -e "\e[0m\e[36mTimidity\e[0m"
-cp -r -f $ARCHIVES/timidity-source/src $SOURCES/timidity-source
+mkdir $SOURCES/timidity-source
+cp -r -f $ARCHIVES/timidity-source/src/* $SOURCES/timidity-source
 cd $SOURCES/timidity-source
 make -f Makefile.apollocrossdev >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp libtimidity.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 mkdir -p $PREFIX/$TARGET/include/timidity
-cp *.h $PREFIX/$TARGET/include/timidity
+cp -f *.h $PREFIX/$TARGET/include/timidity
 
 # PART 7: NDK
 echo -e "\e[1m\e[37m7. Development Kits\e[0m\e[36m"
