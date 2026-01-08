@@ -135,7 +135,7 @@ make >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 # Part 9: BGDBServer
 echo -e "\e[1m\e[37m9. BGDG Server\e[0m\e[36m"
 cd $WORKSPACE/$PROJECTS
-git clone --progress https://franke.ms/git/bebbo/bgdbserver >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
+git clone --progress https://github.com/WDrijver/bgdbserver >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
 cd $WORKSPACE/$PROJECTS/bgdbserver
 make >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
 
