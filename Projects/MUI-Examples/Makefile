@@ -8,7 +8,7 @@ DIR = $(notdir $(shell pwd))
 APOLLO_V4_HOST = "${AMIGAHOST}:Ram Disk/"
 
 # Define ApolloCrossDev Compiler
-PREFIX 	= $(PWD)/../../Compilers/GCC-6.50
+PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Latest
 TARGET 	= m68k-amigaos
 ACP 	= $(PWD)/../../Projects/ApolloExplorer/acp/acp
 GDB		= $(PWD)/../../Projects/bgdbserver/bgdbserver
@@ -129,10 +129,12 @@ cleanbefore:
 	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/$(PROJECT_NAME)*.txt $(EXE)
 
 build: $(EXE)
-
+	@echo "\e[37mStep #2 - \e[31mLinker \e[37mFinished\e[0m"
+    
 # Link each Object to corresponding Executable
 $(PROJECT_DIR)/% : $(C_OBJECTDIR)/%.o 
 	@$(O_LINKER) $< $(C_FLAGS) -o $@ >>$(PROJECT_DIR)/$(PROJECT_NAME)-log.txt 2>>$(PROJECT_DIR)/$(PROJECT_NAME)-log.txt
+	@echo "\e[37mStep #1 - \e[31mCompiler \e[37mFinished\e[0m"
 
 # Compile all C-Sources to Objects 
 $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
@@ -143,11 +145,9 @@ $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
 	@$(S_COMPILER) $(S_FLAGS) -o $@ $< >>/dev/null 2>>$(PROJECT_DIR)/$(PROJECT_NAME)-log.txt
 
 upload:
-	@echo "\e[37m------------------------------------------------------------------\e[0m"
-	@echo "\e[1;31mApollo\e[1;30mExplorer\e[37m Upload\e[30m"
+	@echo "\e[37mStep #3 - \e[31mApollo\e[30mExplorer \e[37mUpload\e[30m"
 	@$(ACP) $(EXE) $(APOLLO_V4_HOST)
 	@cp $(ICONS)/ApolloIcon.info $(PROJECT_DIR)/$(PROJECT_NAME).info
-	@cp $(ICONS)/ApolloIcon_Debug.info $(PROJECT_DIR)/$(PROJECT_NAME)_Debug.info
 
 cleanafter:
 	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/*.info $(EXE)_Debug
