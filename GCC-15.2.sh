@@ -10,7 +10,7 @@ COMPILER=GCC-15.2
 TARGET=m68k-amigaos
 PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
 
-MASTER=/home/willem/ApolloCrossDev.Sources/amiga-gcc
+MASTER=https://github.com/WDrijver/amiga-gcc
 BRANCH=amiga-gcc-15.2
 
 ARCHIVES=$WORKSPACE/$COMPILERS/_archives
