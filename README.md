@@ -26,12 +26,12 @@ sudo apt install git
 
 ## Installation:
 1. Open VS-Code Click "View" and select "Open Command Palette" (or press CTRL+Shift+P)
-2. In drop-down list Select "git clone" and type ...https://github.com/WDrijver/ApolloCrossDev...  
+2. In drop-down list Select "git clone" and type https://github.com/WDrijver/ApolloCrossDev  
 3. After download Click "Open" and accept "trust the authors" and Click "Open Workspace" in the right corner popup window
 4. Select "Terminal" in the menu and then "New Terminal"
-5. In the terminal windows type ..../GCC-6.50-Latest.sh... to install the current ApolloCrossDev Toolchain
-6. After the installation is finished type ...sudo nano ~/.bashrc...
-7. At the end of the file add: ...export AMIGAHOST="IP-ADDRESS"... and save (for example: export AMIGAHOST ="192.168.2.100")
+5. In the terminal windows type ./GCC-6.50-Latest.sh to install the current ApolloCrossDev Toolchain
+6. After the installation is finished type sudo nano ~/.bashrc
+7. At the end of the file add: export AMIGAHOST="IP-ADDRESS" and save (for example: export AMIGAHOST ="192.168.2.100")
 
 ## Test Compiler and File-Transfer:
 1. Click "Terminal" in menu and select "Run Build Task" (or press CTRL-Shift-B)
