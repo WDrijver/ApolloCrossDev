@@ -13,10 +13,7 @@ ApolloCrossDev is based on the excellent Amiga-GCC repositories by Stefan -Bebbo
 
 ## Requirements:
 1. Ubuntu 24.04.3 LTS amd64 (Intel) is the supported Linux (25.10 will fail) installed in a VM (8Gb+ RAM|50Gb+ HD|4+ Cores) 
-2. Git tools installed from CLI: open terminal and type
-...
-sudo apt install git
-...
+2. Git tools installed from CLI: open terminal and type: sudo apt install git
 3. Microsoft Visual Studio Code (VS-Code) downloaded and installed (https://code.visualstudio.com)
 4. Microsoft Visual Studio Code Extensions:
    - Microsoft C/C++ (Intellisense, debugging and code browsing)
