@@ -8,14 +8,14 @@ DIR = $(notdir $(shell pwd))
 APOLLO_V4_HOST = "${AMIGAHOST}:Ram Disk/"
 
 # Define ApolloCrossDev Compiler
-PREFIX 	= $(PWD)/../../Compilers/GCC-6.50
+PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Latest
 TARGET 	= m68k-amigaos
 ACP 	= $(PWD)/../../Projects/ApolloExplorer/acp/acp
 GDB		= $(PWD)/../../Projects/bgdbserver/bgdbserver
 ICONS	= $(PWD)/../../Projects/_icons
 
 #Define Project Name (replace <project-name>)
-PROJECT_NAME	= <project-name>
+PROJECT_NAME	= SAGAPiP
 PROJECT_DIR		= $(PWD)
 
 # Define GNU C-Compiler Type (C = Default, switch comment to change to C++)

@@ -10,6 +10,7 @@ ApolloCrossDev is based on the excellent Amiga-GCC repositories by Stefan -Bebbo
 6. GDB-Server running native on Apollo V4 for remote debugging on Linux in Visual Studio Code
 7. C/C++/ASM Source-Code examples with automated Build from Makefiles and remote Debug enabled
 8. Apollo Sourcecode collection with some basic Apollo C++ and ASM routines, including Debug on Serial Output (TTY)
+9. ApolloExplorer = Great Client/Server File Transfer Utility created by @ronybeck 
 
 ## Requirements:
 1. Ubuntu 24.04.3 LTS amd64 (Intel) is the supported Linux (25.10 will fail) installed in a VM (8Gb+ RAM|50Gb+ HD|4+ Cores) 
@@ -33,7 +34,7 @@ ApolloCrossDev is based on the excellent Amiga-GCC repositories by Stefan -Bebbo
 ## Test Compiler and File-Transfer:
 1. Click "Terminal" in menu and select "Run Build Task" (or press CTRL-Shift-B)
 2. Select "ApolloDemo" from the drop-down List
-3. Watch ApolloCrossDev Compile (Step #1) + Link (Step #2) and Upload (Steap #3) the ApolloDemo Project
+3. Watch ApolloCrossDev Compile (Step #1) + Link (Step #2) and Upload (Step #3) the ApolloDemo Project
 4. DoubleClick RAM Disk on your Apollo V4 and then doubleclick ApolloDemo to experience Apollo V4 power
 
 ## Test Remote GDB Debugger:

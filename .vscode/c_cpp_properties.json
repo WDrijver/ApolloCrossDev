@@ -1,15 +1,15 @@
 {
     "configurations": [
         {
-            "name": "Linux",
+            "name": "ApolloCrossDev",
             "includePath": [
-                "${workspaceFolder}/Compilers/GCC-6.50/m68k-amigaos/**"
+                "${workspaceFolder}/Compilers/GCC-6.50-Latest/m68k-amigaos/**"
             ],
             "defines": [],
-            "compilerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gcc",
+            "compilerPath": "${workspaceFolder}/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc",
             "cStandard": "gnu17",
             "cppStandard": "gnu++17",
-            "intelliSenseMode": "linux-gcc-x64"
+            "intelliSenseMode": "${default}"
         }
     ],
     "version": 4
