@@ -21,7 +21,7 @@
             "compilerPath": "/home/willem/ApolloCrossDev/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc",
             "cStandard": "c11",
             "cppStandard": "c++11",
-            "intelliSenseMode": "linux-gcc-x86"
+            "intelliSenseMode": "${default}"
         }
     ],
     "version": 4

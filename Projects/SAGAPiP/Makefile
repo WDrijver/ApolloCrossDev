@@ -101,16 +101,16 @@ build: $(EXE)
 
 # Link all Objects to one Executable
 $(EXE) : $(O_FILES) 
-	@$(O_LINKER) $(O_FILES) $(C_FLAGS) -o $(EXE) >>$(PROJECT_DIR)/$(PROJECT_NAME)-log.txt 2>>$(PROJECT_DIR)/$(PROJECT_NAME)-log.txt
+	@$(O_LINKER) $(O_FILES) $(C_FLAGS) -o $(EXE) >>/dev/null
 	@echo "\e[37mStep #1 - \e[31mCompiler \e[37mFinished\e[0m"
 
 # Compile all C-Sources to Objects 
 $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
-	@$(C_COMPILER) -c $(C_FLAGS) -o $@ $< >>$(PROJECT_DIR)/$(PROJECT_NAME)-log.txt 2>>$(PROJECT_DIR)/$(PROJECT_NAME)-log.txt
+	@$(C_COMPILER) -c $(C_FLAGS) -o $@ $< >>/dev/null
 
 # Compile all ASM-Sources to Objects
 $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
-	@$(S_COMPILER) $(S_FLAGS) -o $@ $< >>/dev/null 2>>$(PROJECT_DIR)/$(PROJECT_NAME)-log.txt
+	@$(S_COMPILER) $(S_FLAGS) -o $@ $< >>/dev/null
 
 upload_all:
 	@echo "\e[37mStep #3 - \e[31mApollo\e[30mExplorer \e[37mUpload\e[30m"
