@@ -141,6 +141,7 @@ make >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
 
 # PART 10: Cleanup
 echo -e "\e[1m\e[37m10. Cleanup\e[0m\e[36m"
+rm -rf $SOURCES
 cd $PREFIX
 rm -rf info
 rm -rf man
