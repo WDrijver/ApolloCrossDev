@@ -5,7 +5,7 @@
 # Define Shell Environment
 PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
-APOLLO_V4_HOST = "${AMIGAHOST}:Ram Disk/"
+APOLLO_V4_HOST = "${AMIGAHOST}:Personal/"
 
 # Define ApolloCrossDev Compiler
 PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Latest
@@ -45,10 +45,10 @@ C_INCL_NDK  = $(PREFIX)/$(TARGET)/ndk32-include/Include_H
 C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK)
 
 # Define C Options
-C_OPTIONS 	= -O2 -m68080 -m68881 -ffast-math -fomit-frame-pointer -DREGPARM=4
+C_OPTIONS 	= -O2 -m68080 -m68881 -ffast-math -fomit-frame-pointer -DREGPARM
 # -O = basic optimization | -O2 = advanced optimization (default and advised) | -O3 = agressive optimization | -Os = small size | =Ofast = speed optimization (same as -O2)
 # -m68080 = target for Apollo V4 (default and advised) | -m68881 = enable FPU (default and advised) | -ffast-math = faster but less accurate math = -fomit-frame-pointer = free up register
-C_DEFINES 	= 
+C_DEFINES 	= -DAPOLLO_DEBUG
 C_DEBUG		= -g
 C_FLAGS = $(C_LIB) $(C_OPTIONS) $(C_DEBUG) $(C_DEFINES) $(C_INCL_ALL) $(C_LIBS_ALL)
 
@@ -115,8 +115,9 @@ $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
 upload_all:
 	@echo "\e[37mStep #3 - \e[31mApollo\e[30mExplorer \e[37mUpload\e[30m"
 	@$(ACP) $(EXE) $(APOLLO_V4_HOST)
-	@cp $(ICONS)/ApolloIcon.info $(PROJECT_DIR)/$(PROJECT_NAME).info
-	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME).info $(APOLLO_V4_HOST)
+#	@cp $(ICONS)/ApolloIcon.info $(PROJECT_DIR)/$(PROJECT_NAME).info
+#	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME).info $(APOLLO_V4_HOST)
+
 
 upload_debug:
 	@echo "\e[37mStep #3 - \e[31mApollo\e[30mExplorer \e[37mUpload\e[30m"

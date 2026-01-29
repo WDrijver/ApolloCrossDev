@@ -1,0 +1,16 @@
+## Instructions
+
+- [ADDIW](ADDIW.md)
+- [ADDQ](ADDQ.md)
+- [BANK](BANK.md)
+- [MOVE](MOVE.md)
+- [MOVE16](MOVE16.md)
+- [MOVE2](MOVE2.md)
+- [MOVEA](MOVEA.md)
+- [MOVEC](MOVEC.md)
+- [MOVEX](MOVEX.md)
+- [MOVE_sr](MOVE_sr.md)
+- [PDF__AC68080PRM__instructions___extra_integer_notes](PDF__AC68080PRM__instructions___extra_integer_notes.md)
+- [PERM](PERM.md)
+- [SUBQ](SUBQ.md)
+- [TOUCH](TOUCH.md)

@@ -3,156 +3,164 @@
 
 #include "ApolloCrossDev_Library.h"
 
-char ApolloDebugText[120];
+extern char ApolloDebugMessage[200];
 
-extern ULONG ApolloMemoryFree;
+// ApolloSound Functions ######################################
 
-void ApolloLoad(const char *filename, uint8_t **buffer, int*position, uint32_t *lenght, uint16_t offset)
+uint8_t ApolloLoadSound( struct ApolloSound *sound)
 {
-	static uint8_t *buffer_aligned = 0;						// 64-bit aligned input buffer	
+	uint8_t *buffer_aligned = 0;	// 32-Byte aligned input buffer	
+	unsigned long file_size = 0;    // length of file
+	unsigned long file_read = 0;   	// bytes read from file
+	FILE *file_handle = 0;          // stream of file 
+
+	uint16_t samplerate_exponent = 0;
+	uint16_t samplerate_fraction = 0;
 	
-	static unsigned long file_size = 0;    					// length of file
-	static unsigned long file_read = 0;   					// bytes read from file
-	static FILE *file_handle = 0;          					// stream of file 
+	uint32_t sample_offset = 0;
+	bool scanning = true;
+	uint32_t offset = 0; 
+	
+	struct AIFFHeader aiffheader;
 
-    #ifdef APOLLO_DEBUG
-	DebugPutStr("ApolloLoad: Opening File = ");
-	DebugPutStr(filename);
-	#endif
+	AD(sprintf(ApolloDebugMessage, "ApolloLoadSound: Opening File = %s", sound->filename);)
+    AD(ApolloDebugPutStr(ApolloDebugMessage);)
 
-    file_handle = fopen(filename, "rb");
+    file_handle = fopen(sound->filename, "rb");
     if (!file_handle)
     {
-		#ifdef APOLLO_DEBUG
-	   	DebugPutStr( "=ERROR\n");
-		#endif
-	    return;
+	   	AD(ApolloDebugPutStr( "= ERROR\n");)
+	    return APOLLO_SOUND_LOADERROR;
     } else {
-		#ifdef APOLLO_DEBUG
-		DebugPutStr( "=SUCCESS\n");
-		#endif
+		AD(ApolloDebugPutStr( "= SUCCESS\n");)
     }
 
-    fseek(file_handle, 0, SEEK_END);						// goto end of file
-    file_size=ftell(file_handle);							// retrieve filesize
+    fseek(file_handle, 0, SEEK_END);													// Goto end of file
+    file_size = ftell(file_handle);														// Retrieve filesize
 
-	fseek(file_handle, offset, SEEK_SET);
-	file_size-=offset;
+	switch(sound->format)
+	{
+		case APOLLO_AIFF_FORMAT:							
+			fseek(file_handle, 0, SEEK_SET);				
+			fread(&aiffheader, sizeof(struct AIFFHeader), 1, file_handle); 				// Read first Chunk Header
+			offset += 12;																// Increase offset with 8 = ID [LONG] + Chunk Size [LONG] + FORM Type [LONG]											
+			ApolloDebugPutHex("ApolloLoadSound: AIFF Header ID", aiffheader.ckID);
+			if( aiffheader.ckID != 0x464F524D) return APOLLO_SOUND_NOHEADER;			// 'FORM'
+			while(scanning)																
+			{
+				fseek(file_handle, offset, SEEK_SET);
+				fread(&aiffheader, sizeof(struct AIFFHeader), 1, file_handle);			// ID [LONG] + Chunk Size [LONG]
+				offset +=8 ;															// Increase offset with 8 = ID [LONG] + Chunk Size [LONG] 
+				ApolloDebugPutHex("ApolloLoadSound: AIFF Header ID", aiffheader.ckID);
+				switch(aiffheader.ckID)
+				{
+					case 0x434F4D4D: 													// 'COMM'
+						offset += 8;													// Increase offset with 8 = NumChannels [WORD] + NumSampleFrames [LONG] + SampleSize [WORD]
+						fseek(file_handle, offset, SEEK_SET); 
+						fread(&samplerate_exponent, 2, 1, file_handle);					// Read SampleRate Exponent
+						samplerate_exponent=samplerate_exponent - 16383;				// Clear Exponent Bias (-16383)
+						fread(&samplerate_fraction, 2, 1, file_handle);					// Read SampleRate Fraction (first 16-Bits only)
+						samplerate_fraction = samplerate_fraction>>(15-samplerate_exponent);	// Convert binary fraction to decimal fraction
+						sound->period = (APOLLO_PAL_CLOCK/samplerate_fraction);			// Calculate Period from SampleRate
+						offset += 10;													// Increase offset with 10 BYTE (80-bits) SampleRate Bits	
+						break;
 
-	#ifdef APOLLO_DEBUG
-    sprintf(ApolloDebugText,"ApolloLoad: Audio Data Size = %d BYTES\n", file_size);
-    DebugPutStr(ApolloDebugText);
-	#endif
+					case 0x53534E44: 													// 'SSND'
+						fread(&sample_offset, sizeof(uint32_t), 1, file_handle); 		//
+						fseek(file_handle, aiffheader.ckSize - 8 + sample_offset, SEEK_SET);
+						offset +=4;
+						sound->size = aiffheader.ckSize - 8 - sample_offset;
+						offset += 4 + sample_offset;						
+						scanning = false;
+						break;
 
-	*buffer = (uint8_t*)AllocVec(file_size+15, MEMF_ANY);
-    
-    if (!*buffer)
+					default:
+						offset += aiffheader.ckSize;									// Skip chunk
+						if(offset >= file_size) return APOLLO_SOUND_ENDOFFILE;			// Reached end of file without finding SSND chunk
+						break;
+				}
+			}
+			break;
+
+		default:
+			sound->size = file_size - offset;
+			break;
+	}
+	
+	fseek(file_handle, offset, SEEK_SET);						// goto offset in file	
+
+	sound->buffer = (uint8_t*)AllocVec(file_size+31, MEMF_ANY);	// allocate buffer memory with extra 31 bytes for alignment 
+    if (!sound->buffer)
     {
-        #ifdef APOLLO_DEBUG
-    	DebugPutStr( "Apollo_DEBUGLoad: buffer memory ERROR\n");
-		#endif
-		return;
+    	AD(ApolloDebugPutStr( "ApolloLoadSound: Buffer memory allocation ERROR\n");)
+		return APOLLO_SOUND_MEMERROR;
     } else {
-		#ifdef APOLLO_DEBUG
-		DebugPutStr( "ApolloLoad: buffer memory allocated\n");
-		#endif
+		AD(ApolloDebugPutStr( "ApolloLoadSound: Buffer memory allocated\n");)
     }
 
-	memset(*buffer, 0, file_size+15);
+	buffer_aligned = (uint8_t*)(((uint32_t)(sound->buffer+31) & ~31));	// align buffer to 32-byte boundary
 
-	buffer_aligned = (uint8_t*)(((uint32_t)(*buffer+15) & 0xFFFFFFF0));
+	AD(ApolloDebugPutStr("ApolloLoadSound: Reading file -> ");)
 
-	#ifdef APOLLO_DEBUG
-	DebugPutStr("ApolloLoad: Reading file -> ");
-	#endif
-
-	file_read = fread(buffer_aligned, 1, file_size, file_handle);
-    if(file_read != file_size)
+	file_read = fread(buffer_aligned, 1, sound->size, file_handle);	// Read file into aligned buffer	
+    if(file_read != sound->size)
     {
-		#ifdef APOLLO_DEBUG
-	   	DebugPutStr( "ERROR: cannot load file\n");
-		#endif	
-	    return;
+	   	AD(ApolloDebugPutStr( "ERROR: Cannot load file\n");)
+		FreeVec(sound->buffer);					
+	    return APOLLO_SOUND_LOADERROR;
     } else {
-		#ifdef APOLLO_DEBUG
-	   	DebugPutStr( "SUCCESS: file loaded\n");
-		#endif
+	   	AD(ApolloDebugPutStr( "SUCCESS: File loaded\n");)
     }
 
-	#ifdef APOLLO_DEBUG
-    DebugPutStr("ApolloLoad: Closing file -> ");
-	#endif
+    AD(ApolloDebugPutStr("ApolloLoadSound: Closing file -> ");)
 
     if (fclose(file_handle) == EOF)
     {
-		#ifdef APOLLO_DEBUG
-	   	DebugPutStr( "ERROR: cannot close file\n");
-		#endif
+	   	AD(ApolloDebugPutStr( "ERROR: Cannot close file\n");)
+		FreeVec(sound->buffer);
+		return APOLLO_SOUND_CLOSEERR;					
     } else {
-		#ifdef APOLLO_DEBUG
-	   	DebugPutStr( "SUCCESS: file closed\n");
-		#endif
+	   	AD(ApolloDebugPutStr( "SUCCESS: File closed\n");)
     }
 
-	*lenght = file_size;
-	*position = buffer_aligned-*buffer;
+	sound->position = buffer_aligned-sound->buffer;				// Report back position of aligned buffer within allocated buffer
 
-	#ifdef APOLLO_DEBUG
-	sprintf(ApolloDebugText, "ApolloLoad: buffer = 0x%x | aligned buffer = 0x%x | position = %d | filesize =%d |\n", *buffer, buffer_aligned, *position, *lenght);
-	DebugPutStr(ApolloDebugText);
-	#endif
+	AD(sprintf(ApolloDebugMessage, "ApolloLoadSound: Sound File Loaded: %s | Filesize: %d | Format: %d | Length = %d BYTES | SampleRate = %d | Period = %d | Position = %d | Offset = %d\n",
+		 sound->filename, file_size, sound->format, sound->size, samplerate_fraction, sound->period, sound->position, offset);)
+	AD(ApolloDebugPutStr(ApolloDebugMessage);)
+
+	return APOLLO_SOUND_OK;
 }
 
-bool ApolloPlay(int channel, int volume_left, int volume_right, bool loop, bool fadein, uint8_t *buffer, uint32_t lenght, uint16_t period, int *channel_chosen)
+uint8_t ApolloPlaySound( struct ApolloSound *sound)
 {
 	bool channelfree;
-	// Choose Channel
-	if(channel)
-	{
-		// Check if channel is free
-		if ( ( (channel < 4) && (*((volatile uint16_t*)0xDFF002) & (1<<channel)) ) || ( (channel >=4) && (*((volatile uint16_t*)0xDFF202) & (1<<channel)) ) )
-		{
-			#ifdef APOLLO_DEBUG
-			DebugPutStr("ApolloPlay: ERROR = Requested Channel is BUSY\n");
-			#endif
-			return false;
-		}
-	} else {
-		for (channel=0; channel<16; channel++)
-		{
-			channelfree = ( ( (channel < 4) && ( (*((volatile uint16_t*)0xDFF002) & (1<<channel)) == 0) ) || ( (channel >=4) && (*((volatile uint16_t*)0xDFF202) & (1<<channel)) == 0 ) );
-			#ifdef APOLLO_DEBUG
-			sprintf(ApolloDebugText, "ApolloPlay: channel = %d | DMA Channel Free = %s\n", channel, channelfree? "YES":"NO");
-			DebugPutStr(ApolloDebugText);
-			#endif
-			if (channelfree)  break;
-		}
-		if(channel==16)
-		{
-			#ifdef APOLLO_DEBUG
-			DebugPutStr("ApolloPlay: ERROR = NO Free Channel Found\n");
-			#endif
-			return false;
-		}
-	}
-
-	#ifdef APOLLO_DEBUG
-	sprintf(ApolloDebugText, "ApolloPlay: Buffer = 0x%x | Channel = %d | Lenght = %d | Vol-L = %d | Vol-R = %d | Loop = %d | Fadein = %d | Period = %d\n", buffer, channel, lenght, volume_left, volume_right, loop, fadein, period);
-	DebugPutStr(ApolloDebugText);
-	#endif
-
-	*((volatile uint32_t*)(0xDFF400 + (channel * 0x10))) = (uint32_t)buffer;        	   	// Set Channel Pointer
-	*((volatile uint32_t*)(0xDFF404 + (channel * 0x10))) = (uint32_t)((lenght/8)-32);	// Set Channel Music Lenght (in pairs of stereo sample = 2 * 2 * 16-bit = 64-bit chunksize = filesize in bytes / 8)
+	uint8_t channel;
 	
-	ApolloVolume(channel, volume_left, volume_right);
+	for (channel=0; channel<16; channel++)
+	{
+		channelfree = ( ( (channel < 4) && ( (*((volatile uint16_t*)0xDFF002) & (1<<channel)) == 0) ) || ( (channel >=4) && (*((volatile uint16_t*)0xDFF202) & (1<<channel)) == 0 ) );
+		AD(sprintf(ApolloDebugMessage, "ApolloPlay: Channel = %d | DMA Channel Free = %s\n", channel, channelfree? "YES":"NO");)
+		AD(ApolloDebugPutStr(ApolloDebugMessage);)
+		if (channelfree)  break;
+	}
+	if(channel==16) return APOLLO_SOUND_NOCHANNEL;
 
-	if (loop)
+	AD(sprintf(ApolloDebugMessage, "ApolloPlay: Channel = %d | length = %d | Vol-L = %d | Vol-R = %d | Loop = %d | Fadein = %d | Period = %d\n",
+		 channel, sound->size, sound->volume_left, sound->volume_right, sound->loop, sound->fadein, sound->period);)
+	AD(ApolloDebugPutStr(ApolloDebugMessage);)
+
+	*((volatile uint32_t*)(0xDFF400 + (channel * 0x10))) = (uint32_t)(sound->buffer+sound->position);  	// Set Channel Pointer
+	*((volatile uint32_t*)(0xDFF404 + (channel * 0x10))) = (uint32_t)(sound->size/8);					// Set Channel Music length (in pairs of stereo sample = 2 * 2 * 16-bit = 64-bit chunksize = filesize in bytes / 8)
+	*((volatile uint16_t*)(0xDFF408 + (sound->channel * 0x10))) = 0;                					// Set Channel Volume to Zero 
+
+	if (sound->loop)
 	{
 		*((volatile uint16_t*)(0xDFF40A + (channel * 0x10))) = (uint16_t)0x0005;            // %0101 = $05 - Sample 16bit (bit0 = 1) / OneShot Disabled (bit1 = 0) / Stereo Enabled (bit2 = 1)
 	} else {
 		*((volatile uint16_t*)(0xDFF40A + (channel * 0x10))) = (uint16_t)0x0007;            // %0111 = $07 - Sample 16bit (bit0 = 1) / OneShot Enabled (bit1 = 1) / Stereo Enabled (bit2 = 1)
 	}
-	*((volatile uint16_t*)(0xDFF40C + (channel * 0x10))) = (uint16_t)period;					// PERIOD=44.1 Khz
+	*((volatile uint16_t*)(0xDFF40C + (channel * 0x10))) = (uint16_t)sound->period;			// PERIOD= 3640000 * (1/44100 Hz)
 	if (channel < 4)
 	{ 
 		*((volatile uint16_t*)0xDFF096) = (uint16_t)(0x8000) + (1<<channel);                // DMACON = enable DMA and enable DMA for specific channel AUD0-3 (start current stream)    
@@ -160,68 +168,380 @@ bool ApolloPlay(int channel, int volume_left, int volume_right, bool loop, bool 
 		*((volatile uint16_t*)0xDFF296) = (uint16_t)(0x8000) + (1<<(channel-4));            // DMACON = enable DMA and enable DMA for specific channel AUD4-15 (start current stream)       
 	}
 
-	if(fadein)
+	if(sound->fadein)
 	{
-		ApolloFadeIn(channel, 0x00, (volume_left+volume_right)/2);
-	} 
+		ApolloFadeInSound(sound);
+	} else {
+		ApolloVolumeSound(sound);												
+	}
+	return APOLLO_SOUND_OK;
 }
 
-void ApolloFadeIn(int channel, int volume_start, int volume_end)
+void ApolloStopSound(struct ApolloSound *sound)
 {
-	for (;volume_start < volume_end;volume_start++)
+	AD(ApolloDebugPutDec("ApolloStop: Stopping audio on channel", sound->channel);)
+
+	if (sound->channel < 4)
+	{ 
+		*((volatile uint16_t*)0xDFF096) = (uint16_t)(0x0000) + (1<<sound->channel);                // DMACON = clear AUD0-3 (stop current stream)    
+	} else {
+		*((volatile uint16_t*)0xDFF296) = (uint16_t)(0x0000) + (1<<(sound->channel-4));            // DMACON2 = clear AUD4-15 (stop current stream)      
+	}
+}
+
+void ApolloStartSound(struct ApolloSound *sound)
+{
+	AD(ApolloDebugPutDec("ApolloStop: Starting audio on channel", sound->channel);)	
+
+	if (sound->channel < 4)
+	{ 
+		*((volatile uint16_t*)0xDFF096) = (uint16_t)(0x8000) + (1<<sound->channel);                // DMACON = enable AUD0-3 (start current stream)    
+	} else {
+		*((volatile uint16_t*)0xDFF296) = (uint16_t)(0x8000) + (1<<(sound->	channel-4));            // DMACON2 = enable AUD4-15 (start current stream)      
+	}
+}
+
+void ApolloVolumeSound(struct ApolloSound *sound)
+{
+	int volume = (sound->volume_left << 8) + (sound->volume_right);
+
+	*((volatile uint16_t*)(0xDFF408 + (sound->channel * 0x10))) = (uint16_t)volume;                // Set Channel Volume (0-FF / 0-FF) 
+}
+
+void ApolloFadeInSound(struct ApolloSound *sound)
+{
+	uint16_t target_volume = (sound->volume_left + sound->volume_right)/2;
+
+	for (uint16_t volume = 0; volume < target_volume; volume++)
 	{
-		ApolloVolume(channel, volume_start, volume_start);
+		sound->volume_left = volume;
+		sound->volume_right = volume;
+		ApolloVolumeSound(sound);
 		ApolloWaitVBL();
 	}
 }
 
-void ApolloFadeOut(int channel, int volume_start, int volume_end)
+void ApolloFadeOutSound(struct ApolloSound *sound)
 {
-	for (;volume_start > volume_end;volume_start--)
+	for (uint16_t volume = (sound->volume_left + sound->volume_right)/2; volume > 0; volume--)
 	{
-		ApolloVolume(channel, volume_start, volume_start);
+		sound->volume_left = volume;
+		sound->volume_right = volume;
+		ApolloVolumeSound(sound);
 		ApolloWaitVBL();
 	}
+	ApolloStopSound(sound);
 }
 
-void ApolloStop(int channel)
-{
-	#ifdef APOLLO_DEBUG
-	DebugPutDec("ApolloStop: Stopping audio on channel", channel);
-	#endif
 
-	if (channel < 4)
-	{ 
-		*((volatile uint16_t*)0xDFF096) = (uint16_t)(0x0000) + (1<<channel);                // DMACON = clear AUD0-3 (stop current stream)    
-	} else {
-		*((volatile uint16_t*)0xDFF296) = (uint16_t)(0x0000) + (1<<(channel-4));            // DMACON2 = clear AUD4-15 (stop current stream)      
+// ApolloPicture Functions ######################################
+
+uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
+{
+	static uint8_t *buffer_aligned = 0;						// 32-Byte aligned input buffer	
+	static unsigned long file_size = 0;    					// length of file
+	static unsigned long file_read = 0;   					// bytes read from file
+	static FILE *file_handle = 0;          					// stream of file 
+	uint32_t offset = 0, endclipping = 0;
+
+	uint32_t color;
+
+	struct BMPHeader bmpheader;
+	struct DDSHeader ddsheader;
+
+	AD(sprintf(ApolloDebugMessage, "ApolloLoad: Opening File = %s", picture->filename);)
+    AD(ApolloDebugPutStr(ApolloDebugMessage);)
+
+    file_handle = fopen(picture->filename, "rb");
+    if (!file_handle)
+    {
+	   	AD(ApolloDebugPutStr( "= ERROR\n");)
+	    return APOLLO_PICTURE_LOADERR;
+    } else {
+		AD(ApolloDebugPutStr( "= SUCCESS\n");)
+    }
+
+    fseek(file_handle, 0, SEEK_END);						// goto end of file
+    file_size = ftell(file_handle);							// retrieve filesize
+
+	switch(picture->format)
+	{
+		case APOLLO_DDS_FORMAT:
+			fseek(file_handle, 0, SEEK_SET);
+			fread(&ddsheader, sizeof(struct DDSHeader), 1, file_handle);
+			ApolloDebugPutHex("ApolloLoad: DDS Header", ddsheader.dwMagic);
+			if( ddsheader.dwMagic != 0x44445320) return APOLLO_PICTURE_NOHEADER;
+
+			picture->width 		= ApolloSwapLong(ddsheader.dwWidth);
+			picture->height 	= ApolloSwapLong(ddsheader.dwHeight);
+			picture->depth 		= (ApolloSwapLong(ddsheader.dwPitchOrLinearSize)  / picture->width)*8;
+
+			ApolloDebugPutDec("ApolloLoad: DDS Height", picture->height);
+			ApolloDebugPutDec("ApolloLoad: DDS Width", picture->width);
+			ApolloDebugPutDec("ApolloLoad: DDS Depth", picture->depth);
+
+			sprintf(ApolloDebugMessage, "ApolloLoad: DDS Width=%d | Height=%d | Depth=%d\n", picture->width, picture->height, picture->depth);
+			ApolloDebugPutStr(ApolloDebugMessage);
+			offset = sizeof(struct DDSHeader);
+			picture->size = file_size-offset;
+			break;
+		case APOLLO_BMP_FORMAT:
+			fseek(file_handle, 0, SEEK_SET);
+			fread(&bmpheader, sizeof(struct BMPHeader), 1, file_handle);
+
+			if( bmpheader.type != 0x424D) return APOLLO_PICTURE_NOHEADER;						// Check for 'BM' (0x424D) Marker
+			if( (ApolloSwapWord(bmpheader.planes)!=1) ) return APOLLO_PICTURE_PLANEERR;		   	// Check for 1 Color Plane
+			if( (ApolloSwapLong(bmpheader.compression)!=0) ) return APOLLO_PICTURE_COMPRERR;	// Only Uncompressed BMP Supported
+
+			picture->size   	= ApolloSwapLong(bmpheader.sizeimage);
+			picture->width  	= ApolloSwapLong(bmpheader.width);
+			picture->height 	= ApolloSwapLong(bmpheader.height);
+			picture->depth  	= ApolloSwapWord(bmpheader.bpp);
+			picture->palette	= ApolloSwapLong(bmpheader.palette);	
+			offset 				= ApolloSwapLong(bmpheader.offset);
+			
+			if(picture->size == 0) picture->size = file_size - offset;										// If Image Size is 0, calculate it	
+			if( (picture->depth<=8) && (picture->palette==0) ) picture->palette = 1 << picture->depth;		// If Color Indexes is 0, calculate it
+
+			fseek(file_handle, 54, SEEK_SET);
+			for(uint16_t colorcounter=0; colorcounter<picture->palette; colorcounter++)						// Set Apollo SAGA Chunky Color Registers
+			{
+				fread(&color, 1, 4, file_handle);
+				*(volatile uint32_t*)APOLLO_SAGA_CHUNKY_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
+				*(volatile uint32_t*)APOLLO_SAGA_PIPCHK_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
+
+				*(volatile uint32_t*)APOLLO_SAGA_PIPCHK_COL = 0x00FF00FF;
+			}
+
+			sprintf(ApolloDebugMessage, "ApolloLoad: BMP Width=%d | Height=%d | BPP=%d | ImageSize=%d | Palette=%d\n",
+				 bmpheader.width, bmpheader.height, bmpheader.bpp, bmpheader.sizeimage, bmpheader.palette);
+			ApolloDebugPutStr(ApolloDebugMessage);
+			break;
+		default:
+			picture->size = file_size;
+			offset = 0;
+			break;
 	}
-}
+	
+	fseek(file_handle, offset, SEEK_SET);					// goto offset in file	
 
-void ApolloStart(int channel)
-{
-	#ifdef APOLLO_DEBUG
-	DebugPutDec("ApolloStop: Starting audio on channel", channel);
-	#endif
+	picture->buffer = (uint8_t*)AllocVec(picture->size+31, MEMF_ANY);	// allocate buffer memory with extra 31 bytes for alignment 
+    
+    if (!picture->buffer)
+    {
+    	AD(ApolloDebugPutStr( "ApolloLoad: Buffer memory allocation ERROR\n");)
+		return APOLLO_PICTURE_MEMERROR;
+    } else {
+		AD(ApolloDebugPutStr( "ApolloLoad: Buffer memory allocated\n");)
+    }
 
-	if (channel < 4)
-	{ 
-		*((volatile uint16_t*)0xDFF096) = (uint16_t)(0x8000) + (1<<channel);                // DMACON = enable AUD0-3 (start current stream)    
-	} else {
-		*((volatile uint16_t*)0xDFF296) = (uint16_t)(0x8000) + (1<<(channel-4));            // DMACON2 = enable AUD4-15 (start current stream)      
+	buffer_aligned = (uint8_t*)(((uint32_t)(picture->buffer+31) & ~31));	// align buffer to 32-byte boundary
+
+	AD(ApolloDebugPutStr("ApolloLoad: Reading file -> ");)
+
+	file_read = fread(buffer_aligned, 1, picture->size, file_handle);	// Read file into aligned buffer	
+    if(file_read != picture->size)
+    {
+	   	AD(ApolloDebugPutStr( "ERROR: Cannot load file\n");)
+		FreeVec(picture->buffer);					
+	    return APOLLO_PICTURE_OPENERR;
+    } else {
+	   	AD(ApolloDebugPutStr( "SUCCESS: File loaded\n");)
+    }
+
+    AD(ApolloDebugPutStr("ApolloLoad: Closing file -> ");)
+
+    if (fclose(file_handle) == EOF)
+    {
+	   	AD(ApolloDebugPutStr( "ERROR: Cannot close file\n");)
+		FreeVec(picture->buffer);
+		return APOLLO_PICTURE_CLOSEERR;					
+    } else {
+	   	AD(ApolloDebugPutStr( "SUCCESS: File closed\n");)
+    }
+
+	picture->position = buffer_aligned-picture->buffer;			// Report back position of aligned buffer within allocated buffer
+
+	if(picture->endian)
+	{
+		AD( ApolloDebugPutStr( "ApolloLoad: Converting to Big Endian format\n"); )
+
+		uint8_t *buffer_pixel;
+
+		switch(picture->depth)
+		{
+			case 16:
+				for (uint32_t pixel=0; pixel<picture->size;)
+				{
+					buffer_pixel[0] = buffer_aligned[pixel];
+					buffer_aligned[pixel] = buffer_aligned[pixel+1];
+					buffer_aligned[pixel+1] = buffer_pixel[0];
+					pixel+=2;
+				}	
+				break;
+			
+			case 24:
+				for (uint32_t pixel=0; pixel<picture->size;)
+				{
+					buffer_pixel[0] = buffer_aligned[pixel];
+					buffer_aligned[pixel] = buffer_aligned[pixel+2];
+					buffer_aligned[pixel+2] = buffer_pixel[0];
+					pixel+=3;
+				}	
+				break;
+
+			case 32:
+				for (uint32_t pixel=0; pixel<picture->size;)
+				{
+					buffer_pixel[0] = buffer_aligned[pixel];
+					buffer_aligned[pixel] = buffer_aligned[pixel+3];
+					buffer_aligned[pixel+3] = buffer_pixel[0];
+					buffer_pixel = (uint8_t*)&buffer_aligned[pixel+1];
+					buffer_aligned[pixel+1] = buffer_aligned[pixel+2];
+					buffer_aligned[pixel+2] = buffer_pixel[0];
+					pixel+=4;
+				}	
+				break;
+
+			default:
+				break;
+		}
 	}
+
+	if(picture->format == APOLLO_BMP_FORMAT)
+	{
+		if(picture->height>0)
+		{	
+			AD(ApolloDebugPutStr( "Flip BMP Bitmap Vertically\n");)						// BMP bitmap is stored bottom to top, so we flip vertically
+			uint16_t row_bytes = (picture->width * (picture->depth / 8) + 3) & ~3; 		// Each row is padded to a multiple of 4 bytes
+			uint8_t *temp_row = (uint8_t*)AllocVec(row_bytes, MEMF_ANY);
+			if(temp_row)
+			{
+				for(uint32_t y = 0; y < picture->height / 2; y++)
+				{
+					uint8_t *row_top = buffer_aligned + y * row_bytes;
+					uint8_t *row_bottom = buffer_aligned + (picture->height - 1 - y) * row_bytes;
+					memcpy(temp_row, row_top, row_bytes);								// Swap top and bottom rows
+					memcpy(row_top, row_bottom, row_bytes);
+					memcpy(row_bottom, temp_row, row_bytes);
+				}
+				FreeVec(temp_row);
+			} else {
+				AD(ApolloDebugPutStr( " ERROR: Cannot allocate memory for row flipping\n");)
+				FreeVec(picture->buffer);
+				return APOLLO_PICTURE_MEMERROR;
+			}
+		} else {
+			bmpheader.height = -bmpheader.height;										// Make height positive for further processing						
+		}
+	}
+
+	sprintf(ApolloDebugMessage, "ApolloLoad: Picture File Loaded: %s | Filesize = %d | Format: %d | Size = %d BYTES | Width = %d | Height = %d | Depth = %d | Palette = %d | Position = %d | Offset = %d\n",
+		 picture->filename, file_size, picture->format, picture->size, picture->width, picture->height, picture->depth, picture->palette, picture->position, offset);
+	ApolloDebugPutStr(ApolloDebugMessage);
+
+	return APOLLO_PICTURE_OK;
 }
 
-void ApolloVolume(int channel, int volume_left, int volume_right)
+uint8_t ApolloShowPicture(struct ApolloPicture *picture)
 {
-	int volume = (volume_left << 8) + (volume_right);
+	uint16_t gfx_mode = 0;
+	
+	switch(picture->depth)
+	{
+		case 8 : gfx_mode |= APOLLO_SAGA_8_INDEX; break;
+		case 15: gfx_mode |= APOLLO_SAGA_15_1R5G5B5; break;
+		case 16: gfx_mode |= APOLLO_SAGA_16_R5G6B5;	break;
+		case 24: gfx_mode |= APOLLO_SAGA_24_R8G8B8;	break;
+		case 32: gfx_mode |= APOLLO_SAGA_32_A8R8G8B8; break;
+		default: return APOLLO_PICTURE_D_ERROR;
+	}
 
-	#ifdef APOLLO_DEBUG
-	DebugPutHex("ApolloPlay: Volume", volume);
-	#endif
+	switch(picture->width)
+	{
+		case 304 : gfx_mode |= APOLLO_SAGA_304_224; break;
+		case 320 :
+			switch(picture->height)
+			{
+				case 200: gfx_mode |= APOLLO_SAGA_320_200; break;
+				case 240: gfx_mode |= APOLLO_SAGA_320_240; break;
+				case 256: gfx_mode |= APOLLO_SAGA_320_256; break;
+				default: return APOLLO_PICTURE_H_ERROR;
+			}
+		case 480: gfx_mode |= APOLLO_SAGA_480_270; break;
+		case 640:
+			switch(picture->height)
+			{
+				case 200: gfx_mode |= APOLLO_SAGA_640_200; break;
+				case 360: gfx_mode |= APOLLO_SAGA_640_360; break;
+				case 400: gfx_mode |= APOLLO_SAGA_640_400; break;
+				case 480: gfx_mode |= APOLLO_SAGA_640_480; break;
+				case 512: gfx_mode |= APOLLO_SAGA_640_512; break;
+				default: return APOLLO_PICTURE_H_ERROR;
+			}
+			break;
+		case 720:
+			switch(picture->height)
+			{
+				case 405: gfx_mode |= APOLLO_SAGA_720_405; break;
+				case 576: gfx_mode |= APOLLO_SAGA_720_576; break;
+				default: return APOLLO_PICTURE_H_ERROR;
+			}
+			break;
+		case 800: gfx_mode |= APOLLO_SAGA_800_600; break;
+		case 848: gfx_mode |= APOLLO_SAGA_848_480; break;
+		case 960: gfx_mode |= APOLLO_SAGA_960_540; break;
+		case 1024: gfx_mode |= APOLLO_SAGA_1024_768; break;
+		case 1280:
+			switch(picture->height)
+			{
+				case 720: gfx_mode |= APOLLO_SAGA_1280_720; break;
+				case 800: gfx_mode |= APOLLO_SAGA_1280_800; break;
+				case 1024: gfx_mode |= APOLLO_SAGA_1280_1024; break;
+				default: return APOLLO_PICTURE_H_ERROR;
+			}
+			break;
 
-	*((volatile uint16_t*)(0xDFF408 + (channel * 0x10))) = (uint16_t)volume;                // Set Channel Volume (0-FF / 0-FF) 
+		case 1440: gfx_mode |= APOLLO_SAGA_1440_900; break;
+		case 1920: gfx_mode |= APOLLO_SAGA_1920_1080; break;
+		default: return APOLLO_PICTURE_W_ERROR;
+	}
+
+	AD(sprintf(ApolloDebugMessage, "ApolloShow: Gfxmode = %x | Modulo = % d | Position = %x |\n", gfx_mode, picture->modulo, (uint32_t)(picture->position));)
+	AD(ApolloDebugPutStr(ApolloDebugMessage);)
+
+	*((volatile uint16_t*)0xDFF1F4) = (uint16_t)(gfx_mode);
+	*((volatile uint16_t*)0xDFF1E6) = (int16_t)(picture->modulo); 
+	*((volatile uint32_t*)0xDFF1EC) = (uint32_t)(picture->buffer + picture->position);
 }
+
+void ApolloShowPattern(uint8_t *buffer, uint16_t width, uint16_t height, uint8_t depth)
+{
+    uint8_t d=depth/8;
+	for(uint16_t h=0; h<height; h++)
+    {
+        for(uint16_t w=0; w<width; w++)
+        {
+            switch(d)
+			{
+				case 1:
+					buffer[(h*width*d)+(w*d)] = w%0XFF;
+					break;
+				case 2:
+					buffer[(h*width*d)+(w*d)] = w%0XFFFF;
+					break;
+				case 3:
+					buffer[(h*width*d)+(w*d)] = w%0XFFFFFF;
+					break;
+				case 4:
+					buffer[(h*width*d)+(w*d)] = w%0XFFFFFFFF;
+					break;
+			}
+        }
+    }
+}
+
+// Apollo CPU Functions ######################################
 
 void ApolloWaitVBL()
 {
@@ -231,6 +551,10 @@ void ApolloWaitVBL()
 		"			move.w 	#0x0020,0xdff09c	\n"
 	);
 }
+
+
+
+
 
 
 
