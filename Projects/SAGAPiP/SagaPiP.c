@@ -7,9 +7,11 @@
 // 1. PiP Overlay Mode   : PiP window is in Front of the Main Screen and uses a fixed 0xF81F colorkey for transparency
 // 2. PiP ChromaKey Mode : PiP window is Behind the Main Screen and only shows through areas with a user defined chromakey 
 
-#include "ApolloCrossDev_Library.h"
+#include "ApolloCrossDev_Lib.h"
 
 extern char ApolloDebugMessage[200];
+
+uint32_t test;
 
 void main()
 {
@@ -21,8 +23,11 @@ void main()
     uint8_t result;
 
     // Step 1: Load and Play Soundtrack
-    //struct ApolloSound soundtrack = {"DOTC_Peter_Clarke_Intro.aiff", APOLLO_AIFF_FORMAT, true, true, true, 128, 128, NULL, 0, 0, 80, 0};
-    struct ApolloSound soundtrack = {"DOTC-Peter_Clarke_Intro.aiff", APOLLO_AIFF_FORMAT, true, true, true, 128, 128, NULL, 0, 0, 80, 0};
+    struct ApolloSound soundtrack;
+    strcpy(soundtrack.filename, "DOTC-Peter_Clarke_Intro.aiff");
+    soundtrack.format = APOLLO_AIFF_FORMAT;
+    soundtrack.loop = true;
+
     result = ApolloLoadSound(&soundtrack);
     if(result != 0x0)
     {
@@ -82,7 +87,7 @@ void main()
     ApolloDebugPutStr(ApolloDebugMessage);     
     
     // Step 3.3 = Copy PiP WIndow BitMap into PiP Window BitMap
-    ApolloCopy32((uint32_t*)(pip_window_picture.buffer + pip_window_picture.position), (uint32_t*)pip_window_bitmap->Planes[0], pip_window_picture.width*(pip_window_picture.depth/8), pip_window_picture.height, 0, 0);
+    ApolloCopyPicture32((uint8_t*)(pip_window_picture.buffer + pip_window_picture.position), (uint8_t*)pip_window_bitmap->Planes[0], pip_window_picture.width*(pip_window_picture.depth/8), pip_window_picture.height, 0, 0);
 
     // Step 3.4 = Prepare PiP Window Structure and Open Window in WorkBench
     struct NewWindow *pip_window_template = (struct NewWindow*)AllocVec(sizeof(struct NewWindow), MEMF_ANY);
@@ -131,12 +136,8 @@ void main()
         goto exit5;
     }
 
-    *(volatile LONG*)APOLLO_SAGA_POINTER = (uint32_t)(mainscreen->RastPort.BitMap->Planes[0]);
-    *(volatile uint16_t*)APOLLO_SAGA_GFXMODE = 0x0A04; // Set SAGA Gfxmode to 1280x720x24-Bit
-    *(volatile uint16_t*)APOLLO_SAGA_MODULO = 0;
-
     // Step 4.2 = Set Apollo SAGA PiP Registers for PiP Overlay Mode
-    *(volatile LONG*)APOLLO_SAGA_PIP_POINTER = (uint32_t)(pip_overlay_picture.buffer + pip_overlay_picture.position);        // Set PiP Bitmap Pointer
+    *(volatile LONG*)APOLLO_SAGA_PIP_POINTER = (uint32_t)(pip_overlay_picture.buffer + pip_overlay_picture.position);       // Set PiP Bitmap Pointer
     *(volatile int16_t*)APOLLO_SAGA_PIP_X_START = pipwindow->LeftEdge + 16;                                                 // Set PiP X Start Position (+16 pixel correction needed) 
     *(volatile int16_t*)APOLLO_SAGA_PIP_X_STOP = pipwindow->LeftEdge + pip_overlay_picture.width + 16 ;                     // Set PiP X Stop Position (+16 pixel correction needed) 
     *(volatile int16_t*)APOLLO_SAGA_PIP_Y_START = pipwindow->TopEdge - 1;                                                   // Set PiP Y Start Position (-1 pixel correction needed)     
@@ -145,7 +146,8 @@ void main()
     *(volatile int16_t*)APOLLO_SAGA_PIP_MODULO = 0;                                                                         // No Modulo (PiP Bitmap width matches PiP Window width)                                   
     *(volatile int16_t*)APOLLO_SAGA_PIP_CLRKEY = 0x0000;                                                                    // Colorkey = 0 -> ChromKey mode disable -> Overlay Mode Enabled
     *(volatile int16_t*)APOLLO_SAGA_PIP_DMAROWS = pip_overlay_picture.width*(pip_overlay_picture.depth/8);                  // DMA fetch = number of pixels per row = width*bytes per pixel
-
+    *(volatile uint32_t*)APOLLO_SAGA_PIPCHK_COL = 0x00FF00FF;                                                               // Set PiP Overlay Colorkey to R=0xFF G=0x00 B=0xFF
+    
     // Step 4.3 = Process Window Changes (Update PiP position, Enable Transparency on Mouseclick, Close Window)
     struct IntuiMessage *message;    
     bool close = false;
@@ -201,7 +203,7 @@ void main()
     ApolloFill(pipwindow->RPort->BitMap->Planes[0] + ypos + xpos, width, height, depth, dstmod, 0x00000000);
 
     // Step 5.2 Set the correct SAGA PiP register values
-    *(volatile LONG*)APOLLO_SAGA_PIP_POINTER = (uint32_t)(pip_background_bitmap.buffer+ pip_background_bitmap.position);        // Set PiP Bitmap Pointer
+    *(volatile LONG*)APOLLO_SAGA_PIP_POINTER = (uint32_t)(pip_background_bitmap.buffer+ pip_background_bitmap.position);                    // Set PiP Bitmap Pointer
     *(volatile int16_t*)APOLLO_SAGA_PIP_X_START = 16;                                                                                       // Set PiP X Start Position (+16 pixel correction needed)   
     *(volatile int16_t*)APOLLO_SAGA_PIP_X_STOP =  1280+16;                                                                                  // Set PiP X Stop Position (+16 pixel correction needed)
     *(volatile int16_t*)APOLLO_SAGA_PIP_Y_START = 0;                                                                                        // Set PiP Y Start Position                                                

@@ -5,10 +5,10 @@
 # Define Shell Environment
 PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
-APOLLO_V4_HOST = "${AMIGAHOST}:Personal/"
+APOLLO_V4_HOST = "192.168.2.153:Personal/"
 
 # Define ApolloCrossDev Compiler
-PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Latest
+PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Stable
 TARGET 	= m68k-amigaos
 ACP 	= $(PWD)/../../Projects/ApolloExplorer/acp/acp
 GDB		= $(PWD)/../../Projects/bgdbserver/bgdbserver
@@ -32,6 +32,7 @@ C_INCL_CLB	= $(PREFIX)/$(TARGET)/libnix/include
 # C_LIBS_SDL	= -lSDL -lSDL_ttf -lfreetype
 # C_LIBS_MUI	= -lmui
 # C_LIBS_MATH	= -lm
+APOLLOLIB = $(PWD)/../../Projects/ApolloLib
 C_LIBS_ALL 	= $(C_LIBS_SDL) $(C_LIBS_MUI) $(C_LIBS_MATH) 
 
 # Define SDK/NDK Headers, switch comments to enable/disable
@@ -48,7 +49,7 @@ C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK)
 C_OPTIONS 	= -O2 -m68080 -m68881 -ffast-math -fomit-frame-pointer -DREGPARM
 # -O = basic optimization | -O2 = advanced optimization (default and advised) | -O3 = agressive optimization | -Os = small size | =Ofast = speed optimization (same as -O2)
 # -m68080 = target for Apollo V4 (default and advised) | -m68881 = enable FPU (default and advised) | -ffast-math = faster but less accurate math = -fomit-frame-pointer = free up register
-C_DEFINES 	= -DAPOLLO_DEBUG
+C_DEFINES 	= -DAPOLLO_DEBUG -DAPOLLO_DEBUGEXTRA
 C_DEBUG		= -g
 C_FLAGS = $(C_LIB) $(C_OPTIONS) $(C_DEBUG) $(C_DEFINES) $(C_INCL_ALL) $(C_LIBS_ALL)
 
@@ -75,7 +76,7 @@ S_OBJECTDIR = $(PROJECT_DIR)
 # Define Object Filelist
 C_FILES = $(wildcard $(C_SOURCEDIR)/*.c)
 S_FILES = $(wildcard $(S_SOURCEDIR)/*.s)
-O_FILES = $(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES))
+O_FILES = $(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES))	# $(wildcard $(APOLLOLIB)/*.o)
 
 EXE		= $(PROJECT_DIR)/$(PROJECT_NAME)
 
@@ -115,9 +116,8 @@ $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
 upload_all:
 	@echo "\e[37mStep #3 - \e[31mApollo\e[30mExplorer \e[37mUpload\e[30m"
 	@$(ACP) $(EXE) $(APOLLO_V4_HOST)
-#	@cp $(ICONS)/ApolloIcon.info $(PROJECT_DIR)/$(PROJECT_NAME).info
-#	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME).info $(APOLLO_V4_HOST)
-
+	@cp $(ICONS)/ApolloIcon.info $(PROJECT_DIR)/$(PROJECT_NAME).info
+	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME).info $(APOLLO_V4_HOST)
 
 upload_debug:
 	@echo "\e[37mStep #3 - \e[31mApollo\e[30mExplorer \e[37mUpload\e[30m"

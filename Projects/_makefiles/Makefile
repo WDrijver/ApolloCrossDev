@@ -18,23 +18,26 @@ ICONS	= $(PWD)/../../Projects/_icons
 PROJECT_NAME	= <project-name>
 PROJECT_DIR		= $(PWD)
 
-# Define GNU C-Compiler Type (C = Default, switch comment to change to C++)
+# Define GNU C-Compiler Type (C = Default, remove/add # to enable/disable 
 C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc
 # C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-g++
 
-# Define Standard C-Libraries and Headers (libnix = Default, switch comments to change to clib2)
+# Define Standard C-Libraries and Headers (libnix = Default, remove/add # to enable/disable 
 C_LIB		= -noixemul
 # C_LIB 	= -mcrt=clib2
 C_INCL_CLB	= $(PREFIX)/$(TARGET)/libnix/include
 # C_INCL_CLB  = $(PREFIX)/$(TARGET)/clib2/include
 
-# Define Additional Libraried - SDL, MUI and Mathemetics, switch comments to enable/disable 
+# Define ApolloLib
+APOLLOLIB = $(PWD)/../../Projects/ApolloLib
+
+# Define Additional Libraries - SDL, MUI and Mathemetics, remove/add # to enable/disable 
 # C_LIBS_SDL	= -lSDL -lSDL_ttf -lfreetype
 # C_LIBS_MUI	= -lmui
 # C_LIBS_MATH	= -lm
 C_LIBS_ALL 	= $(C_LIBS_SDL) $(C_LIBS_MUI) $(C_LIBS_MATH) 
 
-# Define SDK/NDK Headers, switch comments to enable/disable
+# Define SDK/NDK Headers, remove/add # to enable/disable 
 C_INCL_SYS	= $(PREFIX)/$(TARGET)/sys-include
 # C_INCL_NDK  = $(PREFIX)/$(TARGET)/ndk13-include
 # C_INCL_NDK  = $(PREFIX)/$(TARGET)/ndk39-include
@@ -75,7 +78,7 @@ S_OBJECTDIR = $(PROJECT_DIR)
 # Define Object Filelist
 C_FILES = $(wildcard $(C_SOURCEDIR)/*.c)
 S_FILES = $(wildcard $(S_SOURCEDIR)/*.s)
-O_FILES = $(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES))
+O_FILES = $(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES)) $(wildcard $(APOLLOLIB)/*.o)
 
 EXE		= $(PROJECT_DIR)/$(PROJECT_NAME)
 

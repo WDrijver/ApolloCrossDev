@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <dirent.h>
 #include <string.h>
 #include <stdarg.h>
 #include <math.h>
@@ -13,19 +14,44 @@
 
 // Include Basic Amiga Headers
 #include "exec/types.h"
+#include <exec/ports.h>
+#include <exec/io.h>
+
 #include "clib/exec_protos.h"
 #include "clib/graphics_protos.h"
+#include "clib/lowlevel_protos.h"
+#include "clib/intuition_protos.h"
+#include "clib/keymap_protos.h"
+#include "clib/asl_protos.h"
+#include "clib/dos_protos.h"
+#include "clib/gadtools_protos.h"
+#include "clib/input_protos.h"
+#include "clib/alib_protos.h"
+
+#include <devices/input.h>
+#include <graphics/rastport.h>
+#include <intuition/intuition.h>
+
 #include <proto/intuition.h>
 #include <proto/dos.h>
-#include <intuition/intuition.h>
 #include <proto/gadtools.h>
-#include <graphics/rastport.h>
+#include <proto/input.h>
+#include <proto/exec.h>
+#include <proto/graphics.h>
+#include <proto/keymap.h>
+#include <proto/asl.h>
 
 // Apollo Debug
 #ifdef APOLLO_DEBUG
-#define AD(x) x
+ #define AD(x) x
+ #ifdef APOLLO_DEBUGEXTRA
+  #define ADX(x) x
+ #else
+  #define ADX(x)
+ #endif
 #else
-#define AD(x)
+ #define AD(x)
+ #define ADX(x) 
 #endif
 
 // Apollo Audi (ARNE)
@@ -37,6 +63,7 @@
 #define APOLLO_AIFF_FORMAT      0x1
 #define APOLLO_DDS_FORMAT	    0x2
 #define APOLLO_BMP_FORMAT	    0x3
+#define APOLLO_WAV_FORMAT       0x4
 
 // Apollo Video (ISABELLE)
 #define APOLLO_SAGA_GFXMODE		0xDFF1F4	// Bit[8-15]=SAGA Display Resolution + Bit[0-7]=Color Format 
@@ -131,6 +158,7 @@
 #define APOLLO_SOUND_MEMERROR   0x09
 #define APOLLO_SOUND_OPENERR    0x0A
 #define APOLLO_SOUND_CLOSEERR   0x0B
+#define APOLLO_SOUND_COMPRERR   0x0C
 
 // Apollo Hardware Sprite Pointer
 #define APOLLO_POINTER_SET_X    0xDFF1D0
@@ -141,7 +169,19 @@
 #define APOLLO_MOUSE_GET_X      0xDFF00B
 #define APOLLO_MOUSE_GET_Y      0xDFF00A 
 #define APOLLO_MOUSE_BUTTON1    0xBFE001
-#define APOLLO_MOUSE_BUTTON2    0xDFF016
+#define APOLLO_MOUSE_BUTTON23   0xDFF016
+#define APOLLO_MOUSE_WHEEL      0xDFF212
+
+#define APOLLOMOUSE_DOUBLECLICKCOUNTER	15
+#define APOLLOMOUSE_LEFTCLICK			0x0001
+#define APOLLOMOUSE_RIGHTCLICK			0x0002
+#define APOLLOMOUSE_MIDDLECLICK			0x0004
+#define APOLLOMOUSE_LEFTDOUBLECLICK		0x0008
+#define APOLLOMOUSE_RIGHTDOUBLECLICK	0x0010
+#define APOLLOMOUSE_MIDDLEDOUBLECLICK	0x0020
+#define APOLLOMOUSE_LEFTDOWN			0x0040
+#define APOLLOMOUSE_RIGHTDOWN			0x0080
+#define APOLLOMOUSE_MIDDLEDOWN			0x0100
 
 #define APOLLO_POINTER_COL0     0xDFF3A0        // CLUT[4] SAGA Pointer Color Table
 #define APOLLO_POINTER_COL1     0xDFF3A2
@@ -227,5 +267,6 @@
 #define ADKCON			0xDFF09E
 #define SERDATR			0xDFF018
 #define SERPER			0xDFF032
+
 
 
