@@ -43,7 +43,7 @@ struct ApolloSound
 struct ApolloPicture
 {
     // Input Values
-    char        *filename;
+    char        filename[256];
     uint8_t     format;
     bool        endian;
     // Return Values

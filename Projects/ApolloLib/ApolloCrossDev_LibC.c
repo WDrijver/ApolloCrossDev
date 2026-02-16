@@ -257,10 +257,11 @@ uint8_t ApolloPlaySound( struct ApolloSound *sound)
 	} else {
 		sound->channel = channel;
 	}
- 
+	
 	AD(sprintf(ApolloDebugMessage, "ApolloPlaySound: File=%-25s | Size=%8d | Cache=%12d | Channel=%02d | Vol-L = %3d | Vol-R = %3d | Loop = %d | Fadein = %d | Period = %3d |\n",
-		 sound->filename, sound->size, sound->size, sound->channel, sound->volume_left, sound->volume_right, sound->loop, sound->fadein, sound->period);)
+		sound->filename, sound->size, sound->position, sound->channel, sound->volume_left, sound->volume_right, sound->loop, sound->fadein, sound->period);)
 	AD(ApolloDebugPutStr(ApolloDebugMessage);)
+
 
 	*((volatile uint32_t*)(0xDFF400 + (sound->channel * 0x10))) = (uint32_t)(sound->buffer+sound->position);  	// Set Channel Pointer
 	*((volatile uint32_t*)(0xDFF404 + (sound->channel * 0x10))) = (uint32_t)(sound->size/8);					// Set Channel Music length (in pairs of stereo sample = 2 * 2 * 16-bit = 64-bit chunksize = filesize in bytes / 8)
@@ -369,7 +370,7 @@ uint8_t ApolloAllocPicture( struct ApolloPicture *picture)
 
 	picture->position = buffer_aligned - picture->buffer;				// Report back position of aligned buffer within allocated buffer
 
-	picture->filename = NULL;	// Clear filename to indicate memory-only picture
+	strcpy(picture->filename, "");	// Clear filename to indicate memory-only picture
 	
 	ADX(sprintf(ApolloDebugMessage, "ApolloAllocPicture: Picture Allocated: Width=%d | Height=%d | Depth=%d | Size=%d | Position=%d\n",
 		 picture->width, picture->height, picture->depth, picture->size, picture->position);)
@@ -707,8 +708,7 @@ void ApolloBackupWBScreen(struct ApolloPicture *picture)
 {
 	struct Screen *wb_screen;  	  
 	wb_screen = LockPubScreen(NULL);
-    char picture_title[] = "WorkBench Screen Backup";
-    picture->filename 	= picture_title;
+    strcpy(picture->filename, "WorkBench Screen Backup");
 	picture->buffer 	= (uint8_t*)wb_screen->RastPort.BitMap->Planes[0];
 	picture->width 		= (uint16_t)wb_screen->Width;
 	picture->height 	= (uint16_t)wb_screen->Height;
@@ -909,7 +909,6 @@ void ApolloMouse(ApolloMouseState *MouseState)
 	return;
 }
 
-
 void ApolloKeyboard(ApolloKeyBoardState *KeyboardState)
 {
 	UBYTE* const 	Keyboard_Pointer = (UBYTE*)0xBFEC01; 
@@ -930,7 +929,6 @@ void ApolloKeyboard(ApolloKeyBoardState *KeyboardState)
 		KeyboardState->Current_Key = 127;
 	}
 }
-
 
 UBYTE ApolloKeyboardToUnicode(UBYTE KeyboardAmiga)
 {
