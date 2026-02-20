@@ -43,15 +43,18 @@
 
 // Apollo Debug
 #ifdef APOLLO_DEBUG
+ #define ADXX(x) 
  #define AD(x) x
  #ifdef APOLLO_DEBUGEXTRA
   #define ADX(x) x
  #else
   #define ADX(x)
+  #define ADXX(x)   
  #endif
 #else
  #define AD(x)
  #define ADX(x) 
+ #define ADXX(x)
 #endif
 
 // Apollo Audi (ARNE)

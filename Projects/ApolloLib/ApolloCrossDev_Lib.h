@@ -39,6 +39,7 @@ struct ApolloSound
     bool        fadeout;
     uint16_t    volume_left;
     uint16_t    volume_right;
+    uint16_t    pan;
 };
 struct ApolloPicture
 {

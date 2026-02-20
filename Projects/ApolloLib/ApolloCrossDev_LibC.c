@@ -3,7 +3,7 @@
 
 #include "ApolloCrossDev_Lib.h"
 
-extern char ApolloDebugMessage[200];
+extern char ApolloDebugMessage[256];
 
 uint8_t ApolloLoadFile(struct ApolloFile *file)
 {
@@ -258,10 +258,9 @@ uint8_t ApolloPlaySound( struct ApolloSound *sound)
 		sound->channel = channel;
 	}
 	
-	AD(sprintf(ApolloDebugMessage, "ApolloPlaySound: File=%-25s | Size=%8d | Cache=%12d | Channel=%02d | Vol-L = %3d | Vol-R = %3d | Loop = %d | Fadein = %d | Period = %3d |\n",
+	AD(sprintf(ApolloDebugMessage, "ApolloPlaySound: File=%-25s | Size=%8d | Cache=%12d | Channel=%02d | Vol-L = %3d | Vol-R = %3d | Loop = %d | Fadein = %d | Period = %3d | Pan = %3d\n",
 		sound->filename, sound->size, sound->position, sound->channel, sound->volume_left, sound->volume_right, sound->loop, sound->fadein, sound->period);)
 	AD(ApolloDebugPutStr(ApolloDebugMessage);)
-
 
 	*((volatile uint32_t*)(0xDFF400 + (sound->channel * 0x10))) = (uint32_t)(sound->buffer+sound->position);  	// Set Channel Pointer
 	*((volatile uint32_t*)(0xDFF404 + (sound->channel * 0x10))) = (uint32_t)(sound->size/8);					// Set Channel Music length (in pairs of stereo sample = 2 * 2 * 16-bit = 64-bit chunksize = filesize in bytes / 8)
@@ -589,8 +588,11 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 	}
 
 	ADX(sprintf(ApolloDebugMessage, "ApolloLoad: Picture File Loaded: %s | Filesize = %8d | Format: %d | Size = %8d BYTES | Width = %d | Height = %d | Depth = %d | Palette = %d | Position = %d | Offset = %d\n",
-		 picture->filename, file_size, picture->format, picture->size, picture->width, picture->height, picture->depth, picture->palette, picture->position, offset);)
+		  picture->filename, file_size, picture->format, picture->size, picture->width, picture->height, picture->depth, picture->palette, picture->position, offset);)
 	ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+	
+	
+
 
 	return APOLLO_PICTURE_OK;
 }
