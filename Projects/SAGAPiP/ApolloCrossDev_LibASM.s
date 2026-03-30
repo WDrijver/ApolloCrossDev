@@ -1,14 +1,16 @@
 ***************************************************
 * ApolloCrossDev Assembler Library                *
-* 6-2-2026                                        *
+* 30-3-2026                                       *
 ***************************************************
 
-* 1. ApolloFill		= Fill Destination with value (Generic)
-* 2. ApolloCopyPicture		= Copy Source to Destination (Generic)
-* 3. ApolloCopyPicture32	= Copy Source to Destination (32-Byte Aligned)
+* 1. ApolloFillBitMap		= Fill BitMap with 32-bit values
+* 2. ApolloFillBlock		= Fill Block of Memory with 32-bit values (32-Byte Aligned)
+* 3. ApolloFillColor		= Fill BitMap with Color values
+* 4. ApolloCopyPicture		= Copy Source to Destination (Generic)
+* 5. ApolloCopyPicture32	= Copy Source to Destination (32-Byte Aligned)
 
 ***************************************************
-* ApolloFill                                      *
+* ApolloFillBitMap                                *
 ***************************************************
 * a0 = dst = destination pointer                  *
 * d3 = w = blitbox width in Pixels                *
@@ -18,10 +20,10 @@
 * d7 = value in uint32_t (4 Bytes / 32 Bits)      *
 ***************************************************
 
-	XDEF _ApolloFill
+	XDEF _ApolloFillBitMap
 	CNOP 0,4
 
-_ApolloFill:
+_ApolloFillBitMap:
 	movem.l d7/d6/d5/d4/d3,-(sp)			      		* Save registers to Stack
 	lsr.l #3,d5											* d5 = convert colordepth in Bits to colordepth in Bytes
 	mulu.l d5,d3										* d3 = calculate effective width in Bytes (width * colordepth)
@@ -55,6 +57,80 @@ _ApolloFill:
 	movem.l (sp)+,d3/d4/d5/d6/d7			    		* Restore all registers from Stack
 	rts
     
+
+***************************************************
+* ApolloFillBlock                                 *
+***************************************************
+* a0 = dst = destination pointer                  *
+* d3 = c = byte counter				              *
+* d4 = value in uint32_t (4 Bytes / 32 Bits)      *
+***************************************************
+
+	XDEF _ApolloFillBlock
+	CNOP 0,4
+
+_ApolloFillBlock:
+	movem.l d4/d3,-(sp)			      					* Save registers to Stack
+	lsr.l  #5,d3										* divide width value by 32 to for 32-Byte chunk counter
+	vperm #$45674567,d4,d4,d4							* fill d7 with 2 x uint32_t value
+	bra.s .EndLoop
+
+.Loop32Byte:
+	store d4,(a0)+										* store 8 Byte value into destination
+	store d4,(a0)+										* store 8 Byte value into destination
+	store d4,(a0)+										* store 8 Byte value into destination
+	store d4,(a0)+										* store 8 Byte value into destination
+
+.EndLoop:
+	dbra.l d3,.Loop32Byte                              	* d0 = decrease loop counter and jump to .LoopHeight
+	movem.l (sp)+,d3/d4						    		* Restore all registers from Stack
+	rts
+
+***************************************************
+* ApolloFillColor                                 *
+***************************************************
+* a0 = dst = destination pointer                  *
+* d3 = w = blitbox width in Pixels                *
+* d4 = h = blitbox height in Pixels               *
+* d5 = d = blitbox colordepth in Bits             *
+* d6 = dstmod = destination modulo in Pixels      *
+* d7 = value in uint32_t (4 Bytes / 32 Bits)      *
+***************************************************
+
+	XDEF _ApolloFillColor
+	CNOP 0,4
+
+_ApolloFillColor:
+	movem.l d7/d6/d5/d4/d3/d2,-(sp)			      		* Save registers to Stack
+	lsr.l #3,d5											* d5 = convert colordepth in Bits to colordepth in Bytes
+	mulu.l d5,d6										* d6 = calculate effective destination modulo in Bytes (modulo * colordepth)
+	bra.s .EndLoopHeight
+
+.LoopHeight:
+	move.l d3,d0										* d0 = reset width loop counter each height loop
+	bra.s .GoLoopWidthColor	
+
+.LoopWidthColor:
+	move.l d5,d1
+	move.l d7,d2	
+	bra.s .GoLoopWidthColorByte							* d1 = reset color byte counter each width loop
+
+.LoopWidthColorByte:
+	move.b d2,(a0)+										* store Color Byte value into destination
+	lsr.l #8,d2											* shift d2 right by 8 bits to get next color byte into lowest byte position	
+
+.GoLoopWidthColorByte:
+	dbra.l d1,.LoopWidthColorByte						* d1 = decrease color byte counter and jump to .GoLoopWidthColorByte
+
+.GoLoopWidthColor:
+	dbra.l d0,.LoopWidthColor							* d0 = decrease width loop counter and jump to .LoopWidthColor
+	add.l d6,a0 										* a0 = add source pitch d5 to source pointer (modulo)
+
+.EndLoopHeight:
+	dbra.l d4,.LoopHeight                               * d0 = decrease height loop counter and jump to .LoopHeight
+	movem.l (sp)+,d2/d3/d4/d5/d6/d7			    		* Restore all registers from Stack
+	rts
+
 
 *************************************************************
 * ApolloCopyPicture                                         *

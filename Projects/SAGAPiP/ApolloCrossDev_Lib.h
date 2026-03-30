@@ -238,7 +238,10 @@ uint32_t ApolloSwapLong( _D0(uint32_t SwapLong));
 uint64_t ApolloSwapOcta( _D0(uint64_t SwapOcta));
 
 // Apollo Picture Functions
-void ApolloFill( _A0(uint8_t* dst), _D3(uint16_t w), _D4(uint16_t h), _D5(uint16_t d), _D6(uint32_t dstmod), _D7(uint32_t value) );
+void ApolloFillBitMap( _A0(uint8_t* dst), _D3(uint16_t w), _D4(uint16_t h), _D5(uint16_t d), _D6(uint32_t dstmod), _D7(uint32_t value) );
+void ApolloFillBlock( _A0(uint8_t* dst), _D3(uint32_t c), _D4(uint32_t value));
+void ApolloFillColor( _A0(uint8_t* dst), _D3(uint16_t w), _D4(uint16_t h), _D5(uint16_t d), _D6(uint32_t dstmod), _D7(uint32_t value) );
+
 void ApolloCopyPicture( _A0(uint8_t *s), _A1(uint8_t *d), _D3(uint16_t width), _D4(uint16_t height), _D5(uint16_t spitch), _D6(uint16_t dpitch) );
 void ApolloCopyPicture32(_A0(uint8_t *s), _A1(uint8_t *d), _D3(uint16_t width), _D4(uint16_t height), _D5(uint16_t spitch), _D6(uint16_t dpitch) ); 
 
