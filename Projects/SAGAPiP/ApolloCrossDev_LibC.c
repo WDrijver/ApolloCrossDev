@@ -458,14 +458,27 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 			if(picture->size == 0) picture->size = file_size - offset;										// If Image Size is 0, calculate it	
 			if( (picture->depth<=8) && (picture->palette==0) ) picture->palette = 1 << picture->depth;		// If Color Indexes is 0, calculate it
 
-			fseek(file_handle, 54, SEEK_SET);
-			for(uint16_t colorcounter=0; colorcounter<picture->palette; colorcounter++)						// Set Apollo SAGA Chunky Color Registers
+			if (picture->depth <= 8)
 			{
-				fread(&color, 1, 4, file_handle);
-				*(volatile uint32_t*)APOLLO_SAGA_CHUNKY_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
-				*(volatile uint32_t*)APOLLO_SAGA_PIP1CHK_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
-				*(volatile uint32_t*)APOLLO_SAGA_PIP2CHK_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
-				//*(volatile uint32_t*)APOLLO_SAGA_PIPCHK_COL = 0x00FF00FF;   // Enable only when Color00 = Transparent
+				fseek(file_handle, 54, SEEK_SET);
+				for(uint16_t colorcounter=0; colorcounter<picture->palette; colorcounter++)						// Set Apollo SAGA Chunky Color Registers
+				{
+					fread(&color, 1, 4, file_handle);
+					switch(picture->pip)
+					{
+						case 0:
+							*(volatile uint32_t*)APOLLO_SAGA_CHUNKY_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
+							break;
+						case 1:
+							*(volatile uint32_t*)APOLLO_SAGA_PIP1CHK_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
+							break;
+						case 2:
+							*(volatile uint32_t*)APOLLO_SAGA_PIP2CHK_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
+							break;
+						default:
+							break;
+					}
+				}
 			}
 
 			ADX(sprintf(ApolloDebugMessage, "ApolloLoadPicture: BMP Width=%d | Height=%d | BPP=%d | ImageSize=%d | Palette=%d\n",

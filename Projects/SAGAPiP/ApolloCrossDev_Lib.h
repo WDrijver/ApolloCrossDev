@@ -59,6 +59,7 @@ struct ApolloPicture
     // Display Values
     int16_t     modulo;
     bool        fullscreen;
+    uint16_t    pip;                    // 0 = No PiP | 1 = PiP1 | 2 = PiP2
 };
 struct BMPHeader
 {
