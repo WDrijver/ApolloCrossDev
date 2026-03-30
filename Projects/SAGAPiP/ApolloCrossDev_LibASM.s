@@ -94,7 +94,7 @@ _ApolloFillBlock:
 * d4 = h = blitbox height in Pixels               *
 * d5 = d = blitbox colordepth in Bits             *
 * d6 = dstmod = destination modulo in Pixels      *
-* d7 = value in uint32_t (4 Bytes / 32 Bits)      *
+* d7 = color value (BYTE REVERSED !!!             *
 ***************************************************
 
 	XDEF _ApolloFillColor
