@@ -1,11 +1,13 @@
 // SAGAPiP Example Code for Apollo Picture in Picture Feature
-// 28-1-2025 Willem Drijver
+// 30-3-2026 Willem Drijver
 //
 // This example code demonstrates how to use the Apollo SAGA Picture in Picture (PiP) feature
 //
 // There are two modes:
-// 1. PiP Overlay Mode   : PiP window is in Front of the Main Screen and uses a fixed 0xF81F colorkey for transparency
-// 2. PiP ChromaKey Mode : PiP window is Behind the Main Screen and only shows through areas with a user defined chromakey 
+// 1. PiP Overlay Mode   : PiP bitmap is in Front of the Main Screen and uses a fixed 0xF81F colorkey for transparency
+// 2. PiP ChromaKey Mode : PiP bitmap is Behind the Main Screen and only shows through areas with a user defined chromakey 
+//
+// Starting ApolloCore 11900 there a TWO PiP windows available (see ApolloCrossDev_Defines.h)
 
 #include "ApolloCrossDev_Lib.h"
 
@@ -16,7 +18,7 @@ uint32_t test;
 void main()
 {
     AD(ApolloDebugInit();)
-    AD(ApolloDebugPutStr("SAGAPiP 2.7 Example Program Start\n");)
+    AD(ApolloDebugPutStr("SAGAPiP 3.0 Example Program Start\n");)
    
     struct Screen *mainscreen = LockPubScreen(NULL);
 
@@ -49,7 +51,25 @@ void main()
         goto exit2; 
     }
 
-    // Step 2: Load and Show Background
+    // Step 2: Load PiP Background
+
+    // Step 2.1 Secure WorkBench Screen Pointer
+
+    struct Library *CyberGfxBase = OpenLibrary("cybergraphics.library", 0);
+    if (!CyberGfxBase)
+    {
+        ApolloDebugPutStr("SAGAPiP Example Program: ERROR - Cannot open cybergraphics.library\n");
+        goto exit4;
+    }
+
+    APTR    workbench_screen_pointer;
+    APTR    handle;
+
+    struct Screen *workbench_screen = LockPubScreen("Workbench");
+
+    handle = LockBitMapTags(workbench_screen->RastPort.BitMap, LBMI_BASEADDRESS, (ULONG)&workbench_screen_pointer, TAG_DONE);
+    
+    UnLockBitMap(handle);
 
     struct ApolloPicture pip_background_bitmap = {"RHLOS_1280x720x16.dds", APOLLO_DDS_FORMAT, true, NULL, 0, 0, 0, 0, 0, 0};
     
@@ -60,19 +80,22 @@ void main()
         ApolloDebugPutStr(ApolloDebugMessage);
         goto exit2;
     }
-    
-    /*result = ApolloShowPicture(&pip_background_bitmap);
+
+    result = ApolloShowPicture(&pip_background_bitmap);
     if(result != 0x0)
     {
         sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot show PiP Background Bitmap %s (Error Code: %d)\n", pip_background_bitmap.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
         goto exit3;
     }
+
     ApolloCPUDelay(2000);
-    *(volatile LONG*)APOLLO_SAGA_POINTER = (uint32_t)(mainscreen->RastPort.BitMap->Planes[0]);
+
+    // Step 2.1 = Restore WorkBench Screen
+
+    *(volatile LONG*)APOLLO_SAGA_POINTER = (uint32_t)(workbench_screen_pointer);
     *(volatile uint16_t*)APOLLO_SAGA_GFXMODE = 0x0A04; // Set SAGA Gfxmode to 1280x720x24-Bit
-    *(volatile uint16_t*)APOLLO_SAGA_MODULO = 0;*/
-    
+    *(volatile uint16_t*)APOLLO_SAGA_MODULO = 0;
 
     // Step 3: Load and Show PiP Window
 
@@ -99,32 +122,19 @@ void main()
          pip_window_bitmap->BytesPerRow, pip_window_bitmap->Rows, pip_window_bitmap->Flags, pip_window_bitmap->Depth, pip_window_bitmap->pad );
     ApolloDebugPutStr(ApolloDebugMessage);
 
-    for(int planes=0;planes<9;planes++)
-    {
-        if(pip_window_bitmap->Planes[planes])
-        {
-            sprintf(ApolloDebugMessage,"PiP Window BitMap Plane %d Pointer = %p\n", planes, pip_window_bitmap->Planes[planes]);
-            ApolloDebugPutStr(ApolloDebugMessage);
-        }
-    }
-
+    // NOTE: AllocBitMap returns different results on P96 (AmigaOS) versys CyberGraphx (ApolloOS) graphics drivers.
+    // So we cannot assume any BitMap layout and need to use CyberGraphx functions which are compatible with both drivers.
+    
     // Step 3.3 = Acquire a pointer to PiP Window Bitmap
 
-    struct Library *CyberGfxBase = OpenLibrary("cybergraphics.library", 0);
-    if (!CyberGfxBase)    {
-        ApolloDebugPutStr("SAGAPiP Example Program: ERROR - Cannot open cybergraphics.library\n");
-        goto exit4;
-    }
-
-    APTR    buffer;
-    APTR    handle;
-    ULONG   rowbytes;
-
-    handle = LockBitMapTags(pip_window_bitmap, LBMI_BASEADDRESS, (ULONG)&buffer, LBMI_BYTESPERROW, (ULONG)&rowbytes, TAG_DONE);
+    APTR    pip_window_bitmap_pointer;
+    
+    handle = LockBitMapTags(pip_window_bitmap, LBMI_BASEADDRESS, (ULONG)&pip_window_bitmap_pointer, TAG_DONE);
         
     // Step 3.4 = Copy PiP WIndow BitMap into PiP Window BitMap
 
-    ApolloCopyPicture32((uint8_t*)(pip_window_picture.buffer + pip_window_picture.position), (uint8_t*)buffer, pip_window_picture.width*(pip_window_picture.depth/8), pip_window_picture.height, 0, 0);
+    ApolloCopyPicture32((uint8_t*)(pip_window_picture.buffer + pip_window_picture.position),
+     (uint8_t*)pip_window_bitmap_pointer, pip_window_picture.width*(pip_window_picture.depth/8), pip_window_picture.height, 0, 0);
 
     UnLockBitMap(handle);
 
@@ -216,8 +226,8 @@ void main()
                     switch(message->Code)                   // Mouse button event    
                     {
                         case SELECTDOWN:                    // Fill a Square with Transparent Pixels
-                            //ApolloDebugPutStr("SAGAPiP Example Program: Mouse Button Event - SELECT DOWN\n");
-                            //ApolloFill(pip_overlay_picture.buffer + 160*(pip_overlay_picture.depth/8) + (120*640*(pip_overlay_picture.depth/8)), 320, 240, pip_overlay_picture.depth, 320, 0x00000000); 
+                            ApolloDebugPutStr("SAGAPiP Example Program: Mouse Button Event - SELECT DOWN\n");
+                            ApolloFill(pip_overlay_picture.buffer + 160*(pip_overlay_picture.depth/8) + (120*640*(pip_overlay_picture.depth/8)), 320, 240, pip_overlay_picture.depth, 320, 0x00000000); 
                             break;
                         case MENUDOWN:                         
                             ApolloDebugPutStr("Close Window Event\n");
@@ -244,9 +254,9 @@ void main()
     uint32_t height = pip_window_picture.height - pipwindow->BorderTop - pipwindow->BorderBottom;
     uint32_t dstmod = GetBitMapAttr(pipwindow->RPort->BitMap, BMA_WIDTH) - width;
     
-    handle = LockBitMapTags(pipwindow->RPort->BitMap, LBMI_BASEADDRESS, (ULONG)&buffer, LBMI_BYTESPERROW, (ULONG)&rowbytes, TAG_DONE);
+    handle = LockBitMapTags(pipwindow->RPort->BitMap, LBMI_BASEADDRESS, (ULONG)&pip_window_bitmap_pointer, TAG_DONE);
 
-    ApolloFill((uint8_t*)(buffer + xpos + ypos), width, height, depth, dstmod, 0x00000000);
+    ApolloFill((uint8_t*)(pip_window_bitmap_pointer + xpos + ypos), width, height, depth, dstmod, 0x00000000);
 
     UnLockBitMap(handle);
 
