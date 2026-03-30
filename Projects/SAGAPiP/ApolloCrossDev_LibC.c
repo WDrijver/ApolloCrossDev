@@ -3,7 +3,7 @@
 
 #include "ApolloCrossDev_Lib.h"
 
-extern char ApolloDebugMessage[200];
+extern char ApolloDebugMessage[256];
 
 uint8_t ApolloLoadFile(struct ApolloFile *file)
 {
@@ -241,25 +241,28 @@ uint8_t ApolloLoadSound( struct ApolloSound *sound)
 
 uint8_t ApolloPlaySound( struct ApolloSound *sound)
 {
-	bool channelfree;
-	uint8_t channel;
-	
-	for (channel=0; channel<16; channel++)
+	if(!sound->staticchannel)
 	{
-		channelfree = ( ( (channel < 4) && ( (*((volatile uint16_t*)0xDFF002) & (1<<channel)) == 0) ) || ( (channel >=4) && (*((volatile uint16_t*)0xDFF202) & (1<<(channel-4))) == 0 ) );
-		ADX(sprintf(ApolloDebugMessage, "ApolloPlaySound: Channel = %d | DMA Channel Free = %s\n", channel, channelfree? "YES":"NO");)
-		ADX(ApolloDebugPutStr(ApolloDebugMessage);)
-		if (channelfree)  break;
+		bool channelfree;
+		uint8_t channel;
+		
+		for (channel=1; channel<16; channel++)
+		{
+			channelfree = ( ( (channel < 4) && ( (*((volatile uint16_t*)0xDFF002) & (1<<channel)) == 0) ) || ( (channel >=4) && (*((volatile uint16_t*)0xDFF202) & (1<<(channel-4))) == 0 ) );
+			ADX(sprintf(ApolloDebugMessage, "ApolloPlaySound: Channel = %d | DMA Channel Free = %s\n", channel, channelfree? "YES":"NO");)
+			ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+			if (channelfree)  break;
+		}
+		if(channel==16)
+		{
+			return APOLLO_SOUND_NOCHANNEL;
+		} else {
+			sound->channel = channel;
+		}
 	}
-	if(channel==16)
-	{
-		return APOLLO_SOUND_NOCHANNEL;
-	} else {
-		sound->channel = channel;
-	}
- 
-	AD(sprintf(ApolloDebugMessage, "ApolloPlaySound: File=%-25s | Size=%8d | Cache=%12d | Channel=%02d | Vol-L = %3d | Vol-R = %3d | Loop = %d | Fadein = %d | Period = %3d |\n",
-		 sound->filename, sound->size, sound->size, sound->channel, sound->volume_left, sound->volume_right, sound->loop, sound->fadein, sound->period);)
+
+	AD(sprintf(ApolloDebugMessage, "ApolloPlaySound: File=%-25s | Size=%8d | Cache=%12d | Channel=%02d | Vol-L = %3d | Vol-R = %3d | Loop = %d | Fadein = %d | Period = %3d | Pan = %3d\n",
+		sound->filename, sound->size, sound->position, sound->channel, sound->volume_left, sound->volume_right, sound->loop, sound->fadein, sound->period);)
 	AD(ApolloDebugPutStr(ApolloDebugMessage);)
 
 	*((volatile uint32_t*)(0xDFF400 + (sound->channel * 0x10))) = (uint32_t)(sound->buffer+sound->position);  	// Set Channel Pointer
@@ -369,7 +372,7 @@ uint8_t ApolloAllocPicture( struct ApolloPicture *picture)
 
 	picture->position = buffer_aligned - picture->buffer;				// Report back position of aligned buffer within allocated buffer
 
-	picture->filename = NULL;	// Clear filename to indicate memory-only picture
+	strcpy(picture->filename, "");	// Clear filename to indicate memory-only picture
 	
 	ADX(sprintf(ApolloDebugMessage, "ApolloAllocPicture: Picture Allocated: Width=%d | Height=%d | Depth=%d | Size=%d | Position=%d\n",
 		 picture->width, picture->height, picture->depth, picture->size, picture->position);)
@@ -460,7 +463,8 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 			{
 				fread(&color, 1, 4, file_handle);
 				*(volatile uint32_t*)APOLLO_SAGA_CHUNKY_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
-				*(volatile uint32_t*)APOLLO_SAGA_PIPCHK_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
+				*(volatile uint32_t*)APOLLO_SAGA_PIP1CHK_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
+				*(volatile uint32_t*)APOLLO_SAGA_PIP2CHK_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
 				//*(volatile uint32_t*)APOLLO_SAGA_PIPCHK_COL = 0x00FF00FF;   // Enable only when Color00 = Transparent
 			}
 
@@ -588,9 +592,9 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 	}
 
 	ADX(sprintf(ApolloDebugMessage, "ApolloLoad: Picture File Loaded: %s | Filesize = %8d | Format: %d | Size = %8d BYTES | Width = %d | Height = %d | Depth = %d | Palette = %d | Position = %d | Offset = %d\n",
-		 picture->filename, file_size, picture->format, picture->size, picture->width, picture->height, picture->depth, picture->palette, picture->position, offset);)
+		  picture->filename, file_size, picture->format, picture->size, picture->width, picture->height, picture->depth, picture->palette, picture->position, offset);)
 	ADX(ApolloDebugPutStr(ApolloDebugMessage);)
-
+	
 	return APOLLO_PICTURE_OK;
 }
 
@@ -667,14 +671,24 @@ uint8_t ApolloShowPicture(struct ApolloPicture *picture)
 	*((volatile uint32_t*)0xDFF1EC) = (uint32_t)(picture->buffer + picture->position);
 }
 
-void ApolloShowPiP( struct ApolloPicture *picture)
+void ApolloShowPiP1( struct ApolloPicture *picture)
 {
-	 *(volatile int16_t*)APOLLO_SAGA_PIP_DMAROWS = picture->width * (picture->depth/8); 
+	 *(volatile int16_t*)APOLLO_SAGA_PIP1_DMAROWS = picture->width * (picture->depth/8); 
 }
 
-void ApolloHidePiP()
+void ApolloShowPiP2( struct ApolloPicture *picture)
 {
-	*(volatile int16_t*)APOLLO_SAGA_PIP_DMAROWS = 0;
+	 *(volatile int16_t*)APOLLO_SAGA_PIP2_DMAROWS = picture->width * (picture->depth/8); 
+}
+
+void ApolloHidePiP1()
+{
+	*(volatile int16_t*)APOLLO_SAGA_PIP1_DMAROWS = 0;
+}
+
+void ApolloHidePiP2()
+{
+	*(volatile int16_t*)APOLLO_SAGA_PIP2_DMAROWS = 0;
 }
 
 void ApolloShowPattern(uint8_t *buffer, uint16_t width, uint16_t height, uint8_t depth)
@@ -707,8 +721,7 @@ void ApolloBackupWBScreen(struct ApolloPicture *picture)
 {
 	struct Screen *wb_screen;  	  
 	wb_screen = LockPubScreen(NULL);
-    char picture_title[] = "WorkBench Screen Backup";
-    picture->filename 	= picture_title;
+    strcpy(picture->filename, "WorkBench Screen Backup");
 	picture->buffer 	= (uint8_t*)wb_screen->RastPort.BitMap->Planes[0];
 	picture->width 		= (uint16_t)wb_screen->Width;
 	picture->height 	= (uint16_t)wb_screen->Height;
@@ -909,7 +922,6 @@ void ApolloMouse(ApolloMouseState *MouseState)
 	return;
 }
 
-
 void ApolloKeyboard(ApolloKeyBoardState *KeyboardState)
 {
 	UBYTE* const 	Keyboard_Pointer = (UBYTE*)0xBFEC01; 
@@ -930,7 +942,6 @@ void ApolloKeyboard(ApolloKeyBoardState *KeyboardState)
 		KeyboardState->Current_Key = 127;
 	}
 }
-
 
 UBYTE ApolloKeyboardToUnicode(UBYTE KeyboardAmiga)
 {

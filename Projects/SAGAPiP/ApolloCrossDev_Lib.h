@@ -22,28 +22,30 @@ struct ApolloFile
 struct ApolloSound
 {
     // Input Values
-    char        filename[256];
-    uint8_t     format;
+    char        filename[256];      // filename of the sound
+    uint8_t     format;             // format of the sound (APOLLO_AIFF_FORMAT or APOLLO_WAV_FORMAT)   
     // Output Values
-    uint8_t     *buffer;
-    uint32_t    position;
-    uint32_t    size;
-    uint16_t    period;
-    uint8_t     channel;
-    bool        stereo;
-    uint32_t    datarate;
-    uint16_t    bitspersample;
+    uint8_t     *buffer;            // Buffer created by ApolloSound
+    uint32_t    position;           // 32-Byte alignment position for start of the Sound data
+    uint32_t    size;               // Size of the sound data in bytes
+    uint16_t    period;             // Playback period for the sound (calculated from sample rate)
+    uint8_t     channel;            // Channel assigned by ApolloPlaySound
+    bool        stereo;             // true if sound is stereo, false if mono
+    uint32_t    datarate;           // Data rate of the sound
+    uint16_t    bitspersample;      // Bits per sample of the sound
     // Playback Values
-    bool        loop;
-    bool        fadein;
-    bool        fadeout;
-    uint16_t    volume_left;
-    uint16_t    volume_right;
+    bool        loop;               // true if the sound should loop
+    bool        fadein;             // true if the sound should fade in
+    bool        fadeout;            // true if the sound should fade out
+    uint16_t    volume_left;        // Left channel volume
+    uint16_t    volume_right;       // Right channel volume
+    uint16_t    pan;                // Pan value
+    bool        staticchannel;      // if true the sound will play on ApolloSound->channel
 };
 struct ApolloPicture
 {
     // Input Values
-    char        *filename;
+    char        filename[256];
     uint8_t     format;
     bool        endian;
     // Return Values

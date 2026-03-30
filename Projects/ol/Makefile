@@ -5,37 +5,39 @@
 # Define Shell Environment
 PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
-APOLLO_V4_HOST = "192.168.2.231:Personal/"
+APOLLO_V4_HOST = "${AMIGAHOST}:Ram Disk/"
 
 # Define ApolloCrossDev Compiler
-PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Stable
+PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Latest
 TARGET 	= m68k-amigaos
 ACP 	= $(PWD)/../../Projects/ApolloExplorer/acp/acp
 GDB		= $(PWD)/../../Projects/bgdbserver/bgdbserver
 ICONS	= $(PWD)/../../Projects/_icons
 
 #Define Project Name (replace <project-name>)
-PROJECT_NAME	= SAGAPiP
+PROJECT_NAME	= ol
 PROJECT_DIR		= $(PWD)
 
-# Define GNU C-Compiler Type (C = Default, switch comment to change to C++)
+# Define GNU C-Compiler Type (C = Default, remove/add # to enable/disable 
 C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc
 # C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-g++
 
-# Define Standard C-Libraries and Headers (libnix = Default, switch comments to change to clib2)
+# Define Standard C-Libraries and Headers (libnix = Default, remove/add # to enable/disable 
 C_LIB		= -noixemul
 # C_LIB 	= -mcrt=clib2
 C_INCL_CLB	= $(PREFIX)/$(TARGET)/libnix/include
 # C_INCL_CLB  = $(PREFIX)/$(TARGET)/clib2/include
 
-# Define Additional Libraried - SDL, MUI and Mathemetics, switch comments to enable/disable 
+# Define ApolloLib
+APOLLOLIB = $(PWD)/../../Projects/ApolloLib
+
+# Define Additional Libraries - SDL, MUI and Mathemetics, remove/add # to enable/disable 
 # C_LIBS_SDL	= -lSDL -lSDL_ttf -lfreetype
 # C_LIBS_MUI	= -lmui
 # C_LIBS_MATH	= -lm
-APOLLOLIB = $(PWD)/../../Projects/ApolloLib
 C_LIBS_ALL 	= $(C_LIBS_SDL) $(C_LIBS_MUI) $(C_LIBS_MATH) 
 
-# Define SDK/NDK Headers, switch comments to enable/disable
+# Define SDK/NDK Headers, remove/add # to enable/disable 
 C_INCL_SYS	= $(PREFIX)/$(TARGET)/sys-include
 # C_INCL_NDK  = $(PREFIX)/$(TARGET)/ndk13-include
 # C_INCL_NDK  = $(PREFIX)/$(TARGET)/ndk39-include
@@ -46,10 +48,10 @@ C_INCL_NDK  = $(PREFIX)/$(TARGET)/ndk32-include/Include_H
 C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK)
 
 # Define C Options
-C_OPTIONS 	= -O2 -m68080 -m68881 -ffast-math -fomit-frame-pointer -DREGPARM
+C_OPTIONS 	= -O2 -m68080 -m68881 -ffast-math -fomit-frame-pointer -DREGPARM=4 -S -nostartfiles
 # -O = basic optimization | -O2 = advanced optimization (default and advised) | -O3 = agressive optimization | -Os = small size | =Ofast = speed optimization (same as -O2)
 # -m68080 = target for Apollo V4 (default and advised) | -m68881 = enable FPU (default and advised) | -ffast-math = faster but less accurate math = -fomit-frame-pointer = free up register
-C_DEFINES 	= -DAPOLLO_DEBUG -DAPOLLO_DEBUGEXTRA
+C_DEFINES 	= 
 C_DEBUG		= -g
 C_FLAGS = $(C_LIB) $(C_OPTIONS) $(C_DEBUG) $(C_DEFINES) $(C_INCL_ALL) $(C_LIBS_ALL)
 
@@ -76,7 +78,7 @@ S_OBJECTDIR = $(PROJECT_DIR)
 # Define Object Filelist
 C_FILES = $(wildcard $(C_SOURCEDIR)/*.c)
 S_FILES = $(wildcard $(S_SOURCEDIR)/*.s)
-O_FILES = $(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES))	# $(wildcard $(APOLLOLIB)/*.o)
+O_FILES = $(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES)) $(wildcard $(APOLLOLIB)/*.o)
 
 EXE		= $(PROJECT_DIR)/$(PROJECT_NAME)
 

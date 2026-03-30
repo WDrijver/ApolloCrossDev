@@ -12,7 +12,7 @@ extern "C"{
 #include "ApolloCrossDev_Defines.h"
 
 // Global Variables
-extern char ApolloDebugMessage[200];
+extern char ApolloDebugMessage[256];
 
 /** Screen/Serial Debug **/
 

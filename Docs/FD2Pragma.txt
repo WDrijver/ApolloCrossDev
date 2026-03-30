@@ -1,0 +1,51 @@
+Create the correct inline files : fd2pragma fd/dos_lib.fd CLIB clib/dos_protos.h TO inline SPECIAL 40
+Create the correct proto files  : fd2pragma fd/dos_lib.fd CLIB clib/dos_protos.h TO proto SPECIAL 35
+Create pragmas to proto redirect: fd2pragma fd/dos_lib.fd CLIB clib/dos_protos.h TO pragmas SPECIAL 80   
+
+Useful examples (with intuition.library):
+
+1) fd2pragma <FD file> TO <pragma dir>
+
+   fd2pragma FD:intuition_lib.fd TO INCLUDE:pragma/
+
+        Creates a pragma file for all C compilers and copies it to the
+        given directory.
+
+2) fd2pragma <FD file> CLIB <clib file> SPECIAL 12 TO <lib dir>
+
+   fd2pragma FD:intuition_lib.fd CLIB INCLUDE:clib/intuition_protos.h
+     SPECIAL 12 TO LIB:
+
+        Creates a link library holding stub functions to call tag-functions
+        from compilers which do not support them (MaxonC++).
+
+3) fd2pragma <FD file> CLIB <clib file> SPECIAL 13 MODE 3
+
+   fd2pragma FD:intuition_lib.fd CLIB INCLUDE:clib/intuition_protos.h
+     SPECIAL 13 MODE 3
+
+        Creates a link library and an include file which allow you to call
+        library functions with local base variables in compilers which do
+        not support that (MaxonC++). See @{"below" LINK Local} how to handle these files.
+
+4) fd2pragma <FD file> SPECIAL 34 TO <proto dir>
+
+   fd2pragma FD:intuition_lib.fd SPECIAL 34 TO INCLUDE:proto/
+
+        Creates a proto file for the local library base file include, which
+        was created in example 3 and copies it to the given directory.
+
+5) fd2pragma <FD file> SPECIAL 35 TO <proto dir>
+
+   fd2pragma FD:intuition_lib.fd SPECIAL 35 TO INCLUDE:proto/
+
+        Creates a proto file for all C compilers and copies it to the
+        given directory.
+
+6) fd2pragma <FD file> CLIB <clib file> SPECIAL 40
+
+   fd2pragma FD:intuition_lib.fd CLIB INCLUDE:clib/intuition_protos.h
+     SPECIAL 40
+
+        Creates inline include for GCC. This is used by GCC instead of
+        pragma files for other compilers.

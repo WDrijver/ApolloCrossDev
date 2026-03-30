@@ -27,10 +27,13 @@
 #include "clib/gadtools_protos.h"
 #include "clib/input_protos.h"
 #include "clib/alib_protos.h"
+#include "clib/cybergraphics_protos.h"
 
 #include <devices/input.h>
 #include <graphics/rastport.h>
+#include <graphics/gfx.h>
 #include <intuition/intuition.h>
+#include <cybergraphx/cybergraphics.h>
 
 #include <proto/intuition.h>
 #include <proto/dos.h>
@@ -40,18 +43,22 @@
 #include <proto/graphics.h>
 #include <proto/keymap.h>
 #include <proto/asl.h>
+#include <proto/cybergraphics.h>
 
 // Apollo Debug
 #ifdef APOLLO_DEBUG
+ #define ADXX(x) 
  #define AD(x) x
  #ifdef APOLLO_DEBUGEXTRA
   #define ADX(x) x
  #else
   #define ADX(x)
+  #define ADXX(x)   
  #endif
 #else
  #define AD(x)
  #define ADX(x) 
+ #define ADXX(x)
 #endif
 
 // Apollo Audi (ARNE)
@@ -66,30 +73,44 @@
 #define APOLLO_WAV_FORMAT       0x4
 
 // Apollo Video (ISABELLE)
-#define APOLLO_SAGA_GFXMODE		0xDFF1F4	// Bit[8-15]=SAGA Display Resolution + Bit[0-7]=Color Format 
-#define APOLLO_SAGA_POINTER		0xDFF1EC	// Chunky Bitmap Pointer  
-#define APOLLO_SAGA_MODULO		0xDFF1E6	// Chunky Bitmap Modulo (Bytes skipped after each Row)
+#define APOLLO_SAGA_GFXMODE		    0xDFF1F4	// Bit[8-15]=SAGA Display Resolution + Bit[0-7]=Color Format 
+#define APOLLO_SAGA_POINTER		    0xDFF1EC	// Chunky Bitmap Pointer  
+#define APOLLO_SAGA_MODULO		    0xDFF1E6	// Chunky Bitmap Modulo (Bytes skipped after each Row)
 
-#define APOLLO_SAGA_PLANAR_COL  0xDFF380    // Index Planar = Bit[24-31] Color Number | Bit[16-23] Red | Bit[8-15] Green | Bit[0-7] Blue
-#define APOLLO_SAGA_CHUNKY_COL  0xDFF388    // Index Chunky = Bit[24-31] Color Number | Bit[16-23] Red | Bit[8-15] Green | Bit[0-7] Blue
-#define APOLLO_SAGA_PIPCHK_COL  0xDFF38C    // Index PiP    = Bit[24-31] Color Number | Bit[16-23] Red | Bit[8-15] Green | Bit[0-7] Blue
+#define APOLLO_SAGA_PLANAR_COL      0xDFF380    // Index Planar = Bit[24-31] Color Number | Bit[16-23] Red | Bit[8-15] Green | Bit[0-7] Blue
+#define APOLLO_SAGA_CHUNKY_COL      0xDFF388    // Index Chunky = Bit[24-31] Color Number | Bit[16-23] Red | Bit[8-15] Green | Bit[0-7] Blue
 
-#define APOLLO_SAGA_PIP_GFXMODE 0xDFF3DC	// Bit[8]= Enable 0xF81F Transparency + Bit[0-7]=Color Format (only modes 0x01,0x02 and 0x03)
-#define APOLLO_SAGA_PIP_POINTER 0xDFF3D8	// Chunky Bitmap Pointer
-#define APOLLO_SAGA_PIP_MODULO	0xDFF3DE	// Chunky Bitmap Modulo (Bytes skipped after each Row)
+#define APOLLO_SAGA_PIP1CHK_COL     0xDFF38C    // Index PiP1    = Bit[24-31] Color Number | Bit[16-23] Red | Bit[8-15] Green | Bit[0-7] Blue
 
-#define APOLLO_SAGA_PIP_X_START 0xDFF3D0	// X-Start-Position 
-#define APOLLO_SAGA_PIP_Y_START 0xDFF3D2	// Y-Start-Position
-#define APOLLO_SAGA_PIP_X_STOP	0xDFF3D4	// X-Stop-Position
-#define APOLLO_SAGA_PIP_Y_STOP	0xDFF3D6	// Y-Stop Position
-#define APOLLO_SAGA_PIP_CLRKEY	0xDFF3E0	// ColorKey | Bit[15]=Enable Bit[8-11]=Red Bit[4-7]=Green Bit[0-3]=Blue | Enable -> PiP is only shown on Colorkey pixels
-#define APOLLO_SAGA_PIP_DMAROWS	0xDFF3E2	// DMA Row Fetch in Bytes = Number of Bytes per Row 
+#define APOLLO_SAGA_PIP1_GFXMODE    0xDFF3DC	// Bit[8]= Enable 0xF81F Transparency + Bit[0-7]=Color Format (only modes 0x01,0x02 and 0x03)
+#define APOLLO_SAGA_PIP1_POINTER    0xDFF3D8	// Chunky Bitmap Pointer
+#define APOLLO_SAGA_PIP1_MODULO	    0xDFF3DE	// Chunky Bitmap Modulo (Bytes skipped after each Row)
 
-#define APOLLO_SAGA_PIP_TRANSON 0x0100      // Bit[8] APOLLO_SAGA_PIP_GFXMODE Enable Transparency
+#define APOLLO_SAGA_PIP1_X_START    0xDFF3D0	// X-Start-Position 
+#define APOLLO_SAGA_PIP1_Y_START    0xDFF3D2	// Y-Start-Position
+#define APOLLO_SAGA_PIP1_X_STOP	    0xDFF3D4	// X-Stop-Position
+#define APOLLO_SAGA_PIP1_Y_STOP	    0xDFF3D6	// Y-Stop Position
+#define APOLLO_SAGA_PIP1_CLRKEY	    0xDFF3E0	// ColorKey | Bit[15]=Enable Bit[8-11]=Red Bit[4-7]=Green Bit[0-3]=Blue | Enable -> PiP is only shown on Colorkey pixels
+#define APOLLO_SAGA_PIP1_DMAROWS	0xDFF3E2	// DMA Row Fetch in Bytes = Number of Bytes per Row 
 
-#define APOLLO_SAGA_PIP_TRANS8				// Transparency Color for 8-Bit RGB-Indexed = ????
-#define APOLLO_SAGA_PIP_TRANS15 			// Transparency Color for 15-Bit 1R5G5B5 = 0 11111 00000 11111
-#define APOLLO_SAGA_PIP_TRANS16 0xF81F		// Transparency Color for 16-Bit R5G6B5	= 11111 000000 11111
+#define APOLLO_SAGA_PIP2CHK_COL     0xDFF37C    // Index PiP2    = Bit[24-31] Color Number | Bit[16-23] Red | Bit[8-15] Green | Bit[0-7] Blue
+
+#define APOLLO_SAGA_PIP2_GFXMODE    0xDFF3BC	// Bit[8]= Enable 0xF81F Transparency + Bit[0-7]=Color Format (only modes 0x01,0x02 and 0x03)
+#define APOLLO_SAGA_PIP2_POINTER    0xDFF3B8	// Chunky Bitmap Pointer
+#define APOLLO_SAGA_PIP2_MODULO	    0xDFF3BE	// Chunky Bitmap Modulo (Bytes skipped after each Row)
+
+#define APOLLO_SAGA_PIP2_X_START    0xDFF3B0	// X-Start-Position 
+#define APOLLO_SAGA_PIP2_Y_START    0xDFF3B2	// Y-Start-Position
+#define APOLLO_SAGA_PIP2_X_STOP	    0xDFF3B4	// X-Stop-Position
+#define APOLLO_SAGA_PIP2_Y_STOP	    0xDFF3B6	// Y-Stop Position
+#define APOLLO_SAGA_PIP2_CLRKEY	    0xDFF3C0	// ColorKey | Bit[15]=Enable Bit[8-11]=Red Bit[4-7]=Green Bit[0-3]=Blue | Enable -> PiP is only shown on Colorkey pixels
+#define APOLLO_SAGA_PIP2_DMAROWS	0xDFF3C2	// DMA Row Fetch in Bytes = Number of Bytes per Row 
+
+#define APOLLO_SAGA_PIP_TRANSON     0x0100      // Bit[8] APOLLO_SAGA_PIP_GFXMODE Enable Transparency
+
+#define APOLLO_SAGA_PIP_TRANS8				    // Transparency Color for 8-Bit RGB-Indexed = ????
+#define APOLLO_SAGA_PIP_TRANS15 			    // Transparency Color for 15-Bit 1R5G5B5 = 0 11111 00000 11111
+#define APOLLO_SAGA_PIP_TRANS16     0xF81F		// Transparency Color for 16-Bit R5G6B5	= 11111 000000 11111
 
 // Apollo SAGA Display Resolutions
 #define APOLLO_SAGA_304_224		0x0900      // Bit[8-15] APOLLO_SAGA_PIP_GFXMODE  
