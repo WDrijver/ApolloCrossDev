@@ -44,8 +44,6 @@ echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
 CC=gcc-12 CXX=g++-12 gmake all $CPU SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX
 # >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
-exit
-
 # Part 5: MUI
 echo -e "\e[1m\e[37m5. Adding MUI5\e[0m\e[36m"
 cd $SOURCES/amiga-gcc

@@ -21,11 +21,5 @@ SOURCES=$PREFIX/_sources
 export PATH=$PREFIX/bin:$PATH
 
 sudo xcodebuild -license accept
-
+export PATH=$(brew --prefix bison)/bin:$PATH
 source GCC-Install-MacOS.sh
-
-
-
-
-
-
