@@ -1,100 +1,31 @@
-# ApolloCrossDev GCC-6.50 - Install Script v0.91 - MacOS
+# ApolloCrossDev Primary Install Script v1.0 - MacOS
 
-EDITION=GCC-6.50
-VERSION=0.91
-CPU=-j4
+VERSION=1.0
+CPU=-j16
 
-WORKSPACE="`pwd`/Compilers"
-COMPILER=GCC-6.50
-
-ARCHIVES=$WORKSPACE/_archives
-BUILDS=$WORKSPACE/$COMPILER/_builds
-SOURCES=$WORKSPACE/$COMPILER/_sources
-PATCHES=$WORKSPACE/$COMPILER/_install/patches
-LOGFILES=$WORKSPACE/$COMPILER/_logs
-PREFIX=$WORKSPACE/$COMPILER
+WORKSPACE="`pwd`"
+COMPILERS=Compilers
+PROJECTS=Projects
+COMPILER=GCC-6.50-Latest
 TARGET=m68k-amigaos
+PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
+
+MASTER=https://github.com/WDrijver/amiga-gcc
+BRANCH=amiga-gcc-latest
+
+ARCHIVES=$WORKSPACE/$COMPILERS/_archives
+LOGFILES=$PREFIX/_logs
+BUILDS=$PREFIX/_builds
+SOURCES=$PREFIX/_sources
+
 export PATH=$PREFIX/bin:$PATH
 
-MUI5_ARCHIVE=MUI-5.0-20210831-os3.lha
-NDK32_DOWNLOAD=http://aminet.net/dev/misc/NDK3.2.lha
+sudo xcodebuild -license accept
 
-# INIT Terminal
-clear
-echo -e "\e[1m\e[37m########## \e[31mApollo\e[1;30mCrossDev \e[36m$EDITION\e[30m v$VERSION \e[37m ###########\e[0m\e[36m"
-echo -e "\e[1m\e[37m#"
-echo -e "\e[1m\e[37m# \e[0mBuilding with CPU=$CPU | If Build fails set CPU=-j1\e[0m\e[36m"
-echo " "
-echo -e "\e[1m\e[37m0. Sudo Password\e[0m"
+source GCC-Install-MacOS.sh
 
-# PART 1: Clean the House
-echo -e "\e[1m\e[37m1. Clean the House\e[0m\e[36m"
-rm -f -r $PREFIX
-mkdir $PREFIX
-rm -f -r $LOGFILES
-mkdir -p $LOGFILES
-rm -f -r $BUILDS
-mkdir -p $BUILDS
-rm -f -r $SOURCES
-mkdir $SOURCES
-cd $SOURCES
 
-# PART 2: Update Linux Packages 
-echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
-brew install bash wget make lhasa gmp mpfr libmpc flex gettext gnu-sed texinfo gcc@12 make autoconf bison >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 
-# PART 3: Clone Amiga-GCC
-echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-git clone --progress https://franke.ms/git/bebbo/amiga-gcc 2>>$LOGFILES/part3_err.log
 
-# Part 4: Compile Amiga-GCC
-echo -e "\e[1m\e[37m4. Compile Amiga-GCC\e[0m\e[36m"
-cd $SOURCES/amiga-gcc
-echo -e "\e[0m\e[36m   * Clean Amiga-GCC\e[0m"
-gmake clean >>$LOGFILES/part4_clean.log 2>>$LOGFILES/part4_clean_err.log
-echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
-gmake drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4_dropprefix.log 2>>$LOGFILES/part4_dropprefix_err.log
-echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
-#make all $CPU PREFIX=$PREFIX >>$LOGFILES/part4_make.log 2>>$LOGFILES/part4_make_err.log
-CC=gcc-12 CXX=g++-12 gmake all $CPU SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
-exit
 
-# Part 5: SDL
-echo -e "\e[1m\e[37m5. Adding Open-GL, SDL, TTF and FreeType\e[0m\e[36m"
-cd $PREFIX
-cp -r -f $PREFIX/include/GL $PREFIX/$TARGET/include/GL >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-cp -r -f $PREFIX/include/gdb $PREFIX/$TARGET/include/GDB >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-cp -r -f $PREFIX/include/SDL $PREFIX/$TARGET/include/SDL >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-cp -r -f $PREFIX/include/SDL_*.* $PREFIX/$TARGET/include/SDL  >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-cp -r -f $PREFIX/lib/libSDL* $PREFIX/$TARGET/lib >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-rm -r -f $PREFIX/lib/libSDL* >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-rm -r -f $PREFIX/include >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
-cd $ARCHIVES
-cp -r -f SDL/* $PREFIX/$TARGET >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
-# Part 6: MUI
-echo -e "\e[1m\e[37m6. Adding MUI5\e[0m\e[36m"
-cd $SOURCES/amiga-gcc
-make sdk=mui PREFIX=$PREFIX >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-
-# PART 7: NDK
-echo -e "\e[1m\e[37m8. Development Kits\e[0m\e[36m"
-mv $PREFIX/$TARGET/ndk-include $PREFIX/$TARGET/ndk39-include
-cd $PREFIX/$TARGET
-git clone --progress https://github.com/WDrijver/DevPac >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
-cd $SOURCES
-wget -nc $NDK32_DOWNLOAD -a  $LOGFILES/part7.log
-mkdir $PREFIX/$TARGET/ndk32-include
-lha -xw=$PREFIX/$TARGET/ndk32-include NDK3.2.lha >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
-
-# PART 8: Cleanup
-echo -e "\e[1m\e[37m8. Cleanup\e[0m\e[36m"
-cd $PREFIX
-rm -rf info
-rm -rf man
-
-# FINISH
-echo " "
-echo -e "\e[1m\e[32mFINISHED\e[0m"
-echo " "
-exit
