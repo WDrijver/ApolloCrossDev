@@ -14,35 +14,27 @@ rm -f -r $PREFIX
 mkdir $PREFIX
 rm -f -r $LOGFILES
 mkdir -p $LOGFILES
-rm -f -r $BUILDS
-mkdir -p $BUILDS
 rm -f -r $SOURCES
 mkdir $SOURCES
 cd $SOURCES
 
 # PART 2: Update Linux Packages 
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
-brew install bash wget make lhasa gmp mpfr libmpc flex gettext gnu-sed texinfo gcc@12 make autoconf bison
-# >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
+brew install bash wget make lhasa gmp mpfr libmpc flex gettext gnu-sed texinfo gcc@12 make autoconf bison >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
-git clone --progress -b $BRANCH $MASTER
-# 2>>$LOGFILES/part3_err.log
+git clone --progress -b $BRANCH $MASTER 2>>$LOGFILES/part3_err.log
 
 # Part 4: Compile Amiga-GCC
 echo -e "\e[1m\e[37m4. Compile Amiga-GCC\e[0m\e[36m"
 cd $SOURCES/amiga-gcc
 echo -e "\e[0m\e[36m   * Clean Amiga-GCC\e[0m"
-gmake clean 
-#>>$LOGFILES/part4_clean.log 2>>$LOGFILES/part4_clean_err.log
+make clean >>$LOGFILES/part4_clean.log 2>>$LOGFILES/part4_clean_err.log
 echo -e "\e[0m\e[36m   * Clean ApolloCrossDev\e[0m"
-gmake drop-prefix PREFIX=$PREFIX
-# >>$LOGFILES/part4_dropprefix.log 2>>$LOGFILES/part4_dropprefix_err.log
+make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4_dropprefix.log 2>>$LOGFILES/part4_dropprefix_err.log
 echo -e "\e[0m\e[36m   * Build Amiga-GCC (be patient)\e[0m"
-#make all $CPU PREFIX=$PREFIX >>$LOGFILES/part4_make.log 2>>$LOGFILES/part4_make_err.log
-CC=gcc-12 CXX=g++-12 gmake all $CPU SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX
-# >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+CC=gcc-12 CXX=g++-12 make all $CPU SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Part 5: MUI
 echo -e "\e[1m\e[37m5. Adding MUI5\e[0m\e[36m"
