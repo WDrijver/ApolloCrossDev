@@ -22,24 +22,25 @@ struct ApolloFile
 struct ApolloSound
 {
     // Input Values
-    char        filename[256];
-    uint8_t     format;
+    char        filename[256];      // filename of the sound
+    uint8_t     format;             // format of the sound (APOLLO_AIFF_FORMAT or APOLLO_WAV_FORMAT)   
     // Output Values
-    uint8_t     *buffer;
-    uint32_t    position;
-    uint32_t    size;
-    uint16_t    period;
-    uint8_t     channel;
-    bool        stereo;
-    uint32_t    datarate;
-    uint16_t    bitspersample;
+    uint8_t     *buffer;            // Buffer created by ApolloSound
+    uint32_t    position;           // 32-Byte alignment position for start of the Sound data
+    uint32_t    size;               // Size of the sound data in bytes
+    uint16_t    period;             // Playback period for the sound (calculated from sample rate)
+    uint8_t     channel;            // Channel assigned by ApolloPlaySound
+    bool        stereo;             // true if sound is stereo, false if mono
+    uint32_t    datarate;           // Data rate of the sound
+    uint16_t    bitspersample;      // Bits per sample of the sound
     // Playback Values
-    bool        loop;
-    bool        fadein;
-    bool        fadeout;
-    uint16_t    volume_left;
-    uint16_t    volume_right;
-    uint16_t    pan;
+    bool        loop;               // true if the sound should loop
+    bool        fadein;             // true if the sound should fade in
+    bool        fadeout;            // true if the sound should fade out
+    uint16_t    volume_left;        // Left channel volume
+    uint16_t    volume_right;       // Right channel volume
+    uint16_t    pan;                // Pan value
+    bool        staticchannel;      // if true the sound will play on ApolloSound->channel
 };
 struct ApolloPicture
 {
@@ -58,6 +59,7 @@ struct ApolloPicture
     // Display Values
     int16_t     modulo;
     bool        fullscreen;
+    uint16_t    pip;                    // 0 = No PiP | 1 = PiP1 | 2 = PiP2
 };
 struct BMPHeader
 {
@@ -236,7 +238,10 @@ uint32_t ApolloSwapLong( _D0(uint32_t SwapLong));
 uint64_t ApolloSwapOcta( _D0(uint64_t SwapOcta));
 
 // Apollo Picture Functions
-void ApolloFill( _A0(uint8_t* dst), _D3(uint16_t w), _D4(uint16_t h), _D5(uint16_t d), _D6(uint32_t dstmod), _D7(uint32_t value) );
+void ApolloFillBitMap( _A0(uint8_t* dst), _D3(uint16_t w), _D4(uint16_t h), _D5(uint16_t d), _D6(uint32_t dstmod), _D7(uint32_t value) );
+void ApolloFillBlock( _A0(uint8_t* dst), _D3(uint32_t c), _D4(uint32_t value));
+void ApolloFillColor( _A0(uint8_t* dst), _D3(uint16_t w), _D4(uint16_t h), _D5(uint16_t d), _D6(uint32_t dstmod), _D7(uint32_t value) );
+
 void ApolloCopyPicture( _A0(uint8_t *s), _A1(uint8_t *d), _D3(uint16_t width), _D4(uint16_t height), _D5(uint16_t spitch), _D6(uint16_t dpitch) );
 void ApolloCopyPicture32(_A0(uint8_t *s), _A1(uint8_t *d), _D3(uint16_t width), _D4(uint16_t height), _D5(uint16_t spitch), _D6(uint16_t dpitch) ); 
 

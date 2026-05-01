@@ -1,11 +1,11 @@
-# ApolloCrossDev Makefile Template v1.1
-# 1-5-2026
+# ApolloCrossDev Makefile Template v1.0
+# 28-11-2025
 # Willem Drijver
 
 # Define Shell Environment
 PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
-APOLLO_V4_HOST = "192.168.2.234:Personal/"
+APOLLO_V4_HOST = "192.168.2.231:Personal/"
 
 # Define ApolloCrossDev Compiler
 PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Stable
@@ -28,11 +28,11 @@ C_LIB		= -noixemul
 C_INCL_CLB	= $(PREFIX)/$(TARGET)/libnix/include
 # C_INCL_CLB  = $(PREFIX)/$(TARGET)/clib2/include
 
-# Define Additional Libraries - ApolloLib, SDL, MUI and Mathematics, switch comments to enable/disable 
-APOLLOLIB = $(PWD)/../../Projects/ApolloLib
+# Define Additional Libraried - SDL, MUI and Mathemetics, switch comments to enable/disable 
 # C_LIBS_SDL	= -lSDL -lSDL_ttf -lfreetype
 # C_LIBS_MUI	= -lmui
 # C_LIBS_MATH	= -lm
+APOLLOLIB = $(PWD)/../../Projects/ApolloLib
 C_LIBS_ALL 	= $(C_LIBS_SDL) $(C_LIBS_MUI) $(C_LIBS_MATH) 
 
 # Define SDK/NDK Headers, switch comments to enable/disable
@@ -43,7 +43,7 @@ C_INCL_NDK  = $(PREFIX)/$(TARGET)/ndk32-include/Include_H
 # C_INCL_GL	= $(PREFIX)/$(TARGET)/include/GL
 # C_INCL_SDL	= $(PREFIX)/$(TARGET)/include/SDL
 # C_INCL_MUI	= $(PREFIX)/$(TARGET)/include/MUI
-C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK) -I$(APOLLOLIB)
+C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK)
 
 # Define C Options
 C_OPTIONS 	= -O2 -m68080 -m68881 -ffast-math -fomit-frame-pointer -DREGPARM
@@ -73,17 +73,10 @@ S_SOURCEDIR = $(PROJECT_DIR)
 C_OBJECTDIR = $(PROJECT_DIR)
 S_OBJECTDIR = $(PROJECT_DIR)
 
-# Define Source Filelist
-APP_C_FILES = $(wildcard $(C_SOURCEDIR)/*.c)
-APP_S_FILES = $(wildcard $(S_SOURCEDIR)/*.s)
-LIB_C_FILES = $(wildcard $(APOLLOLIB)/*.c)
-LIB_S_FILES = $(wildcard $(APOLLOLIB)/*.s)
-
 # Define Object Filelist
-APP_O_FILES = $(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(APP_C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(APP_S_FILES))
-LIB_O_FILES = $(patsubst $(APOLLOLIB)/%.c,$(APOLLOLIB)/%.o,$(LIB_C_FILES)) $(patsubst $(APOLLOLIB)/%.s,$(APOLLOLIB)/%.o,$(LIB_S_FILES))
-
-O_FILES = $(APP_O_FILES) $(LIB_O_FILES)
+C_FILES = $(wildcard $(C_SOURCEDIR)/*.c)
+S_FILES = $(wildcard $(S_SOURCEDIR)/*.s)
+O_FILES = $(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubst $(S_SOURCEDIR)/%.s,$(S_OBJECTDIR)/%.o,$(S_FILES))	# $(wildcard $(APOLLOLIB)/*.o)
 
 EXE		= $(PROJECT_DIR)/$(PROJECT_NAME)
 
@@ -98,7 +91,6 @@ init:
 	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-6.50 Compiler v1.0\e[0m"    
 	@echo "\e[36mC-Sources : \e[37m$(C_FILES)\e[0m"
 	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
-	@echo "\e[36mO-Files : \e[37m$(O_FILES)\e[0m"
 	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"
 	@echo "\e[37m------------------------------------------------------------------\e[0m"
 

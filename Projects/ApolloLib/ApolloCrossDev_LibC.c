@@ -241,23 +241,26 @@ uint8_t ApolloLoadSound( struct ApolloSound *sound)
 
 uint8_t ApolloPlaySound( struct ApolloSound *sound)
 {
-	bool channelfree;
-	uint8_t channel;
-	
-	for (channel=0; channel<16; channel++)
+	if(!sound->staticchannel)
 	{
-		channelfree = ( ( (channel < 4) && ( (*((volatile uint16_t*)0xDFF002) & (1<<channel)) == 0) ) || ( (channel >=4) && (*((volatile uint16_t*)0xDFF202) & (1<<(channel-4))) == 0 ) );
-		ADX(sprintf(ApolloDebugMessage, "ApolloPlaySound: Channel = %d | DMA Channel Free = %s\n", channel, channelfree? "YES":"NO");)
-		ADX(ApolloDebugPutStr(ApolloDebugMessage);)
-		if (channelfree)  break;
+		bool channelfree;
+		uint8_t channel;
+		
+		for (channel=1; channel<16; channel++)
+		{
+			channelfree = ( ( (channel < 4) && ( (*((volatile uint16_t*)0xDFF002) & (1<<channel)) == 0) ) || ( (channel >=4) && (*((volatile uint16_t*)0xDFF202) & (1<<(channel-4))) == 0 ) );
+			ADX(sprintf(ApolloDebugMessage, "ApolloPlaySound: Channel = %d | DMA Channel Free = %s\n", channel, channelfree? "YES":"NO");)
+			ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+			if (channelfree)  break;
+		}
+		if(channel==16)
+		{
+			return APOLLO_SOUND_NOCHANNEL;
+		} else {
+			sound->channel = channel;
+		}
 	}
-	if(channel==16)
-	{
-		return APOLLO_SOUND_NOCHANNEL;
-	} else {
-		sound->channel = channel;
-	}
-	
+
 	AD(sprintf(ApolloDebugMessage, "ApolloPlaySound: File=%-25s | Size=%8d | Cache=%12d | Channel=%02d | Vol-L = %3d | Vol-R = %3d | Loop = %d | Fadein = %d | Period = %3d | Pan = %3d\n",
 		sound->filename, sound->size, sound->position, sound->channel, sound->volume_left, sound->volume_right, sound->loop, sound->fadein, sound->period);)
 	AD(ApolloDebugPutStr(ApolloDebugMessage);)
@@ -455,13 +458,27 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 			if(picture->size == 0) picture->size = file_size - offset;										// If Image Size is 0, calculate it	
 			if( (picture->depth<=8) && (picture->palette==0) ) picture->palette = 1 << picture->depth;		// If Color Indexes is 0, calculate it
 
-			fseek(file_handle, 54, SEEK_SET);
-			for(uint16_t colorcounter=0; colorcounter<picture->palette; colorcounter++)						// Set Apollo SAGA Chunky Color Registers
+			if (picture->depth <= 8)
 			{
-				fread(&color, 1, 4, file_handle);
-				*(volatile uint32_t*)APOLLO_SAGA_CHUNKY_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
-				*(volatile uint32_t*)APOLLO_SAGA_PIPCHK_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
-				//*(volatile uint32_t*)APOLLO_SAGA_PIPCHK_COL = 0x00FF00FF;   // Enable only when Color00 = Transparent
+				fseek(file_handle, 54, SEEK_SET);
+				for(uint16_t colorcounter=0; colorcounter<picture->palette; colorcounter++)						// Set Apollo SAGA Chunky Color Registers
+				{
+					fread(&color, 1, 4, file_handle);
+					switch(picture->pip)
+					{
+						case 0:
+							*(volatile uint32_t*)APOLLO_SAGA_CHUNKY_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
+							break;
+						case 1:
+							*(volatile uint32_t*)APOLLO_SAGA_PIP1CHK_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
+							break;
+						case 2:
+							*(volatile uint32_t*)APOLLO_SAGA_PIP2CHK_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
+							break;
+						default:
+							break;
+					}
+				}
 			}
 
 			ADX(sprintf(ApolloDebugMessage, "ApolloLoadPicture: BMP Width=%d | Height=%d | BPP=%d | ImageSize=%d | Palette=%d\n",
@@ -591,9 +608,6 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 		  picture->filename, file_size, picture->format, picture->size, picture->width, picture->height, picture->depth, picture->palette, picture->position, offset);)
 	ADX(ApolloDebugPutStr(ApolloDebugMessage);)
 	
-	
-
-
 	return APOLLO_PICTURE_OK;
 }
 
@@ -670,14 +684,24 @@ uint8_t ApolloShowPicture(struct ApolloPicture *picture)
 	*((volatile uint32_t*)0xDFF1EC) = (uint32_t)(picture->buffer + picture->position);
 }
 
-void ApolloShowPiP( struct ApolloPicture *picture)
+void ApolloShowPiP1( struct ApolloPicture *picture)
 {
-	 *(volatile int16_t*)APOLLO_SAGA_PIP_DMAROWS = picture->width * (picture->depth/8); 
+	 *(volatile int16_t*)APOLLO_SAGA_PIP1_DMAROWS = picture->width * (picture->depth/8); 
 }
 
-void ApolloHidePiP()
+void ApolloShowPiP2( struct ApolloPicture *picture)
 {
-	*(volatile int16_t*)APOLLO_SAGA_PIP_DMAROWS = 0;
+	 *(volatile int16_t*)APOLLO_SAGA_PIP2_DMAROWS = picture->width * (picture->depth/8); 
+}
+
+void ApolloHidePiP1()
+{
+	*(volatile int16_t*)APOLLO_SAGA_PIP1_DMAROWS = 0;
+}
+
+void ApolloHidePiP2()
+{
+	*(volatile int16_t*)APOLLO_SAGA_PIP2_DMAROWS = 0;
 }
 
 void ApolloShowPattern(uint8_t *buffer, uint16_t width, uint16_t height, uint8_t depth)
