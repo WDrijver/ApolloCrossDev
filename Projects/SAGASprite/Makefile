@@ -8,7 +8,7 @@ DIR = $(notdir $(shell pwd))
 APOLLO_V4_HOST = "192.168.2.234:Personal/"
 
 # Define ApolloCrossDev Compiler
-PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Stable
+PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Latest
 TARGET 	= m68k-amigaos
 ACP 	= $(PWD)/../../Projects/ApolloExplorer/acp/acp
 GDB		= $(PWD)/../../Projects/bgdbserver/bgdbserver
@@ -94,24 +94,24 @@ debug: init cleanbefore build upload_debug cleanafter exit
 
 init:
 	clear
-	@echo "\e[37m------------------------------------------------------------------\e[0m"
-	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-6.50 Compiler v1.0\e[0m"    
-	@echo "\e[36mC-Sources : \e[37m$(C_FILES)\e[0m"
-	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
-	@echo "\e[36mO-Files : \e[37m$(O_FILES)\e[0m"
-	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"
-	@echo "\e[37m------------------------------------------------------------------\e[0m"
+	@echo "\033[37m------------------------------------------------------------------\033[0m"
+	@echo "\033[1;31mApollo\033[1;30mCrossDev \033[37mGCC-6.50 Compiler v1.0\033[0m"    
+	@echo "\033[36mC-Sources : \033[37m$(C_FILES)\033[0m"
+	@echo "\033[36mS-Sources : \033[37m$(S_FILES)\033[0m"
+	@echo "\033[36mO-Files : \033[37m$(O_FILES)\033[0m"
+	@echo "\033[36mExecutable: \033[37m$(EXE)\033[0m"
+	@echo "\033[37m------------------------------------------------------------------\033[0m"
 
 cleanbefore:
 	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/$(PROJECT_NAME)*.txt $(EXE)
 
 build: $(EXE)
-	@echo "\e[37mStep #2 - \e[31mLinker \e[37mFinished\e[0m"
+	@echo "\033[37mStep #2 - \033[31mLinker \033[37mFinished\033[0m"
 
 # Link all Objects to one Executable
 $(EXE) : $(O_FILES) 
 	@$(O_LINKER) $(O_FILES) $(C_FLAGS) -o $(EXE) >>/dev/null
-	@echo "\e[37mStep #1 - \e[31mCompiler \e[37mFinished\e[0m"
+	@echo "\033[37mStep #1 - \033[31mCompiler \033[37mFinished\033[0m"
 
 # Compile all C-Sources to Objects 
 $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
@@ -122,13 +122,13 @@ $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
 	@$(S_COMPILER) $(S_FLAGS) -o $@ $< >>/dev/null
 
 upload_all:
-	@echo "\e[37mStep #3 - \e[31mApollo\e[30mExplorer \e[37mUpload\e[30m"
+	@echo "\033[37mStep #3 - \033[31mApollo\033[30mExplorer \033[37mUpload\033[30m"
 	@$(ACP) $(EXE) $(APOLLO_V4_HOST)
 	@cp $(ICONS)/ApolloIcon.info $(PROJECT_DIR)/$(PROJECT_NAME).info
 	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME).info $(APOLLO_V4_HOST)
 
 upload_debug:
-	@echo "\e[37mStep #3 - \e[31mApollo\e[30mExplorer \e[37mUpload\e[30m"
+	@echo "\033[37mStep #3 - \033[31mApollo\033[30mExplorer \033[37mUpload\033[30m"
 	@$(ACP) $(EXE) $(APOLLO_V4_HOST)
 	@$(ACP) $(GDB) $(APOLLO_V4_HOST)
 	@cp $(ICONS)/ApolloIcon.info $(PROJECT_DIR)/$(PROJECT_NAME).info
@@ -142,7 +142,7 @@ cleanafter:
 	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/*.info $(EXE)_Debug
 
 exit:
-	@echo "\e[37m------------------------------------------------------------------\e[0m"
-	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[32mCompile Successful\e[0m"
-	@echo "\e[37m------------------------------------------------------------------\e[0m"
+	@echo "\033[37m------------------------------------------------------------------\033[0m"
+	@echo "\033[1;31mApollo\033[1;30mCrossDev \033[32mCompile Successful\033[0m"
+	@echo "\033[37m------------------------------------------------------------------\033[0m"
 	@echo " "

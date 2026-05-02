@@ -20,7 +20,7 @@ cd $SOURCES
 
 # PART 2: Update Linux Packages 
 echo "\033[1m\033[37m2. Update Linux Packages\033[0m\033[36m"
-brew install bash wget make lhasa gmp mpfr libmpc flex gettext gnu-sed texinfo gcc@12 make autoconf bison >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
+brew install bash wget make lhasa gmp mpfr libmpc flex gettext gnu-sed texinfo gcc@12 make autoconf bison qt@5 >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 
 # PART 3: Clone Amiga-GCC
 echo "\033[1m\033[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\033[0m\033[36m"
@@ -121,10 +121,12 @@ cp -r -f cmake/* $PREFIX/lib >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 # Part 8: ApolloExplorer
 echo "\033[1m\033[37m8. ApolloExplorer\033[0m\033[36m"
 cd $WORKSPACE/$PROJECTS
-git clone --progress https://github.com/ronybeck/ApolloExplorer >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+git clone --progress https://github.com/WDrijver/ApolloExplorer >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 cd $WORKSPACE/$PROJECTS/ApolloExplorer
-qmake >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
-make >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+/opt/homebrew/opt/qt@5/bin/qmake -recursive >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+make clean >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+make -j16 >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+make clean >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 
 # Part 9: BGDBServer
 echo "\033[1m\033[37m9. BGDG Server\033[0m\033[36m"
