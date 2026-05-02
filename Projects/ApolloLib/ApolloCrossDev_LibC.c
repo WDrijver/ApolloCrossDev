@@ -464,7 +464,7 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 				for(uint16_t colorcounter=0; colorcounter<picture->palette; colorcounter++)						// Set Apollo SAGA Chunky Color Registers
 				{
 					fread(&color, 1, 4, file_handle);
-					switch(picture->pip)
+					switch(picture->target)
 					{
 						case 0:
 							*(volatile uint32_t*)APOLLO_SAGA_CHUNKY_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
@@ -474,6 +474,10 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 							break;
 						case 2:
 							*(volatile uint32_t*)APOLLO_SAGA_PIP2CHK_COL = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
+							break;
+						case 3:
+							*(volatile uint16_t*)SAGA_VIDEO_SPRITECLUT_IDX = colorcounter;
+							*(volatile uint32_t*)SAGA_VIDEO_SPRITECLUT_RGB = (colorcounter<<24) + (((color >> 8) & 0xFF)<<16) + (((color >> 16) & 0xFF)<<8) + ((color >> 24) & 0xFF);
 							break;
 						default:
 							break;

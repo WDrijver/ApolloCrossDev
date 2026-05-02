@@ -3,7 +3,8 @@
         {
             "name": "ApolloCrossDev",
             "includePath": [
-                "${workspaceFolder}/Compilers/GCC-6.50-Latest/m68k-amigaos/**"
+                "${workspaceFolder}/Compilers/GCC-6.50-Latest/m68k-amigaos/**",
+                "${workspaceFolder}/Projects/ApolloLib/**"
             ],
             "defines": [],
             "compilerPath": "${workspaceFolder}/Compilers/GCC-6.50-Latest/bin/m68k-amigaos-gcc",

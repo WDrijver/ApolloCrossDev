@@ -59,7 +59,7 @@ struct ApolloPicture
     // Display Values
     int16_t     modulo;
     bool        fullscreen;
-    uint16_t    pip;                    // 0 = No PiP | 1 = PiP1 | 2 = PiP2
+    uint16_t    target;                    // 0 = SAGA Screen | 1 = SAGA PiP1 | 2 = SAGA PiP2 | 3 = SAGA Sprite
 };
 struct BMPHeader
 {
