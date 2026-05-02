@@ -13,8 +13,6 @@
 
 extern char ApolloDebugMessage[256];
 
-uint32_t test;
-
 void main()
 {
     AD(ApolloDebugInit();)
