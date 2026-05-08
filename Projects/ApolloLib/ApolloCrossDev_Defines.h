@@ -117,9 +117,9 @@
 // Hardware sprite: 32x32, 1 byte color index + 1 byte alpha per pixel.
 // LONG layout: [pix0:8][alpha0:8][pix1:8][alpha1:8].
 // Palette: move.w index to $DFF3A8, then move.l RGB888 to $DFF3AA.
-#define SAGA_VIDEO_SPRITEDATA      0xDFD000
-#define SAGA_VIDEO_SPRITECLUT_IDX  0xDFF3A8
-#define SAGA_VIDEO_SPRITECLUT_RGB  0xDFF3AA
+#define SAGA_VIDEO_SPRITEDATA      0x00DFD000
+#define SAGA_VIDEO_SPRITECLUT_IDX  0x00DFF3A8
+#define SAGA_VIDEO_SPRITECLUT_RGB  0x00DFF3AA
 
 #define SAGA_SPRITE_WIDTH          32
 #define SAGA_SPRITE_HEIGHT         32
