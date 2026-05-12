@@ -88,11 +88,11 @@ $PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 38 -t $PREFIX/$TA
 $PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 40 -t $PREFIX/$TARGET/include/inline >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 echo -n "\033[0m\033[36mZLib | "
-cp -r -f $ARCHIVES/zlib-source $SOURCES/zlib-source
+cp -r -f $ARCHIVES/zlib-source $SOURCES
 cd $SOURCES/zlib-source
 CC=$PREFIX/bin/m68k-amigaos-gcc \
 AR=$PREFIX/bin/m68k-amigaos-ar \
-RANLIB=CC=$PREFIX/bin/m68k-amigaos-ranlib \
+RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
 make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f libz.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r zlib.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
