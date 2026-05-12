@@ -70,6 +70,16 @@ cd $ARCHIVES/SDL-Images
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
+echo -n "\033[0m\033[36mSDL-Net | "
+cp -r -f $ARCHIVES/SDL-Net $SOURCES
+cd $SOURCES/SDL-Net
+CC=$PREFIX/bin/m68k-amigaos-gcc \
+AR=$PREFIX/bin/m68k-amigaos-ar \
+RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
+make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f libSDL_net.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r *.h $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
 echo -n "\033[0m\033[36mFreeType2 | "
 cd $ARCHIVES/freetype2
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
