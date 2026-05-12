@@ -93,11 +93,8 @@ cd $SOURCES/zlib-source
 CC=$PREFIX/bin/m68k-amigaos-gcc \
 AR=$PREFIX/bin/m68k-amigaos-ar \
 RANLIB=CC=$PREFIX/bin/m68k-amigaos-ranlib \
-CFLAGS="-noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer" \
-./configure >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-make all $CPU >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f libz.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-mkdir -p $PREFIX/$TARGET/include/zlib
 cp -r zlib.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r zconf.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
