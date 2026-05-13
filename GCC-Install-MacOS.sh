@@ -43,34 +43,31 @@ make sdk=mui PREFIX=$PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cp -r -f $SOURCES/amiga-gcc/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/include/mui >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
 # Part 6: PortLibs (amiga-gcc takes care of Open-GL, SDL and GDB - we add Freetype, ZLib and BZip2)
-echo -n "\033[1m\033[37m6. Adding Porting Libs: "
+echo "\033[1m\033[37m6. Adding Porting Libs: "
 cd $PREFIX
-echo -n "\033[0m\033[36mGL | "
+echo "\033[0m\033[36m  * GL\033[0m"
 cp -r -f $PREFIX/include/GL $PREFIX/$TARGET/include/GL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-echo -n "\033[0m\033[36mGDB | "
+echo "\033[0m\033[36m  * GDB\033[0m"
 cp -r -f $PREFIX/include/gdb $PREFIX/$TARGET/include/GDB >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-echo -n "\033[0m\033[36mSDL | "
+echo "\033[0m\033[36m  * SDL\033[0m"
 cp -r -f $PREFIX/include/SDL $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f $PREFIX/lib/libSDL* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 rm -r -f $PREFIX/lib/libSDL* >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 rm -r -f $PREFIX/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-echo -n "\033[0m\033[36mSDL-TTF | "
+echo "\033[0m\033[36m  * SDL-TTF\033[0m"
 cd $ARCHIVES/SDL-TTF
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-
-echo -n "\033[0m\033[36mSDL-Mixer | "
+echo "\033[0m\033[36m  * SDL-Mixer\033[0m"
 cd $ARCHIVES/SDL-Mixer
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-
-echo -n "\033[0m\033[36mSDL-Images | "
+echo "\033[0m\033[36m  * SDL-Images\033[0m"
 cd $ARCHIVES/SDL-Images
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-
-echo -n "\033[0m\033[36mSDL-Net | "
+echo "\033[0m\033[36m  * SDL-Net\033[0m"
 cp -r -f $ARCHIVES/SDL-Net $SOURCES
 cd $SOURCES/SDL-Net
 CC=$PREFIX/bin/m68k-amigaos-gcc \
@@ -80,24 +77,24 @@ make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f libSDL_net.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r *.h $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-echo -n "\033[0m\033[36mFreeType2 | "
+echo "\033[0m\033[36m  * FreeType2\033[0m"
 cd $ARCHIVES/freetype2
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-echo -n "\033[0m\033[36mVorbis | "
+echo "\033[0m\033[36m  * Vorbis\033[0m"
 cd $ARCHIVES/vorbis
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-echo -n "\033[0m\033[36mMPEGA (Dynamic) | "
+echo "\033[0m\033[36m  * MPEGA (Dynamic)\033[0m"
 cd $ARCHIVES/MPEGA-source/include
 cp -r -f clib/* $PREFIX/$TARGET/include/clib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f libraries/* $PREFIX/$TARGET/include/libraries >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 $PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 38 -t $PREFIX/$TARGET/include/proto >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 $PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 40 -t $PREFIX/$TARGET/include/inline >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-echo -n "\033[0m\033[36mZLib | "
+echo "\033[0m\033[36m  * ZLib\033[0m"
 cp -r -f $ARCHIVES/zlib-source $SOURCES
 cd $SOURCES/zlib-source
 CC=$PREFIX/bin/m68k-amigaos-gcc \
@@ -105,10 +102,32 @@ AR=$PREFIX/bin/m68k-amigaos-ar \
 RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
 make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f libz.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r zlib.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r zconf.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+mkdir -p $PREFIX/$TARGET/include/zlib
+cp -r zlib.h $PREFIX/$TARGET/include/zlib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r zconf.h $PREFIX/$TARGET/include/zlib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-echo "\033[0m\033[36mTimidity\033[0m"
+echo "\033[0m\033[36m  * MiniZip\033[0m"
+cd $SOURCES/zlib-source/contrib/minizip
+CC=$PREFIX/bin/m68k-amigaos-gcc \
+AR=$PREFIX/bin/m68k-amigaos-ar \
+RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
+make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f libminizip.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+mkdir -p $PREFIX/$TARGET/include/minizip
+cp -r *.h $PREFIX/$TARGET/include/minizip >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo "\033[0m\033[36m  * LUA\033[0m"
+cp -r -f $ARCHIVES/lua $SOURCES
+cd $SOURCES/lua
+CC=$PREFIX/bin/m68k-amigaos-gcc \
+AR=$PREFIX/bin/m68k-amigaos-ar \
+RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
+make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f liblua.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+mkdir -p $PREFIX/$TARGET/include/lua
+cp -r *.h $PREFIX/$TARGET/include/lua >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo "\033[0m\033[36m  * Timidity\033[0m"
 mkdir $SOURCES/timidity-source
 cp -r -f $ARCHIVES/timidity-source/src/* $SOURCES/timidity-source
 cd $SOURCES/timidity-source
@@ -116,6 +135,10 @@ make -f Makefile.apollocrossdev >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp libtimidity.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 mkdir -p $PREFIX/$TARGET/include/timidity
 cp -f *.h $PREFIX/$TARGET/include/timidity
+
+echo "\033[0m\033[36m  * ffmpeg\033[0m"
+mkdir -p $PREFIX/$TARGET/include/ffmpeg
+cp -r -f $ARCHIVES/ffmpeg/* $PREFIX/$TARGET/include/ffmpeg
 
 # PART 7: NDK
 echo "\033[1m\033[37m7. Development Kits\033[0m\033[36m"
