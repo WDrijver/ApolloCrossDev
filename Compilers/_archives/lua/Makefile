@@ -7,13 +7,13 @@
 PLAT= generic
 
 #PREFIX= ../../../ApolloCrossDev/Compilers/GCC-6.50-Latest/bin
-#CC= $(PREFIX)/m68k-amigaos-gcc -m68040 -m68881 -noixemul -std=gnu99 -DLUA_32BITS -ffast-math
+#CC= $(PREFIX)/m68k-amigaos-gcc 
 
-CFLAGS= -O2 -Wall -Wextra $(SYSCFLAGS) $(MYCFLAGS)
-LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS)
+CFLAGS= -m68040 -m68881 -noixemul -std=gnu99 -DLUA_32BITS -ffast-math -O2 -Wall -Wextra $(SYSCFLAGS) $(MYCFLAGS)
+LDFLAGS= $(SYSLDFLAGS) $(MYLDFLAGS) -noixemul
 LIBS= -lm $(SYSLIBS) $(MYLIBS)
 
-#AR= $(PREFIX)/m68k-amigaos-ar rcu
+#AR= $(PREFIX)/m68k-amigaos-ar
 #RANLIB= $(PREFIX)/m68k-amigaos-ranlib
 RM= rm -f
 UNAME= uname
@@ -59,7 +59,7 @@ o:	$(ALL_O)
 a:	$(ALL_A)
 
 $(LUA_A): $(BASE_O)
-	$(AR) $@ $(BASE_O)
+	$(AR) rcu $@ $(BASE_O)
 	$(RANLIB) $@
 
 $(LUA_T): $(LUA_O) $(LUA_A)

@@ -95,16 +95,16 @@ $PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 38 -t $PREFIX/$TA
 $PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 40 -t $PREFIX/$TARGET/include/inline >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 echo "\033[0m\033[36m  * ZLib\033[0m"
-cp -r -f $ARCHIVES/zlib-source $SOURCES
+mkdir -p $SOURCES/zlib-source
+cp -r -f $ARCHIVES/zlib-source/* $SOURCES/zlib-source
 cd $SOURCES/zlib-source
 CC=$PREFIX/bin/m68k-amigaos-gcc \
 AR=$PREFIX/bin/m68k-amigaos-ar \
 RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
 make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f libz.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-mkdir -p $PREFIX/$TARGET/include/zlib
-cp -r zlib.h $PREFIX/$TARGET/include/zlib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r zconf.h $PREFIX/$TARGET/include/zlib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r zlib.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r zconf.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 echo "\033[0m\033[36m  * MiniZip\033[0m"
 cd $SOURCES/zlib-source/contrib/minizip
@@ -113,14 +113,13 @@ AR=$PREFIX/bin/m68k-amigaos-ar \
 RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
 make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f libminizip.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-mkdir -p $PREFIX/$TARGET/include/minizip
-cp -r *.h $PREFIX/$TARGET/include/minizip >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 echo "\033[0m\033[36m  * LUA\033[0m"
-cp -r -f $ARCHIVES/lua $SOURCES
+mkdir -p $SOURCES/lua
+cp -r -f $ARCHIVES/lua/* $SOURCES/lua
 cd $SOURCES/lua
 CC=$PREFIX/bin/m68k-amigaos-gcc \
-AR=$PREFIX/bin/m68k-amigaos-ar \
+AR=$PREFIX/bin/m68k-amigaos-ar rcu \
 RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
 make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f liblua.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
@@ -138,7 +137,7 @@ cp -f *.h $PREFIX/$TARGET/include/timidity
 
 echo "\033[0m\033[36m  * ffmpeg\033[0m"
 mkdir -p $PREFIX/$TARGET/include/ffmpeg
-cp -r -f $ARCHIVES/ffmpeg/* $PREFIX/$TARGET/include/ffmpeg
+cp -r -f $ARCHIVES/ffmpeg/* $PREFIX/$TARGET/include
 
 # PART 7: NDK
 echo "\033[1m\033[37m7. Development Kits\033[0m\033[36m"
