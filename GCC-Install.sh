@@ -61,8 +61,8 @@ cp -r -f $PREFIX/lib/libSDL* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFI
 rm -r -f $PREFIX/lib/libSDL* >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 rm -r -f $PREFIX/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-echo -e -n "\e[0m\e[36mSDL-TTF | "
-cd $ARCHIVES/SDL-TTF
+echo -e -n "\e[0m\e[36mSDL_ttf | "
+cd $ARCHIVES/SDL_ttf
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
@@ -71,8 +71,8 @@ cd $ARCHIVES/SDL-Mixer
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-echo -e -n "\e[0m\e[36mSDL-Images | "
-cd $ARCHIVES/SDL-Images
+echo -e -n "\e[0m\e[36mSDL_images | "
+cd $ARCHIVES/SDL_images
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 

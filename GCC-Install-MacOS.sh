@@ -45,31 +45,34 @@ cp -r -f $SOURCES/amiga-gcc/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/in
 # Part 6: PortLibs (amiga-gcc takes care of Open-GL, SDL and GDB - we add Freetype, ZLib and BZip2)
 echo "\033[1m\033[37m6. Adding Porting Libs: "
 cd $PREFIX
+
 echo "\033[0m\033[36m  * GL\033[0m"
 cp -r -f $PREFIX/include/GL $PREFIX/$TARGET/include/GL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 echo "\033[0m\033[36m  * GDB\033[0m"
 cp -r -f $PREFIX/include/gdb $PREFIX/$TARGET/include/GDB >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
 echo "\033[0m\033[36m  * SDL\033[0m"
 cp -r -f $PREFIX/include/SDL $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f $PREFIX/lib/libSDL* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-rm -r -f $PREFIX/lib/libSDL* >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-rm -r -f $PREFIX/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-echo "\033[0m\033[36m  * SDL-TTF\033[0m"
-cd $ARCHIVES/SDL-TTF
-cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-echo "\033[0m\033[36m  * SDL-Mixer\033[0m"
-cd $ARCHIVES/SDL-Mixer
-cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-echo "\033[0m\033[36m  * SDL-Images\033[0m"
-cd $ARCHIVES/SDL-Images
-cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-echo "\033[0m\033[36m  * SDL-Net\033[0m"
-cp -r -f $ARCHIVES/SDL-Net $SOURCES
-cd $SOURCES/SDL-Net
+echo "\033[0m\033[36m  * SDL_mixer\033[0m"
+cd $ARCHIVES/SDL_mixer
+mkdir -p $SOURCES/SDL_mixer
+cp -r -f $ARCHIVES/SDL_mixer/* $SOURCES/SDL_mixer
+cd $SOURCES/SDL_mixer
+PATH=$PREFIX/bin:$PATH \
+CC=$PREFIX/bin/m68k-amigaos-gcc \
+AR=$PREFIX/bin/m68k-amigaos-ar \
+RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
+./configure --host=m68k-amigaos --prefix=$PREFIX/$TARGET >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make CFLAGS="-noixemul -g -O2" LDFLAGS="-noixemul -lSDL" >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f build/.libs/libSDL_mixer.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f *.h $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo "\033[0m\033[36m  * SDL_net\033[0m"
+mkdir -p $SOURCES/SDL_net
+cp -r -f $ARCHIVES/SDL_net/* $SOURCES/SDL_net
+cd $SOURCES/SDL_net
 CC=$PREFIX/bin/m68k-amigaos-gcc \
 AR=$PREFIX/bin/m68k-amigaos-ar \
 RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
@@ -77,13 +80,23 @@ make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f libSDL_net.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r *.h $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-echo "\033[0m\033[36m  * FreeType2\033[0m"
-cd $ARCHIVES/freetype2
+echo "\033[0m\033[36m  * SDL_ttf\033[0m"
+cd $ARCHIVES/SDL_ttf
+cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo "\033[0m\033[36m  * SDL_images\033[0m"
+cd $ARCHIVES/SDL_images
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 echo "\033[0m\033[36m  * Vorbis\033[0m"
 cd $ARCHIVES/vorbis
+cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo "\033[0m\033[36m  * FreeType2\033[0m"
+cd $ARCHIVES/freetype2
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
@@ -119,7 +132,7 @@ mkdir -p $SOURCES/lua
 cp -r -f $ARCHIVES/lua/* $SOURCES/lua
 cd $SOURCES/lua
 CC=$PREFIX/bin/m68k-amigaos-gcc \
-AR=$PREFIX/bin/m68k-amigaos-ar rcu \
+AR=$PREFIX/bin/m68k-amigaos-ar \
 RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
 make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f liblua.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log

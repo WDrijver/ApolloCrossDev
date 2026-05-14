@@ -1,5 +1,0 @@
-#objects
-*.go
-*.a
-/Default/
-.idea/
