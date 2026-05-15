@@ -51,23 +51,43 @@ cp -r -f $SOURCES/amiga-gcc/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/in
 # Part 6: PortLibs (amiga-gcc takes care of Open-GL, SDL and GDB - we add Freetype, ZLib and BZip2)
 echo -e -n "\e[1m\e[37m6. Adding Porting Libs: "
 cd $PREFIX
+
 echo -e -n "\e[0m\e[36mGL | "
 cp -r -f $PREFIX/include/GL $PREFIX/$TARGET/include/GL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 echo -e -n "\e[0m\e[36mGDB | "
 cp -r -f $PREFIX/include/gdb $PREFIX/$TARGET/include/GDB >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
 echo -e -n "\e[0m\e[36mSDL | "
 cp -r -f $PREFIX/include/SDL $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f $PREFIX/lib/libSDL* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-rm -r -f $PREFIX/lib/libSDL* >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-rm -r -f $PREFIX/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo -e -n "\e[0m\e[36mSDL_mixer | "
+cd $ARCHIVES/SDL_mixer
+mkdir -p $SOURCES/SDL_mixer
+cp -r -f $ARCHIVES/SDL_mixer/* $SOURCES/SDL_mixer
+cd $SOURCES/SDL_mixer
+PATH=$PREFIX/bin:$PATH \
+CC=$PREFIX/bin/m68k-amigaos-gcc \
+AR=$PREFIX/bin/m68k-amigaos-ar \
+RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
+./configure --host=m68k-amigaos --prefix=$PREFIX/$TARGET >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make CFLAGS="-noixemul -g -O2" LDFLAGS="-noixemul -lSDL" >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f build/.libs/libSDL_mixer.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f *.h $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo -e -n "\e[0m\e[36mSDL_net | "
+mkdir -p $SOURCES/SDL_net
+cp -r -f $ARCHIVES/SDL_net/* $SOURCES/SDL_net
+cd $SOURCES/SDL_net
+CC=$PREFIX/bin/m68k-amigaos-gcc \
+AR=$PREFIX/bin/m68k-amigaos-ar \
+RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
+make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f libSDL_net.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r *.h $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 echo -e -n "\e[0m\e[36mSDL_ttf | "
 cd $ARCHIVES/SDL_ttf
-cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-
-echo -e -n "\e[0m\e[36mSDL-Mixer | "
-cd $ARCHIVES/SDL-Mixer
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
@@ -76,13 +96,13 @@ cd $ARCHIVES/SDL_images
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-echo -e -n "\e[0m\e[36mFreeType2 | "
-cd $ARCHIVES/freetype2
+echo -e -n "\e[0m\e[36mVorbis | "
+cd $ARCHIVES/vorbis
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-echo -e -n "\e[0m\e[36mVorbis | "
-cd $ARCHIVES/vorbis
+echo -e -n "\e[0m\e[36mFreeType2 | "
+cd $ARCHIVES/freetype2
 cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
@@ -94,18 +114,36 @@ $PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 38 -t $PREFIX/$TA
 $PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 40 -t $PREFIX/$TARGET/include/inline >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 echo -e -n "\e[0m\e[36mZLib | "
-cp -r -f $ARCHIVES/zlib-source $SOURCES/zlib-source
+mkdir -p $SOURCES/zlib-source
+cp -r -f $ARCHIVES/zlib-source/* $SOURCES/zlib-source
 cd $SOURCES/zlib-source
 CC=$PREFIX/bin/m68k-amigaos-gcc \
 AR=$PREFIX/bin/m68k-amigaos-ar \
-RANLIB=CC=$PREFIX/bin/m68k-amigaos-ranlib \
-CFLAGS="-noixemul -m68040 -O2 -ffast-math -fomit-frame-pointer" \
-./configure >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-make all $CPU >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
+make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f libz.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-mkdir -p $PREFIX/$TARGET/include/zlib
 cp -r zlib.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r zconf.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo -e -n "\e[0m\e[36mMinizip | "
+cd $SOURCES/zlib-source/contrib/minizip
+CC=$PREFIX/bin/m68k-amigaos-gcc \
+AR=$PREFIX/bin/m68k-amigaos-ar \
+RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
+make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f libminizip.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo -e -n "\e[0m\e[36mLua | "
+mkdir -p $SOURCES/lua
+cp -r -f $ARCHIVES/lua/* $SOURCES/lua
+cd $SOURCES/lua
+CC=$PREFIX/bin/m68k-amigaos-gcc \
+AR=$PREFIX/bin/m68k-amigaos-ar \
+RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
+make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f liblua.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+mkdir -p $PREFIX/$TARGET/include/lua
+cp -r *.h $PREFIX/$TARGET/include/lua >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 echo -e "\e[0m\e[36mTimidity\e[0m"
 mkdir $SOURCES/timidity-source

@@ -20,7 +20,7 @@ cd $SOURCES
 
 # PART 2: Update Linux Packages 
 echo "\033[1m\033[37m2. Update Linux Packages\033[0m\033[36m"
-brew install bash wget make lhasa gmp mpfr libmpc flex gettext gnu-sed texinfo gcc@12 make autoconf bison qt@5 >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
+brew install bash wget make lhasa gmp mpfr libmpc flex gettext gnu-sed texinfo gcc@12 make automake autoconf bison qt@5 >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 
 # PART 3: Clone Amiga-GCC
 echo "\033[1m\033[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\033[0m\033[36m"
