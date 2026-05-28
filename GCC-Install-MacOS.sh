@@ -10,11 +10,11 @@ echo "\033[1m\033[37m0. Sudo Password\033[0m"
 
 # PART 1: Clean the House
 echo "\033[1m\033[37m1. Clean the House\033[0m\033[36m"
-rm -f -r $PREFIX
+rm -f -r $PREFIX >/dev/null
 mkdir $PREFIX
-rm -f -r $LOGFILES
+rm -f -r $LOGFILES >/dev/null
 mkdir -p $LOGFILES
-rm -f -r $SOURCES
+rm -f -r $SOURCES >/dev/null
 mkdir $SOURCES
 cd $SOURCES
 
@@ -33,14 +33,23 @@ echo "\033[0m\033[36m   * Clean Amiga-GCC\033[0m"
 make clean >>$LOGFILES/part4_clean.log 2>>$LOGFILES/part4_clean_err.log
 echo "\033[0m\033[36m   * Clean ApolloCrossDev\033[0m"
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4_dropprefix.log 2>>$LOGFILES/part4_dropprefix_err.log
+echo "\033[0m\033[36m   * Clone Repos (>1 min)"
+make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo "\033[0m\033[36m   * Build Amiga-GCC (be patient)\033[0m"
-CC=gcc-12 CXX=g++-12 make all $CPU SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+CC=gcc-12 CXX=g++-12 make all $CPU NDK=3.2 SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+echo "\033[0m\033[36m   * Add LibDebug\033[0m"
+make libdebug PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Part 5: MUI
 echo "\033[1m\033[37m5. Adding MUI5\033[0m\033[36m"
+
 cd $SOURCES/amiga-gcc
 make sdk=mui PREFIX=$PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cp -r -f $SOURCES/amiga-gcc/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/include/mui >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+
+# Patch MUI5 proto header to be compatible with Amiga-GCC
+cd $ARCHIVES/MUI5
+cp -r -f muimaster_lib.h $PREFIX/$TARGET/include/proto >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
 # Part 6: PortLibs (amiga-gcc takes care of Open-GL, SDL and GDB - we add Freetype, ZLib and BZip2)
 echo "\033[1m\033[37m6. Adding Porting Libs: "
@@ -176,7 +185,7 @@ cd $WORKSPACE/$PROJECTS
 git clone --progress https://github.com/WDrijver/bgdbserver >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
 cd $WORKSPACE/$PROJECTS/bgdbserver
 make >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
-
+exit
 # PART 10: Cleanup
 echo "\033[1m\033[37m10. Cleanup\033[0m\033[36m"
 rm -rf $SOURCES
