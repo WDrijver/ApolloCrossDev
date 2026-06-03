@@ -401,7 +401,10 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 
 	uint32_t color;
 
-	struct BMPHeader bmpheader;
+	bool bSwapPicture = false;								// Flag to indicate if image data needs to be swapped after loading (for top-down BMP)
+
+	struct BMPFileHeader bmpfileheader;
+	struct BMPDIBHeader_BITMAPINFOHEADER bmpinfoheader;
 	struct DDSHeader ddsheader;
 
 	ADX(sprintf(ApolloDebugMessage, "ApolloLoadPicture: Opening File = %s", picture->filename);)
@@ -441,20 +444,45 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 			picture->size = file_size-offset;
 			break;
 		case APOLLO_BMP_FORMAT:
+			ADX(ApolloDebugPutStr("ApolloLoad: BMP Format detected, reading header\n");)
 			fseek(file_handle, 0, SEEK_SET);
-			fread(&bmpheader, sizeof(struct BMPHeader), 1, file_handle);
+			fread(&bmpfileheader, sizeof(struct BMPFileHeader), 1, file_handle);
+			fread(&bmpinfoheader, sizeof(struct BMPDIBHeader_BITMAPINFOHEADER), 1, file_handle);
 
-			if( bmpheader.type != 0x424D) return APOLLO_PICTURE_NOHEADER;						// Check for 'BM' (0x424D) Marker
-			if( (ApolloSwapWord(bmpheader.planes)!=1) ) return APOLLO_PICTURE_PLANEERR;		   	// Check for 1 Color Plane
-			if( (ApolloSwapLong(bmpheader.compression)!=0) ) return APOLLO_PICTURE_COMPRERR;	// Only Uncompressed BMP Supported
+			if( bmpfileheader.type != 0x424D) return APOLLO_PICTURE_NOHEADER;						// Check for 'BM' (0x424D) Marker
+			if( (ApolloSwapWord(bmpinfoheader.planes)!=1) ) return APOLLO_PICTURE_PLANEERR;		   	// Check for 1 Color Plane
+			if( (ApolloSwapLong(bmpinfoheader.compression)!=0) && (ApolloSwapLong(bmpinfoheader.compression)!=3))
+			{
+				ADX(sprintf(ApolloDebugMessage, "ApolloLoad: BMP Compression Mode %d not supported\n", ApolloSwapLong(bmpinfoheader.compression));)
+				ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+				return APOLLO_PICTURE_COMPRERR;	// Only Uncompressed BMP Supported
+			}
 
-			picture->size   	= ApolloSwapLong(bmpheader.sizeimage);
-			picture->width  	= ApolloSwapLong(bmpheader.width);
-			picture->height 	= ApolloSwapLong(bmpheader.height);
-			picture->depth  	= ApolloSwapWord(bmpheader.bpp);
-			picture->palette	= ApolloSwapLong(bmpheader.palette);	
-			offset 				= ApolloSwapLong(bmpheader.offset);
+			picture->size   	= ApolloSwapLong(bmpinfoheader.sizeimage);
+			picture->width  	= ApolloSwapLong(bmpinfoheader.width);
+			picture->height 	= ApolloSwapLong(bmpinfoheader.height);
+
+			if(picture->height < 0) 
+			{
+				picture->height = -picture->height;										// Height is negative for top-down BMP, convert it to positive for further processing
+				bSwapPicture = false;															// Set flag to indicate that image data does not need to be swapped after loading
+				ADX(sprintf(ApolloDebugMessage, "ApolloLoad: BMP Top-Down format detected, height = %d\n", picture->height);)
+				ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+			} else {
+				picture->height = picture->height;											// Height is positive for bottom-up BMP, keep it positive for further processing
+				bSwapPicture = true;															// Set flag to indicate that image data needs to be swapped after loading
+				ADX(sprintf(ApolloDebugMessage, "ApolloLoad: BMP Bottom-Up format detected, height = %d\n", picture->height);)
+				ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+			}
 			
+			picture->depth  	= ApolloSwapWord(bmpinfoheader.bpp);
+			picture->palette	= ApolloSwapLong(bmpinfoheader.palette);	
+			offset 				= ApolloSwapLong(bmpfileheader.offset);
+		
+			ADX(sprintf(ApolloDebugMessage, "ApolloLoad: BMP Header read -> Width=%d | Height=%d | BPP=%d | ImageSize=%d | Palette=%d\n",
+				 picture->width, picture->height, picture->depth, picture->size, picture->palette);)
+			ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+
 			if(picture->size == 0) picture->size = file_size - offset;										// If Image Size is 0, calculate it	
 			if( (picture->depth<=8) && (picture->palette==0) ) picture->palette = 1 << picture->depth;		// If Color Indexes is 0, calculate it
 
@@ -568,7 +596,7 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 					buffer_pixel[0] = buffer_aligned[pixel];
 					buffer_aligned[pixel] = buffer_aligned[pixel+3];
 					buffer_aligned[pixel+3] = buffer_pixel[0];
-					buffer_pixel = (uint8_t*)&buffer_aligned[pixel+1];
+					buffer_pixel[0] = buffer_aligned[pixel+1];
 					buffer_aligned[pixel+1] = buffer_aligned[pixel+2];
 					buffer_aligned[pixel+2] = buffer_pixel[0];
 					pixel+=4;
@@ -582,7 +610,7 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 
 	if(picture->format == APOLLO_BMP_FORMAT)
 	{
-		if(picture->height>0)
+		if(bSwapPicture)
 		{	
 			ADX(ApolloDebugPutStr( "Flip BMP Bitmap Vertically\n");)						// BMP bitmap is stored bottom to top, so we flip vertically
 			uint16_t row_bytes = (picture->width * (picture->depth / 8) + 3) & ~3; 		// Each row is padded to a multiple of 4 bytes
@@ -604,7 +632,7 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 				return APOLLO_PICTURE_MEMERROR;
 			}
 		} else {
-			bmpheader.height = -bmpheader.height;										// Make height positive for further processing						
+			ADX(ApolloDebugPutStr( "No need to flip BMP Bitmap\n");)
 		}
 	}
 

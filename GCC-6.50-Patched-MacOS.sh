@@ -6,12 +6,12 @@ CPU=-j16
 WORKSPACE="`pwd`"
 COMPILERS=Compilers
 PROJECTS=Projects
-COMPILER=GCC-6.50-Stable
+COMPILER=GCC-6.50-Test
 TARGET=m68k-amigaos
 PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
 
 MASTER=https://github.com/WDrijver/amiga-gcc
-BRANCH=amiga-gcc-stable
+BRANCH=amiga-gcc-latest
 
 ARCHIVES=$WORKSPACE/$COMPILERS/_archives
 LOGFILES=$PREFIX/_logs
@@ -23,4 +23,4 @@ export PATH=$PREFIX/bin:$PATH
 sudo xcodebuild -license accept
 export PATH=$(brew --prefix bison)/bin:$PATH
 
-source GCC-Install-MacOS.sh
+source GCC-Install-Test-MacOS.sh

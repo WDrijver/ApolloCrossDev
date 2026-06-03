@@ -9,64 +9,141 @@ void main(int argc, char *argv[])
 
     if(argc > 1)
     {
-        sprintf(ApolloDebugMessage, "ApolloPointer Example Program: Command Line Argument Detected: %s\n", argv[1]); 
-        ApolloDebugPutStr(ApolloDebugMessage);
+        AD(sprintf(ApolloDebugMessage, "ApolloPointer Example Program: Command Line Argument Detected: %s\n", argv[1]);) 
+        AD(ApolloDebugPutStr(ApolloDebugMessage);)
     } else {
-        ApolloDebugPutStr("ApolloPointer Example Program: No Command Line Argument Detected\n");
-        printf("\nUsage: ApolloPointer <Sprite Bitmap Filename>\n\nExample: ApolloPointer sprite.bmp\n\nNotes:\n- Sprite Bitmap must be 32x32 pixels in size and in 24-bit BMP format.\n- Color #0 is transparant and Color #1 is semi-transparant.\n- All other colors are fully opaque.\n\n");
+        printf("\nUsage: ApolloPointer <Sprite Bitmap Filename>\n\nExample: ApolloPointer sprite.bmp\n\nNotes:\n- Sprite Bitmap must be 32x32 pixels in size and in CLUT8 BMP format.\n- Color #0 is transparant and Color #1 is semi-transparant.\n- All other colors are fully opaque.\n\n");
         goto exit;
     }   
 
-    struct ApolloPicture sprite_bitmap = {"", APOLLO_BMP_FORMAT, true, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 3};
+    struct ApolloPicture sprite_bitmap = {"", APOLLO_BMP_FORMAT, true, NULL, 0, 0, 0, 0, 0, 0, 0, 0, APOLLO_PIC_TARGET_SPRITE};
     strncpy(sprite_bitmap.filename, argv[1], 255);
     uint8_t result = ApolloLoadPicture(&sprite_bitmap);
     if(result != 0x0)
     {
-        sprintf(ApolloDebugMessage, "ApolloPointer Example Program: ERROR - Cannot load Sprite Bitmap %s (Error Code: %d)\n", sprite_bitmap.filename, result); 
-        ApolloDebugPutStr(ApolloDebugMessage);
+        printf("\nApolloPointer Example Program: ERROR - Cannot load Sprite Bitmap %s (Error Code: %d)\n", sprite_bitmap.filename, result); 
+        goto exit;
+    }
+
+    if (sprite_bitmap.width != 32 || sprite_bitmap.height != 32)
+    {
+        printf("\nApolloPointer Example Program: ERROR - Sprite Bitmap %s has invalid dimensions (Width: %d, Height: %d). Expected dimensions are 32x32 pixels.\n", sprite_bitmap.filename, sprite_bitmap.width, sprite_bitmap.height); 
+        goto exit;
+    }
+
+    if (sprite_bitmap.depth != 8 && sprite_bitmap.depth != 24 && sprite_bitmap.depth != 32)
+    {
+        printf("\nApolloPointer Example Program: ERROR - Sprite Bitmap %s has invalid color depth (Depth: %d).\nExpected color depth is either 8 bits per pixel (CLUT8), 24 bits per pixel (RGB888), or 32 bits per pixel (RGBA8888).\n", sprite_bitmap.filename, sprite_bitmap.depth); 
         goto exit;
     }
 
     // Set SAGA Sprite Bitmap Pointer and Sprite Size
-
     uint8_t *SpritePointer_Source = (sprite_bitmap.buffer + sprite_bitmap.position);
     ULONG SpritePointer_Target;
     
     SpritePointer_Target = SAGA_VIDEO_SPRITEDATA;
 
-    UWORD pixel1, pixel2;
-    ULONG pixel;
-    
-    for (int rows=0; rows<32; rows++)
+    if (sprite_bitmap.depth == 8)       // Source BMP = CLUT8
     {
-      for (int pixels=0; pixels<16; pixels++)
+        UWORD pixel1, pixel2;
+        ULONG pixel;
+        
+        for (int rows=0; rows<32; rows++)
         {
-            pixel1 = *(UBYTE*)(SpritePointer_Source + (rows * 32) + (pixels * 2) + 0);
-            pixel1<<=8;
-            if((pixel1 != 0xFF00) && (pixel1 != 0x0000))
+        for (int pixels=0; pixels<16; pixels++)
             {
-                pixel1|=0xFF;
-            } else {
-                pixel1|=0x80;
-            }
-           
-            pixel2 = *(UBYTE*)(SpritePointer_Source + (rows * 32) + (pixels * 2) + 1);
-            pixel2<<=8;
-            if((pixel2 != 0xFF00) && (pixel2 != 0x0000))
-            {
-                pixel2|=0xFF;
-            } else {
-                pixel2|=0x80;
-            }
-
-            pixel = (pixel1 << 16) + pixel2;
-
-            *(LONG *)(SpritePointer_Target) = (LONG)pixel;
+                pixel1 = *(UBYTE*)(SpritePointer_Source + (rows * 32) + (pixels * 2) + 0);
+                pixel1<<=8;
+                if((pixel1 != 0xFF00) && (pixel1 != 0x0000))
+                {
+                    pixel1|=0xFF;
+                } else {
+                    pixel1|=0x80;
+                }
             
-            SpritePointer_Target=SpritePointer_Target+4;
+                pixel2 = *(UBYTE*)(SpritePointer_Source + (rows * 32) + (pixels * 2) + 1);
+                pixel2<<=8;
+                if((pixel2 != 0xFF00) && (pixel2 != 0x0000))
+                {
+                    pixel2|=0xFF;
+                } else {
+                    pixel2|=0x80;
+                }
+
+                pixel = (pixel1 << 16) + pixel2;
+
+                *(LONG *)(SpritePointer_Target) = (LONG)pixel;
+                
+                SpritePointer_Target=SpritePointer_Target+4;
+            }
         }
     }
-    
+
+    if (sprite_bitmap.depth == 32)      // Source BMP = RGBA8888
+    {
+        printf("\nR8G8B8A8 Detected\n");
+        
+        ULONG pixel;
+        ULONG color;
+        ULONG alpha;
+
+        UBYTE sprite_data[64*32];
+        ULONG sprite_colors[256] = {0}; // Initialize all colors to 0 (fully transparent)
+        UWORD index;
+        UWORD nextfreeindex=1; // Start at 1 since color index 0 is reserved for transparency
+
+        sprite_colors[0] = 0x000000; // Color index 0 is reserved for transparency (fully transparent)
+
+        for (int rows=0; rows<32; rows++)
+        {
+            for (int pixels=0; pixels<32; pixels++)
+            {
+                pixel = *(ULONG*)(SpritePointer_Source + (rows * 32 * 4) + (pixels * 4));
+                
+                color = pixel & 0x00FFFFFF;    // Get R8G8B8 part of the pixel
+                alpha = pixel & 0xFF000000;    // Get A8 part of the pixel
+
+                for (index=0; index<nextfreeindex; index++)
+                {
+                    if (sprite_colors[index] == color) break; // Color already exists in sprite_colors array, reuse index
+                }
+
+                if (index == nextfreeindex) // New color, add to sprite_colors array
+                {
+                    ADX(sprintf(ApolloDebugMessage, "New Color Detected: 0x%06X | Assigned Index: %d\n", color, index);)
+                    ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+                    sprite_colors[nextfreeindex] = color;
+                    if (nextfreeindex < 255) nextfreeindex++;
+                }
+                sprite_data[(rows * 32 * 2) + (pixels * 2)]     = index;                // Store color index in sprite data
+                sprite_data[(rows * 32 * 2) + (pixels * 2) + 1] = (UBYTE)(alpha>>24);   // Store alpha value in sprite data
+
+                ADX(sprintf(ApolloDebugMessage, "Pixel[%2d:%2d] Pixel =0x%08X | Color =0x%06X | Alpha =0x%08X | Index=0x%02X | Alpha=0x%02X | NextFreeIndex=%2d\n", rows, pixels, pixel, color, alpha, index, (UBYTE)(alpha>>24), nextfreeindex);)
+                ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+            }
+        }
+
+        ADX(sprintf(ApolloDebugMessage, "Total Unique Colors Detected (including transparency): %d\n", nextfreeindex);)
+        ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+
+        for (int i=0; i<nextfreeindex; i++)
+        {    
+            *(volatile uint16_t*)SAGA_VIDEO_SPRITECLUT_IDX = i;
+            *(volatile uint32_t*)SAGA_VIDEO_SPRITECLUT_RGB = sprite_colors[i];
+            //ADX(sprintf(ApolloDebugMessage, "CLUT Index:%3d Color=0x%06X\n", i, sprite_colors[i]);)
+            //ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+        }
+
+        for (int i=0; i<(64*32); i+=4)
+        {
+            *(LONG *)(SpritePointer_Target) = (sprite_data[i]<<24) + (sprite_data[i+1]<<16) + (sprite_data[i+2]<<8) + sprite_data[i+3];
+            SpritePointer_Target=SpritePointer_Target+4;
+            //ADX(sprintf(ApolloDebugMessage, "Sprite Data[%4d]=0x%08X\n", i, (sprite_data[i]<<24) + (sprite_data[i+1]<<16) + (sprite_data[i+2]<<8) + sprite_data[i+3]);)
+            //ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+        }
+        goto exit;
+    }
+
     exit:
     AD(ApolloDebugPutStr("ApolloPointer Example Program End\n");)
     return;

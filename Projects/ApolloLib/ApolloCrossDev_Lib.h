@@ -52,8 +52,8 @@ struct ApolloPicture
     uint8_t     *buffer;
     uint32_t    position;
     uint32_t    size;
-    uint16_t    width;
-    uint16_t    height;
+    int32_t    width;
+    int32_t    height;
     uint8_t     depth;
     uint32_t    palette;
     // Display Values
@@ -61,14 +61,24 @@ struct ApolloPicture
     bool        fullscreen;
     uint16_t    target;                    // 0 = SAGA Screen | 1 = SAGA PiP1 | 2 = SAGA PiP2 | 3 = SAGA Sprite
 };
-struct BMPHeader
+struct BMPFileHeader
 {
     uint16_t	type;
     uint32_t	size;
     uint16_t	reserved1;
     uint16_t	reserved2;
     uint32_t	offset;
-
+};
+struct BMPDIBHeader_BITMAPCOREHEADER
+{
+    uint32_t	headersize;
+    uint16_t	width;
+    uint16_t	height;
+    uint16_t	planes;
+    uint16_t	bpp;
+};  
+struct BMPDIBHeader_BITMAPINFOHEADER
+{   
     uint32_t	headersize;
     int32_t		width;
     int32_t		height;
@@ -81,6 +91,61 @@ struct BMPHeader
     uint32_t	palette;
     uint32_t	colorimportant;
 };
+struct BMPDIBHeader_BITMAPV4HEADER
+{   
+    uint32_t	headersize;
+    int32_t		width;
+    int32_t		height;
+    uint16_t	planes;
+    uint16_t	bpp;
+    uint32_t	compression;
+    uint32_t	sizeimage;
+    int32_t		hppm;
+    int32_t		vppm;
+    uint32_t	palette;
+    uint32_t	colorimportant;
+    uint32_t	redmask;
+    uint32_t	greenmask;
+    uint32_t	bluemask;
+    uint32_t	alphamask;
+    uint32_t	csType;
+    uint32_t	endpointR[3];
+    uint32_t	endpointG[3];
+    uint32_t	endpointB[3];
+    uint32_t	gammaR;
+    uint32_t	gammaG;
+    uint32_t	gammaB; 
+};
+struct BMPDIBHeader_BITMAPV5HEADER
+{   
+    uint32_t	headersize;
+    int32_t		width;
+    int32_t		height;
+    uint16_t	planes;
+    uint16_t	bpp;
+    uint32_t	compression;
+    uint32_t	sizeimage;
+    int32_t		hppm;
+    int32_t		vppm;
+    uint32_t	palette;
+    uint32_t	colorimportant;
+    uint32_t	redmask;
+    uint32_t	greenmask;
+    uint32_t	bluemask;
+    uint32_t	alphamask;
+    uint32_t	csType;
+    uint32_t	endpointR[3];
+    uint32_t	endpointG[3];
+    uint32_t	endpointB[3];
+    uint32_t	gammaR;
+    uint32_t	gammaG;
+    uint32_t	gammaB; 
+    uint32_t	intent; 
+    uint32_t	profiledata; 
+    uint32_t	profilesize; 
+    uint32_t	reserved; 
+};
+
 struct DDSHeader
 {
     uint32_t    dwMagic;
@@ -187,7 +252,11 @@ typedef struct
 	uint16_t	Button_Middle_Count;
 } ApolloMouseState;
 
-
+struct ApolloPointer
+{
+    UBYTE   data[64*32*2];           // Pointer Sprite pixel data (64x32 pixels, 2 bytes per pixel for color index (BYTE-1) and alpha value (BYTE-2))
+    ULONG   colors[256];             // Pointer Sprite color palette (256 color indices, 24 bits per color in R8G8B8 format)
+};
 
 // ApolloCrossDev C Functions ######################################
 
@@ -230,7 +299,10 @@ uint8_t ApolloKeyboardToUnicode(uint8_t KeyboardAmiga);
 
 // Apollo Memory Functions
 void ApolloCopyBlock( _A0(uint8_t *s), _A1(uint8_t *d), _D3(ULONG size));
-void ApolloCopyBlock32(_A0(uint8_t *s), _A1(uint8_t *d), _D3(ULONG size)); 
+void ApolloCopyBlock32(_A0(uint8_t *s), _A1(uint8_t *d), _D3(ULONG size));
+void ApolloCopyLongs(_A0(uint8_t *s), _A1(uint8_t *d), _D3(ULONG size));
+void ApolloFillLongs(_A1(uint8_t *d), _D4(ULONG value), _D3(ULONG size));
+
 void ApolloEndianSwapWordBuffer(_A0(uint8_t *s), _D0(uint32_t l));
 void ApolloEndianSwapLongBuffer(_A0(uint8_t *s), _D0(uint32_t l));
 uint16_t ApolloSwapWord( _D0(uint16_t SwapWord));

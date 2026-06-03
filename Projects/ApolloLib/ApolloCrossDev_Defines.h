@@ -112,6 +112,11 @@
 #define APOLLO_SAGA_PIP_TRANS15 			    // Transparency Color for 15-Bit 1R5G5B5 = 0 11111 00000 11111
 #define APOLLO_SAGA_PIP_TRANS16     0xF81F		// Transparency Color for 16-Bit R5G6B5	= 11111 000000 11111
 
+#define APOLLO_PIC_TARGET_SAGA      0x00        // Show picture on SAGA Screen
+#define APOLLO_PIC_TARGET_PIP1      0x01        // Show picture on SAGA PiP1
+#define APOLLO_PIC_TARGET_PIP2      0x02        // Show picture on SAGA PiP2
+#define APOLLO_PIC_TARGET_SPRITE    0x03        // Show picture as SAGA Sprite
+
 // Apollo SAGA Sprites
 
 // Hardware sprite: 32x32, 1 byte color index + 1 byte alpha per pixel.
@@ -124,6 +129,7 @@
 #define SAGA_SPRITE_WIDTH          32
 #define SAGA_SPRITE_HEIGHT         32
 #define SAGA_SPRITE_DATASIZE       (SAGA_SPRITE_WIDTH * SAGA_SPRITE_HEIGHT * 2)
+
 
 
 // Apollo SAGA Display Resolutions

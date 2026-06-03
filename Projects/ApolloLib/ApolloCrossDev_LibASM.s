@@ -289,7 +289,64 @@ _ApolloCopyBlock32:
 	rts
 
 
+*************************************************************
+* ApolloCopyLongs                                           *
+*************************************************************
+* a0 = src = source pointer									*	
+* a1 = dst = destination pointer							*
+* d3 = size = block size in Bytes                           *
+*************************************************************
 
+	XDEF _ApolloCopyLongs
+	CNOP 0,4
+
+_ApolloCopyLongs:
+	movem.l a6/d6/d5/d4/d3,-(sp)	* Save all registers to Stack
+
+.LoopSize:
+	move.l d3,d0					* d0 = set size loop counter
+	lsr.l  #2,d0					* divide size counter by 4 to determine 4-byte (LONG) chunk counter
+	bra.s .GoLoopSize4Byte
+
+.LoopSize4Byte:
+	move.l (a0)+,(a1)+				* copy 4 bytes from a0 source to a1 destination
+	
+.GoLoopSize4Byte:
+	dbra.l  d0,.LoopSize4Byte
+
+.EndLoopSize:
+	movem.l (sp)+,d3/d4/d5/d6/a6	* Restore all registers from Stack
+	rts
+
+
+*************************************************************
+* ApolloFillLongs                                           *
+*************************************************************
+* a1 = dst = destination pointer							*
+* d4 = value = fill value									*
+* d3 = size = block size in Bytes                           *
+*************************************************************
+
+	XDEF _ApolloFillLongs
+	CNOP 0,4
+
+_ApolloFillLongs:
+	movem.l a6/d6/d5/d4/d3,-(sp)	* Save all registers to Stack
+
+.LoopSize:
+	move.l d3,d0					* d0 = set size loop counter
+	lsr.l  #2,d0					* divide size counter by 4 to determine 4-byte (LONG) chunk counter
+	bra.s .GoLoopSize4Byte
+
+.LoopSize4Byte:
+	move.l d4,(a1)+					* fill 4 bytes at a1 with value in d4
+	
+.GoLoopSize4Byte:
+	dbra.l  d0,.LoopSize4Byte
+
+.EndLoopSize:
+	movem.l (sp)+,d3/d4/d5/d6/a6	* Restore all registers from Stack
+	rts
 
 * Apollo CPU Tick *
 
