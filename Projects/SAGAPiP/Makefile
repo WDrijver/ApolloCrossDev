@@ -5,10 +5,10 @@
 # Define Shell Environment
 PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
-APOLLO_V4_HOST = "192.168.2.234:Personal/"
+APOLLO_V4_HOST = "192.168.2.46:Personal/"
 
 # Define ApolloCrossDev Compiler
-PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Latest
+PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Test
 TARGET 	= m68k-amigaos
 ACP 	= $(PWD)/../../Projects/ApolloExplorer/acp/acp
 GDB		= $(PWD)/../../Projects/bgdbserver/bgdbserver

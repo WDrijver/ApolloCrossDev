@@ -5,7 +5,7 @@
 # Define Shell Environment
 PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
-APOLLO_V4_HOST = "192.168.2.145:Personal/"
+APOLLO_V4_HOST = "192.168.2.46:Personal/"
 
 # Define ApolloCrossDev Compiler
 PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Latest
@@ -103,7 +103,7 @@ init:
 	@echo "\033[37m------------------------------------------------------------------\033[0m"
 
 cleanbefore:
-	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/$(PROJECT_NAME)*.txt $(EXE)
+	@rm -f $(O_FILES) $(PROJECT_DIR)/$(PROJECT_NAME)*.txt $(EXE)
 
 build: $(EXE)
 	@echo "\033[37mStep #2 - \033[31mLinker \033[37mFinished\033[0m"
@@ -139,7 +139,7 @@ upload_debug:
 	@$(ACP) $(EXE)_Debug $(APOLLO_V4_HOST)
 
 cleanafter:
-	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/*.info $(EXE)_Debug
+		@rm -f $(O_FILES) $(PROJECT_DIR)/*.info $(EXE)_Debug
 
 exit:
 	@echo "\033[37m------------------------------------------------------------------\033[0m"
