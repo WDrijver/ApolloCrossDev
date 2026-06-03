@@ -39,8 +39,8 @@ make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4
 # Apply Patches from Ioannis Kouretsidis (@JohnStuggi)
 echo "\033[0m\033[36m   * Applying 68080 AMMX Patches from Ioannis Kouretsidis (@JohnStuggi)\033[0m"
 cd $SOURCES/amiga-gcc/projects/gcc
-git apply $ARCHIVES/patches/q2f.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
-git diff --stat >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/q2g.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git diff --stat 
 cd $SOURCES/amiga-gcc
 
 echo "\033[0m\033[36m   * Build Amiga-GCC (be patient)\033[0m"
