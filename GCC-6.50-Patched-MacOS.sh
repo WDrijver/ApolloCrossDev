@@ -11,7 +11,7 @@ TARGET=m68k-amigaos
 PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
 
 MASTER=https://github.com/WDrijver/amiga-gcc
-BRANCH=amiga-gcc-latest
+BRANCH=amiga-gcc-stable
 
 ARCHIVES=$WORKSPACE/$COMPILERS/_archives
 LOGFILES=$PREFIX/_logs

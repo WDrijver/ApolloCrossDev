@@ -82,7 +82,7 @@
 
 #define APOLLO_SAGA_PIP1CHK_COL     0xDFF38C    // Index PiP1    = Bit[24-31] Color Number | Bit[16-23] Red | Bit[8-15] Green | Bit[0-7] Blue
 
-#define APOLLO_SAGA_PIP1_GFXMODE    0xDFF3DC	// Bit[8]= Enable 0xF81F Transparency + Bit[0-7]=Color Format (only modes 0x01,0x02 and 0x03)
+#define APOLLO_SAGA_PIP1_GFXMODE    0xDFF3DC	// Bit[8]= Enable 0xF81F | 0xFF00FF Transparency + Bit[0-7]=Color Format (only modes 0x01,0x02 and 0x03)
 #define APOLLO_SAGA_PIP1_POINTER    0xDFF3D8	// Chunky Bitmap Pointer
 #define APOLLO_SAGA_PIP1_MODULO	    0xDFF3DE	// Chunky Bitmap Modulo (Bytes skipped after each Row)
 
