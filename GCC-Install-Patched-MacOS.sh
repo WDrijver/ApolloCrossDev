@@ -39,12 +39,12 @@ make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4
 # Apply Patches from Ioannis Kouretsidis (@JohnStuggi)
 echo "\033[0m\033[36m   * Applying 68080 AMMX Patches from Ioannis Kouretsidis (@JohnStuggi)\033[0m"
 cd $SOURCES/amiga-gcc/projects/gcc
-git apply $ARCHIVES/patches/q2g.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/q2g-stable.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 git diff --stat 
 cd $SOURCES/amiga-gcc
 
 echo "\033[0m\033[36m   * Build Amiga-GCC (be patient)\033[0m"
-CC=gcc-12 CXX=g++-12 make all $CPU NDK=3.2 SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+CC=gcc-12 CXX=g++-12 gmake all $CPU NDK=3.2 SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo "\033[0m\033[36m   * Add LibDebug\033[0m"
 make libdebug PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 

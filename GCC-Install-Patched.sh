@@ -41,8 +41,8 @@ make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4
 # Apply Patches from Ioannis Kouretsidis (@JohnStuggi)
 echo -e "\e[0m\e[36mApplying 68080 AMMX Patches from Ioannis Kouretsidis (@JohnStuggi) | "
 cd $SOURCES/amiga-gcc/projects/gcc
-git apply $ARCHIVES/patches/q2f.patch >>$LOGFILES/patch.log 2>>$LOGFILES/patch.log
-git diff --stat >>$LOGFILES/part4.log
+git apply $ARCHIVES/patches/q2g-stable.patch >>$LOGFILES/patch.log 2>>$LOGFILES/patch.log
+git diff --stat 
 cd $SOURCES/amiga-gcc
 
 echo -e -n "\e[0m\e[36mBuild Compiler (>5 min) | "
