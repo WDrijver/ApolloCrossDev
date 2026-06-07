@@ -20,7 +20,7 @@ cd $SOURCES
 
 # PART 2: Update Linux Packages 
 echo "\033[1m\033[37m2. Update Linux Packages\033[0m\033[36m"
-brew install bash wget make lhasa gmp mpfr libmpc flex gettext gnu-sed texinfo gcc@12 make automake autoconf bison qt@5 >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
+brew install gcc@12 bash wget make lhasa gmp mpfr libmpc flex gettext gnu-sed texinfo make automake autoconf bison qt@5 >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 
 # PART 3: Clone Amiga-GCC
 echo "\033[1m\033[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\033[0m\033[36m"
@@ -30,29 +30,31 @@ git clone --progress -b $BRANCH $MASTER 2>>$LOGFILES/part3_err.log
 echo "\033[1m\033[37m4. Compile Amiga-GCC\033[0m\033[36m"
 cd $SOURCES/amiga-gcc
 echo "\033[0m\033[36m   * Clean Amiga-GCC\033[0m"
-make clean >>$LOGFILES/part4_clean.log 2>>$LOGFILES/part4_clean_err.log
+CC=gcc-12 CXX=g++-12 gmake clean $CPU >>$LOGFILES/part4_clean.log 2>>$LOGFILES/part4_clean_err.log
 echo "\033[0m\033[36m   * Clean ApolloCrossDev\033[0m"
-make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4_dropprefix.log 2>>$LOGFILES/part4_dropprefix_err.log
+CC=gcc-12 CXX=g++-12 gmake drop-prefix $CPU PREFIX=$PREFIX >>$LOGFILES/part4_dropprefix.log 2>>$LOGFILES/part4_dropprefix_err.log
 echo "\033[0m\033[36m   * Clone Repos (>1 min)"
-make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+CC=gcc-12 CXX=g++-12 gmake update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Apply Patches from Ioannis Kouretsidis (@JohnStuggi)
 echo "\033[0m\033[36m   * Applying 68080 AMMX Patches from Ioannis Kouretsidis (@JohnStuggi)\033[0m"
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/q2g-stable.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 git diff --stat 
+cd $ARCHIVES/MacOS
+cp -f * $SOURCES/amiga-gcc/projects/gcc/gcc
 cd $SOURCES/amiga-gcc
 
 echo "\033[0m\033[36m   * Build Amiga-GCC (be patient)\033[0m"
 CC=gcc-12 CXX=g++-12 gmake all $CPU NDK=3.2 SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo "\033[0m\033[36m   * Add LibDebug\033[0m"
-make libdebug PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+CC=gcc-12 CXX=g++-12 gmake libdebug $CPU PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Part 5: MUI
 echo "\033[1m\033[37m5. Adding MUI5\033[0m\033[36m"
 
 cd $SOURCES/amiga-gcc
-make sdk=mui PREFIX=$PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+CC=gcc-12 CXX=g++-12 gmake sdk=mui $CPU PREFIX=$PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cp -r -f $SOURCES/amiga-gcc/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/include/mui >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
 # Patch MUI5 proto header to be compatible with Amiga-GCC

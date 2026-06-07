@@ -30,21 +30,25 @@ git clone --progress -b $BRANCH $MASTER 2>>$LOGFILES/part3_err.log
 echo "\033[1m\033[37m4. Compile Amiga-GCC\033[0m\033[36m"
 cd $SOURCES/amiga-gcc
 echo "\033[0m\033[36m   * Clean Amiga-GCC\033[0m"
-make clean >>$LOGFILES/part4_clean.log 2>>$LOGFILES/part4_clean_err.log
+CC=gcc-12 CXX=g++-12 gmake clean >>$LOGFILES/part4_clean.log 2>>$LOGFILES/part4_clean_err.log
 echo "\033[0m\033[36m   * Clean ApolloCrossDev\033[0m"
-make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4_dropprefix.log 2>>$LOGFILES/part4_dropprefix_err.log
+CC=gcc-12 CXX=g++-12 gmake drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4_dropprefix.log 2>>$LOGFILES/part4_dropprefix_err.log
 echo "\033[0m\033[36m   * Clone Repos (>1 min)"
-make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+CC=gcc-12 CXX=g++-12 gmake update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
+cd $ARCHIVES/MacOS
+cp -f * $SOURCES/amiga-gcc/projects/gcc/gcc
+cd $SOURCES/amiga-gcc
+
 echo "\033[0m\033[36m   * Build Amiga-GCC (be patient)\033[0m"
-CC=gcc-12 CXX=g++-12 make all $CPU NDK=3.2 SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+CC=gcc-12 CXX=g++-12 gmake all $CPU NDK=3.2 SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo "\033[0m\033[36m   * Add LibDebug\033[0m"
-make libdebug PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+CC=gcc-12 CXX=g++-12 gmake libdebug PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Part 5: MUI
 echo "\033[1m\033[37m5. Adding MUI5\033[0m\033[36m"
-
 cd $SOURCES/amiga-gcc
-make sdk=mui PREFIX=$PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+CC=gcc-12 CXX=g++-12 gmake sdk=mui PREFIX=$PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cp -r -f $SOURCES/amiga-gcc/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/include/mui >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
 # Patch MUI5 proto header to be compatible with Amiga-GCC
