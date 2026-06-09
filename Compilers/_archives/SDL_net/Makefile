@@ -1,6 +1,6 @@
 # Makefile for SDL_net 1.2.3 - AmigaOS m68k
 
-#PREFIX= ../../GCC-6.50-Latest/bin
+#PREFIX= ../../GCC-6.50-Stable/bin
 #CC      = $(PREFIX)/m68k-amigaos-gcc
 #AR      = $(PREFIX)/m68k-amigaos-ar
 #RANLIB  = $(PREFIX)/m68k-amigaos-ranlib

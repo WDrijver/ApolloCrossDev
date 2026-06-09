@@ -6,7 +6,7 @@
 # Your platform. See PLATS for possible values.
 PLAT= generic
 
-#PREFIX= ../../../ApolloCrossDev/Compilers/GCC-6.50-Latest/bin
+#PREFIX= ../../../ApolloCrossDev/Compilers/GCC-6.50-Stable/bin
 #CC= $(PREFIX)/m68k-amigaos-gcc 
 
 CFLAGS= -m68040 -m68881 -noixemul -std=gnu99 -DLUA_32BITS -ffast-math -O2 -Wall -Wextra $(SYSCFLAGS) $(MYCFLAGS)

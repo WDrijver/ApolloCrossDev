@@ -15,7 +15,7 @@
 # If your platform has no fopen64/fseeko64/ftello64, add:
 #   make CPPFLAGS="-Dfopen64=fopen -Dftello64=ftell -Dfseeko64=fseek"
 
-#PREFIX= ../../../ApolloCrossDev/Compilers/GCC-6.50-Latest/bin
+#PREFIX= ../../../ApolloCrossDev/Compilers/GCC-6.50-Stable/bin
 #CC      = $(PREFIX)/m68k-amigaos-gcc
 #AR      = $(PREFIX)/m68k-amigaos-ar
 #RANLIB  = $(PREFIX)/m68k-amigaos-ranlib

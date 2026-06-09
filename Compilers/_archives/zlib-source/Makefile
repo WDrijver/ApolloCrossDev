@@ -1,7 +1,7 @@
 # Makefile for ApolloCrossDev GCC 6.50 Latest
 # Willem Drijver
 
-#PREFIX= ../../GCC-6.50-Latest/bin
+#PREFIX= ../../GCC-6.50-Stable/bin
 #CC      = $(PREFIX)/m68k-amigaos-gcc
 #AR      = $(PREFIX)/m68k-amigaos-ar
 #RANLIB  = $(PREFIX)/m68k-amigaos-ranlib
