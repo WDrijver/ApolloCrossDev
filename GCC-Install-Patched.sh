@@ -35,6 +35,7 @@ echo -e -n "\e[0m\e[36mMake Clean | "
 make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e -n "\e[0m\e[36mDrop Prefix | "
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
 echo -e -n "\e[0m\e[36mClone Repos (>1 min) | "
 make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
@@ -43,6 +44,8 @@ echo -e "\e[0m\e[36mApplying 68080 AMMX Patches from Ioannis Kouretsidis (@JohnS
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/q2g-stable.patch >>$LOGFILES/patch.log 2>>$LOGFILES/patch.log
 git diff --stat 
+cd $ARCHIVES/MacOS
+cp -f * $SOURCES/amiga-gcc/projects/gcc/gcc
 cd $SOURCES/amiga-gcc
 
 echo -e -n "\e[0m\e[36mBuild Compiler (>5 min) | "
