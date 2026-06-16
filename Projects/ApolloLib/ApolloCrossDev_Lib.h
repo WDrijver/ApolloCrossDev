@@ -52,10 +52,12 @@ struct ApolloPicture
     uint8_t     *buffer;
     uint32_t    position;
     uint32_t    size;
-    int32_t    width;
-    int32_t    height;
+    int32_t     width;
+    int32_t     height;
     uint8_t     depth;
-    uint32_t    palette;
+    uint32_t    palettesize;
+    uint32_t    palette[256];
+    
     // Display Values
     int16_t     modulo;
     bool        fullscreen;
@@ -356,8 +358,8 @@ extern void ApolloBlitAlphaConstLoop( _A0(UWORD* s), _A1(UWORD* d), _D3(UWORD w)
 extern void ApolloBlitAlphaKeyTransLoop( _A0(UWORD* s), _A1(UWORD* d), _D3(UWORD w), _D4(UWORD h), _D5(ULONG spitch), _D6(ULONG dpitch), _D7(UWORD al), _A2(UWORD ac));
 extern void ApolloBlitAlphaHorizontalLineLoop( _A0(UWORD* s), _A1(UWORD* d), _D3(UWORD w), _D6(ULONG ac), _D7(UWORD al));
 
-extern void ApolloLoadPointers(struct ApolloPointer SpritePointer[500]);
-extern void ApolloSetPointer(struct ApolloPointer SpritePointer[500], LONG SpritePointerIndex);
+extern void ApolloLoadPointer(struct ApolloPointer *sprite_pointer, struct ApolloPicture *sprite_bitmap);
+extern void ApolloShowPointer(struct ApolloPointer *sprite_pointer);
 
 extern ULONG ApolloGetMouseDelta(_A0(UWORD *Mouse_Old));
 
