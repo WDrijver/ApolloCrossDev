@@ -1,0 +1,16 @@
+diff --git a/gcc/bbb-opts.c b/gcc/bbb-opts.c
+index 70a246460..41aaf591f 100644
+--- a/gcc/bbb-opts.c
++++ b/gcc/bbb-opts.c
+@@ -5945,6 +5945,11 @@ opt_shift (void)
+ 	  // ext.l dy
+ 	  else if (jj->get_mode() == SImode && jj->get_src_op() == SIGN_EXTEND)
+ 	    {
++	      /* A logical right shift of a sign-extended value reads the sign
++	         bits in the upper half (they shift down into the low word), so
++	         it must not be narrowed by dropping the sign extension.  */
++	      if (srcop == LSHIFTRT)
++		break;
+ 	      if (GET_MODE(jj->get_src_reg()) == mode)
+ 		{
+ 		  SET_INSN_DELETED(jj->get_insn());

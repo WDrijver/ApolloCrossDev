@@ -36,18 +36,32 @@ make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e -n "\e[0m\e[36mDrop Prefix | "
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
-echo -e -n "\e[0m\e[36mClone Repos (>1 min) | "
+echo -e -n "\e[0m\e[36mClone Repos (>1 min)\e[0m\e[36m"
 make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Apply Patches from Ioannis Kouretsidis (@JohnStuggi)
-echo -e "\e[0m\e[36mApplying 68080 AMMX Patches from Ioannis Kouretsidis (@JohnStuggi) | "
+echo -e "\e[0m\e[36mApplying Apollo 68080 Patches from Ioannis Kouretsidis (@JohnStuggi)\e[0m"
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/q2g-stable.patch >>$LOGFILES/patch.log 2>>$LOGFILES/patch.log
-git diff --stat 
-cd $ARCHIVES/MacOS
-cp -f * $SOURCES/amiga-gcc/projects/gcc/gcc
-cd $SOURCES/amiga-gcc
 
+# Apply Patches from Morten (@Morten)
+echo -e "\e[0m\e[36mApplying Apollo 68080 Patches from Morten (@Morten)"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/opt-absolute-volatile-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/opt-pipeline-cc0-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/opt-shift-lsr-signext-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/postinc-size-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
+echo -e "\e[0m\e[36mOverview of the Applied Patches: "
+git diff --stat 
+
+# Apply Patches for ISL
+echo -e "\e[0m\e[36mApplying Patches for ISL"
+cd $ARCHIVES/isl
+cp -f * $SOURCES/amiga-gcc/projects/gcc/gcc
+
+# Build Compiler
+cd $SOURCES/amiga-gcc
 echo -e -n "\e[0m\e[36mBuild Compiler (>5 min) | "
 make all $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36mAdd LibDebug\e[0m]"

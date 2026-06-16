@@ -1,0 +1,23 @@
+diff --git a/gcc/bbb-opts.c b/gcc/bbb-opts.c
+index 70a246460..f91c3b9a3 100644
+--- a/gcc/bbb-opts.c
++++ b/gcc/bbb-opts.c
+@@ -5433,8 +5433,16 @@ opt_autoinc ()
+         return 0;
+ 
+       int ssize = dsize;
+-      if (ii.is_src_mem() && GET_CODE(SET_SRC(set)) == SIGN_EXTEND)
+-        ssize /= 2;
++      /* Step by the size actually read from memory, not the dest mode
++         (sign/zero-extend and float extend/truncate read a different width).  */
++      if (ii.is_src_mem())
++        {
++          rtx s = SET_SRC(set);
++          while (!MEM_P(s) && (UNARY_P(s) || GET_CODE(s) == SUBREG))
++            s = XEXP(s, 0);
++          if (MEM_P(s))
++            ssize = GET_MODE_SIZE(GET_MODE(s));
++        }
+ 
+       // neither INC or nested MEM is allowed
+       // check if src is a mem which can be converted into an auto inc

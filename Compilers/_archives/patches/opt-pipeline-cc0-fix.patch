@@ -1,0 +1,30 @@
+diff --git a/gcc/bbb-opts.c b/gcc/bbb-opts.c
+index 70a246460..d7829d14a 100644
+--- a/gcc/bbb-opts.c
++++ b/gcc/bbb-opts.c
+@@ -5675,8 +5675,11 @@ opt_pipeline_insns()
+ 	continue;
+ 
+       insn_info & jj = (*infos)[index + 1];
+-      // don't touch compares and check for register overlap and CC use
+-      if (jj.is_compare() || !(jj.get_myuse() & ii.get_def()))
++      // don't touch compares and check for register overlap and CC use.
++      // also bail if cc0 is live into jj: then the order of the two cc0
++      // clobbering insns we may swap is observable and must be preserved.
++      if (jj.is_compare() || !(jj.get_myuse() & ii.get_def())
++          || jj.is_use (FIRST_PSEUDO_REGISTER))
+ 	continue;
+ 
+       // check previous insn
+@@ -5685,8 +5688,9 @@ opt_pipeline_insns()
+       if (hh.is_call() || hh.is_label() || hh.is_jump() || hh.in_proepi() || hh.is_compare() || hh.get_hard() || !hhset || !hh.get_dst_reg() || hh.is_myuse (FIRST_PSEUDO_REGISTER))
+ 	continue;
+ 
+-      // overlap with current insn
+-      if (((ii.get_myuse() | ii.get_def()) & (hh.get_myuse() | hh.get_def()) & ~(1<<(FIRST_PSEUDO_REGISTER+1))) != 0
++      // overlap with current insn (cc0 = bit FIRST_PSEUDO_REGISTER is excluded
++      // here; its ordering is handled by the cc0-liveness bail-out above)
++      if (((ii.get_myuse() | ii.get_def()) & (hh.get_myuse() | hh.get_def()) & ~(1<<FIRST_PSEUDO_REGISTER)) != 0
+        || rtx_equal_p(SET_SRC(iiset), SET_DEST(hhset)))
+ 	continue;
+ 

@@ -1,0 +1,23 @@
+diff --git a/gcc/bbb-opts.c b/gcc/bbb-opts.c
+index 70a246460..acff31b59 100644
+--- a/gcc/bbb-opts.c
++++ b/gcc/bbb-opts.c
+@@ -2065,6 +2065,10 @@ insn_info::make_absolute2base (unsigned regno, unsigned base, rtx with_symbol, b
+   rtx dst = SET_DEST(set);
+   rtx reg = gen_raw_REG (SImode, regno);
+   bool vola = src->volatil;
++  /* A store's volatile bit lives on the destination MEM, not on SET_SRC;
++     preserve it so volatile (MMIO) stores keep their ordering barrier and
++     are not merged or reordered after rebasing.  */
++  bool dvola = MEM_P (dst) && MEM_VOLATILE_P (dst);
+ 
+   if (is_dst_mem () && (has_dst_addr () || get_dst_symbol ()) && !has_dst_memreg () && get_dst_mem_mem() == 0 && get_dst_symbol () == with_symbol)
+     {
+@@ -2076,6 +2080,7 @@ insn_info::make_absolute2base (unsigned regno, unsigned base, rtx with_symbol, b
+ 	    dst = gen_rtx_MEM (mode, reg);
+ 	  else
+ 	    dst = gen_rtx_MEM (mode, gen_rtx_PLUS(SImode, reg, gen_rtx_CONST_INT (SImode, offset)));
++	  MEM_VOLATILE_P (dst) = dvola;
+ 
+ 	  if (apply)
+ 	    fledder_dst_mem (dst);

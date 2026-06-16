@@ -1,0 +1,7 @@
+One of the patches aren't fixes for a compile error, but there was some optimisations the compiler couldn't do without the patch.
+It's an instruction reorder.
+It's tested with parts of zlib, where it measured the number of points it could try for a reorder, and it went from 196 to ~450, so it went up a lot.
+It may not always result in better code, but should on average make some impact..
+The other 3 are just errors.
+The dropping of the volatile may be important, maybe not.
+It can rearrange writing to IO registers, which may lead to hardware doing strange things.

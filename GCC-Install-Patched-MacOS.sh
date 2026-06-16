@@ -37,14 +37,28 @@ echo "\033[0m\033[36m   * Clone Repos (>1 min)"
 CC=gcc-12 CXX=g++-12 gmake update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Apply Patches from Ioannis Kouretsidis (@JohnStuggi)
-echo "\033[0m\033[36m   * Applying 68080 AMMX Patches from Ioannis Kouretsidis (@JohnStuggi)\033[0m"
+echo "\033[0m\033[36m   * Applying Apollo 68080 Patches from Ioannis Kouretsidis (@JohnStuggi)\033[0m"
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/q2g-stable.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
-git diff --stat 
-cd $ARCHIVES/MacOS
-cp -f * $SOURCES/amiga-gcc/projects/gcc/gcc
-cd $SOURCES/amiga-gcc
 
+# Apply Patches from Morten (@Morten)
+echo "\033[0m\033[36m   * Applying Apollo 68080 Patches from Morten (@Morten)\033[0m"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/opt-absolute-volatile-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/opt-pipeline-cc0-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/opt-shift-lsr-signext-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/postinc-size-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
+echo "\033[0m\033[36m   * Overview of the Applied Patches:\033[0m"
+git diff --stat 
+
+# Apply Patches for ISL
+echo "\033[0m\033[36m   * Applying Patches for ISL\033[0m"
+cd $ARCHIVES/isl
+cp -f * $SOURCES/amiga-gcc/projects/gcc/gcc
+
+# Build Compiler
+cd $SOURCES/amiga-gcc
 echo "\033[0m\033[36m   * Build Amiga-GCC (be patient)\033[0m"
 CC=gcc-12 CXX=g++-12 gmake all $CPU NDK=3.2 SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo "\033[0m\033[36m   * Add LibDebug\033[0m"
@@ -52,14 +66,13 @@ CC=gcc-12 CXX=g++-12 gmake libdebug $CPU PREFIX=$PREFIX >>$LOGFILES/part4.log 2>
 
 # Part 5: MUI
 echo "\033[1m\033[37m5. Adding MUI5\033[0m\033[36m"
-
 cd $SOURCES/amiga-gcc
 CC=gcc-12 CXX=g++-12 gmake sdk=mui $CPU PREFIX=$PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cp -r -f $SOURCES/amiga-gcc/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/include/mui >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
-# Patch MUI5 proto header to be compatible with Amiga-GCC
-cd $ARCHIVES/MUI5
-cp -r -f muimaster_lib.h $PREFIX/$TARGET/include/proto >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+# Copy proto headers to be compatible with Amiga-GCC (MacOS only)
+cd $ARCHIVES/proto
+cp -r -f *.h $PREFIX/$TARGET/include/proto >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
 # Part 6: PortLibs (amiga-gcc takes care of Open-GL, SDL and GDB - we add Freetype, ZLib and BZip2)
 echo "\033[1m\033[37m6. Adding Porting Libs: "
