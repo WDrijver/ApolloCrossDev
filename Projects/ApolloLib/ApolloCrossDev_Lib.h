@@ -254,8 +254,11 @@ typedef struct
 
 struct ApolloPointer
 {
+    bool    bLoaded;                 // Indicates if the pointer is loaded and ready to use
     UBYTE   data[64*32*2];           // Pointer Sprite pixel data (64x32 pixels, 2 bytes per pixel for color index (BYTE-1) and alpha value (BYTE-2))
     ULONG   colors[256];             // Pointer Sprite color palette (256 color indices, 24 bits per color in R8G8B8 format)
+    FLOAT   hotspotX;                // X coordinate of the pointer's hotspot (e.g., 0 for top-left corner, 16 for center of a 32x32 pointer)
+    FLOAT   hotspotY;                // Y coordinate of the pointer's hotspot (e.g., 0 for top-left corner, 16 for center of a 32x32 pointer) 
 };
 
 // ApolloCrossDev C Functions ######################################
@@ -284,7 +287,7 @@ uint8_t ApolloShowPicture(struct ApolloPicture *picture);
 void ApolloShowPiP( struct ApolloPicture *picture);
 void ApolloHidePiP();
 void ApolloShowPattern(uint8_t *buffer, uint16_t width, uint16_t height, uint8_t depth);
-void ApolloBackupWBScreen(struct ApolloPicture *picture);
+//void ApolloBackupWBScreen(struct ApolloPicture *picture);
 
 // Apollo CPU Functions
 void ApolloWaitVBL();
@@ -321,6 +324,42 @@ void ApolloCopyPicture32(_A0(uint8_t *s), _A1(uint8_t *d), _D3(uint16_t width), 
 uint32_t ApolloCPUTick();
 void ApolloCPUDelay( _D0(uint32_t WaitTime));
 
+// Apollo RHLOS Functions
+extern UBYTE ApolloKeyboardToUnicode(UBYTE KeyboardAmiga);
+void ApolloStartChannel(int channel);
+void ApolloStopChannel(int channel);
+void ApolloPlayFile(const char *filename, uint8_t *buffer, uint16_t offset, int channel, int volume_left, int volume_right, bool loop);
+
+extern void ApolloBlitLoop( _A0(UWORD* s), _A1(UWORD* d), _D3(UWORD w), _D4(UWORD h), _D5(ULONG spitch), _D6(ULONG dpitch));
+extern void ApolloCopyLoop( _A0(UWORD *s), _A1(UWORD *d), _D3(UWORD width), _D4(UWORD height), _D5(UWORD spitch), _D6(UWORD dpitch) );
+extern void ApolloCopy32Loop( _A0(UWORD *s), _A1(UWORD *d), _D3(UWORD width), _D4(UWORD height), _D5(UWORD spitch), _D6(UWORD dpitch) );
+extern void ApolloEndianSwap2Loop(_A0(UWORD *s), _D0(ULONG l));
+extern void ApolloEndianSwap8Loop(_A0(UWORD *s), _D0(ULONG l));
+
+extern void ApolloUncompressLoop( _A0(UWORD* s), _A1(UWORD* d), _D3(UWORD w), _D4(UWORD h), _D5(ULONG spitch) );
+extern void ApolloUncompressVectorLoop( _A0(UWORD* s), _A1(UWORD* i), _A2(UWORD* d), _D3(UWORD w), _D4(UWORD h), _D5(ULONG spitch));
+void ApolloFadeOut(int channel, int volume_start, int volume_end);
+void ApolloShowFile(const char *filename, uint8_t **buffer_draw, uint8_t **buffer_live, uint32_t lenght, uint16_t offset, uint16_t gfx_mode, uint16_t gfx_modulo, bool endianswap);
+void ApolloCacheFile(const char *filename, uint8_t **cache, uint32_t *lenght, uint16_t file_offset);
+bool ApolloPlay(int channel, int volume_left, int volume_right, bool loop, uint8_t *buffer, uint32_t lenght, uint16_t offset);
+void ApolloVolume(int channel, int volume_left, int volume_right);
+extern void ApolloTakeOver( void );
+extern void ApolloForbid( void );
+extern void ApolloDisable( void );
+extern void ApolloTimer( void );
+extern void ApolloFillLoop( _A0(UWORD* d), _D3(UWORD w), _D4(UWORD h), _D5(ULONG dpitch), _D7(UWORD fc) );
+extern void ApolloBlitBlueAlphaUILoop( _A0(UWORD* src), _A1(UWORD* dst), _A2(UWORD* alpha), _D3(UWORD width), _D4(UWORD height), _D5(ULONG spitch), _D6(ULONG dpitch), _D7(ULONG apitch));
+extern void ApolloBlitRedAlphaBGLoop( _A0(UWORD* src), _A1(UWORD* dst), _A2(UWORD* alpha), _D3(UWORD width), _D4(UWORD height), _D5(ULONG spitch), _D6(ULONG dpitch), _D7(ULONG apitch));
+extern void ApolloBlitGreenAlphaBGLoop( _A0(UWORD* src), _A1(UWORD* dst), _A2(UWORD* alpha), _D3(UWORD width), _D4(UWORD height), _D5(ULONG spitch), _D6(ULONG dpitch), _D7(ULONG apitch));
+extern void ApolloBlitBlueAlphaBGLoop( _A0(UWORD* src), _A1(UWORD* dst), _A2(UWORD* alpha), _D3(UWORD width), _D4(UWORD height), _D5(ULONG spitch), _D6(ULONG dpitch), _D7(ULONG apitch));
+extern void ApolloBlitAlphaConstLoop( _A0(UWORD* s), _A1(UWORD* d), _D3(UWORD w), _D4(UWORD h), _D5(ULONG spitch), _D6(ULONG dpitch), _D7(UWORD al));
+extern void ApolloBlitAlphaKeyTransLoop( _A0(UWORD* s), _A1(UWORD* d), _D3(UWORD w), _D4(UWORD h), _D5(ULONG spitch), _D6(ULONG dpitch), _D7(UWORD al), _A2(UWORD ac));
+extern void ApolloBlitAlphaHorizontalLineLoop( _A0(UWORD* s), _A1(UWORD* d), _D3(UWORD w), _D6(ULONG ac), _D7(UWORD al));
+
+extern void ApolloLoadPointers(struct ApolloPointer SpritePointer[500]);
+extern void ApolloSetPointer(struct ApolloPointer SpritePointer[500], LONG SpritePointerIndex);
+
+extern ULONG ApolloGetMouseDelta(_A0(UWORD *Mouse_Old));
 
 #ifdef __cplusplus
 }

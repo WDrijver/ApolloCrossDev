@@ -1,6 +1,10 @@
 // Apollo V4 SAGA libraries
 // Willem Drijver
 
+#ifdef __cplusplus
+extern "C"{
+#endif 
+
 // Include Basic C Headers
 #include <stdint.h>
 #include <stdlib.h>
@@ -14,16 +18,21 @@
 
 // Include Basic Amiga Headers
 #include "exec/types.h"
+#include "clib/exec_protos.h"
+#include "clib/dos_protos.h"
+#include <exec/io.h>
+#include <devices/input.h>
+
+/*
 #include <exec/ports.h>
 #include <exec/io.h>
 
-#include "clib/exec_protos.h"
 #include "clib/graphics_protos.h"
 #include "clib/lowlevel_protos.h"
 #include "clib/intuition_protos.h"
 #include "clib/keymap_protos.h"
 #include "clib/asl_protos.h"
-#include "clib/dos_protos.h"
+
 #include "clib/gadtools_protos.h"
 #include "clib/input_protos.h"
 #include "clib/alib_protos.h"
@@ -44,6 +53,7 @@
 #include <proto/keymap.h>
 #include <proto/asl.h>
 #include <proto/cybergraphics.h>
+*/
 
 // Apollo Debug
 #ifdef APOLLO_DEBUG
@@ -82,7 +92,7 @@
 
 #define APOLLO_SAGA_PIP1CHK_COL     0xDFF38C    // Index PiP1    = Bit[24-31] Color Number | Bit[16-23] Red | Bit[8-15] Green | Bit[0-7] Blue
 
-#define APOLLO_SAGA_PIP1_GFXMODE    0xDFF3DC	// Bit[8]= Enable 0xF81F | 0xFF00FF Transparency + Bit[0-7]=Color Format (only modes 0x01,0x02 and 0x03)
+#define APOLLO_SAGA_PIP1_GFXMODE    0xDFF3DC	// Bit[8]= Enable 0xF81F Transparency + Bit[0-7]=Color Format (only modes 0x01,0x02 and 0x03)
 #define APOLLO_SAGA_PIP1_POINTER    0xDFF3D8	// Chunky Bitmap Pointer
 #define APOLLO_SAGA_PIP1_MODULO	    0xDFF3DE	// Chunky Bitmap Modulo (Bytes skipped after each Row)
 
@@ -309,5 +319,25 @@
 #define SERDATR			0xDFF018
 #define SERPER			0xDFF032
 
+// Apollo RHLOS Defines
+#define AIFF_OFFSET		128
+#define DDS_OFFSET		128
 
+#define SAGA_MODE_848   0x0F02
+#define SAGA_MODE_1280  0x0A02
+
+#define SAGA_Y_HUD		80
+
+#define APOLLO_POINTER_RED		0x0A00
+#define APOLLO_POINTER_GREEN	0x00A0
+#define APOLLO_POINTER_BLUE		0x000A
+#define APOLLO_POINTER_BLACK    0x0000
+#define APOLLO_POINTER_ORANGE   0x0FCA
+#define APOLLO_POINTER_RED2     0x0D22
+
+#define APOLLOCYCLES	92000
+
+#ifdef __cplusplus
+}
+#endif
 

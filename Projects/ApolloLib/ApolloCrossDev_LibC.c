@@ -309,7 +309,7 @@ void ApolloStopSound(struct ApolloSound *sound)
 
 void ApolloStartSound(struct ApolloSound *sound)
 {
-	ADX(ApolloDebugPutDec("ApolloStop: Starting audio on channel", sound->channel);)	
+	ADX(ApolloDebugPutDec("ApolloStart: Starting audio on channel", sound->channel);)	
 
 	if (sound->channel < 4)
 	{ 
@@ -762,7 +762,7 @@ void ApolloShowPattern(uint8_t *buffer, uint16_t width, uint16_t height, uint8_t
     }
 }
 
-void ApolloBackupWBScreen(struct ApolloPicture *picture)
+/*void ApolloBackupWBScreen(struct ApolloPicture *picture)
 {
 	struct Screen *wb_screen;  	  
 	wb_screen = LockPubScreen(NULL);
@@ -772,7 +772,7 @@ void ApolloBackupWBScreen(struct ApolloPicture *picture)
 	picture->height 	= (uint16_t)wb_screen->Height;
 	picture->depth 		= (uint8_t)(8*(wb_screen->RastPort.BitMap->BytesPerRow / wb_screen->Width));
 	UnlockPubScreen(NULL, wb_screen);
-}
+}*/
 
 // Apollo CPU Functions
 
@@ -1079,7 +1079,332 @@ UBYTE ApolloKeyboardToUnicode(UBYTE KeyboardAmiga)
 	return 0;
 }
 
+void ApolloStopChannel(int channel)
+{
+	#ifdef APOLLODEBUG_APOLLO
+    ApolloDebugPutDec("ApolloStop: Stopping audio on channel", channel);
+	#endif
 
+	if (channel < 4)
+	{ 
+		*((volatile uint16_t*)0xDFF096) = (uint16_t)(0x0000) + (1<<channel);                // DMACON = clear AUD0-3 (stop current stream)    
+	} else {
+		*((volatile uint16_t*)0xDFF296) = (uint16_t)(0x0000) + (1<<(channel-4));            // DMACON2 = clear AUD4-15 (stop current stream)      
+	}
+}
 
+void ApolloStartChannel(int channel)
+{
+	#ifdef APOLLODEBUG_APOLLO
+		ApolloDebugPutDec("ApolloStart: Starting audio on channel", channel);
+	#endif
+
+	if (channel < 4)
+	{ 
+		*((volatile uint16_t*)0xDFF096) = (uint16_t)(0x8000) + (1<<channel);                // DMACON = enable AUD0-3 (start current stream)    
+	} else {
+		*((volatile uint16_t*)0xDFF296) = (uint16_t)(0x8000) + (1<<(channel-4));            // DMACON2 = enable AUD4-15 (start current stream)      
+	}
+}
+
+void ApolloPlayFile(const char *filename, uint8_t *buffer, uint16_t offset, int channel, int volume_left, int volume_right, bool loop)
+{
+	static unsigned long file_size = 0;
+	static unsigned long file_read = 0;
+	static FILE *file_handle = 0; 
+
+    #ifdef APOLLODEBUG_APOLLO
+	ApolloDebugPutStr("ApolloPlayFile: Opening File = ");
+	ApolloDebugPutStr(filename);
+	#endif
+
+    file_handle = fopen(filename, "rb");
+    if (!file_handle)
+    {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "=ERROR\n");
+		#endif
+	    return;
+    } else {
+		#ifdef APOLLODEBUG_APOLLO
+		ApolloDebugPutStr( "=SUCCESS\n");
+		#endif
+    }
+
+    fseek(file_handle, 0, SEEK_END);						// goto end of file
+    file_size=ftell(file_handle);							// retrieve filesize
+
+	fseek(file_handle, offset, SEEK_SET);
+	file_size-=offset;
+
+    if (buffer == NULL) ApolloDebugPutStr( "ApolloPlayFile: buffer memory ERROR\n");
+
+	#ifdef APOLLODEBUG_APOLLO
+	ApolloDebugPutStr("ApolloPlayFile: Reading file -> ");
+	#endif
+
+	file_read = fread(buffer, 1, file_size, file_handle);
+    if(file_read != file_size)
+    {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "ERROR: cannot load file\n");
+		#endif	
+	    return;
+    } else {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "SUCCESS: file loaded\n");
+		#endif
+    }
+
+	#ifdef APOLLODEBUG_APOLLO
+    	ApolloDebugPutStr("ApolloPlayFile: Closing file -> ");
+	#endif
+
+    if (fclose(file_handle) == EOF)
+    {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "ERROR: cannot close file\n");
+		#endif
+    } else {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "SUCCESS: file closed\n");
+		#endif
+    }
+
+	// If channel is busy, stop channel
+	if ( (channel < 4) && (*((volatile uint16_t*)0xDFF002) & (1<<channel)) || (channel >=4) && (*((volatile uint16_t*)0xDFF202) & (1<<channel)))
+	{
+        if (channel < 4)
+        { 
+            *((volatile uint16_t*)0xDFF096) = (uint16_t)(0x0000) + (1<<channel);                // DMACON = clear AUD0-3 (stop current stream)    
+        } else {
+            *((volatile uint16_t*)0xDFF296) = (uint16_t)(0x0000) + (1<<(channel-4));            // DMACON2 = clear AUD4-15 (stop current stream)      
+        }
+	}
+
+	#ifdef APOLLODEBUG_APOLLO
+	sprintf(ApolloDebugMessage, "ApolloPlayFile: Channel = %d | L=%d | O=%d | Vol-L = %d | Vol-R = %d | Loop = %d \n", channel, file_size, offset, volume_left, volume_right, loop);
+	ApolloDebugPutStr(ApolloDebugMessage);
+	#endif
+
+	*((volatile uint32_t*)(0xDFF400 + (channel * 0x10))) = (uint32_t)buffer+offset;        	   	// Set Channel Pointer
+	*((volatile uint32_t*)(0xDFF404 + (channel * 0x10))) = (uint32_t)(((file_size-offset)/8)-32);	// Set Channel Music Lenght (in pairs of stereo sample = 2 * 2 * 16-bit = 64-bit chunksize = filesize in bytes / 8)
+	
+	int volume = (volume_left << 8) + (volume_right);
+
+	#ifdef APOLLODEBUG_APOLLO
+	ApolloDebugPutHex("ApolloPlayFile: Volume", volume);
+	#endif
+
+	*((volatile uint16_t*)(0xDFF408 + (channel * 0x10))) = (uint16_t)volume;                // Set Channel Volume (0-FF / 0-FF) 
+
+	if (loop)
+	{
+		*((volatile uint16_t*)(0xDFF40A + (channel * 0x10))) = (uint16_t)0x0005;            // %0101 = $05 - Sample 16bit (bit0 = 1) / OneShot Disabled (bit1 = 0) / Stereo Enabled (bit2 = 1)
+	} else {
+		*((volatile uint16_t*)(0xDFF40A + (channel * 0x10))) = (uint16_t)0x0007;            // %0111 = $07 - Sample 16bit (bit0 = 1) / OneShot Enabled (bit1 = 1) / Stereo Enabled (bit2 = 1)
+	}
+	*((volatile uint16_t*)(0xDFF40C + (channel * 0x10))) = (uint16_t)80;					// PERIOD=44.1 Khz
+	if (channel < 4)
+	{ 
+		*((volatile uint16_t*)0xDFF096) = (uint16_t)(0x8000) + (1<<channel);                // DMACON = enable DMA and enable DMA for specific channel AUD0-3 (start current stream)    
+	} else {
+		*((volatile uint16_t*)0xDFF296) = (uint16_t)(0x8000) + (1<<(channel-4));            // DMACON = enable DMA and enable DMA for specific channel AUD4-15 (start current stream)       
+	}
+}
+
+void ApolloFadeOut(int channel, int volume_start, int volume_end)
+{
+	for (;volume_start > volume_end;volume_start--)
+	{
+		ApolloVolume(channel, volume_start, volume_start);
+		ApolloWaitVBL();
+	}
+	ApolloStopChannel(channel);
+}
+
+void ApolloShowFile(const char *filename, uint8_t **buffer_draw, uint8_t **buffer_live, uint32_t lenght, uint16_t offset, uint16_t gfx_mode, uint16_t gfx_modulo, bool endianswap)
+{
+	static unsigned long file_size = 0;
+	static unsigned long file_read = 0;
+	static FILE *file_handle = 0; 
+
+	uint8_t *buffer_temp;
+
+    #ifdef APOLLODEBUG_APOLLO
+	ApolloDebugPutStr("ApolloShowFile: Opening File = ");
+	ApolloDebugPutStr(filename);
+	#endif
+
+    file_handle = fopen(filename, "rb");
+    if (!file_handle)
+    {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "=ERROR\n");
+		#endif
+	    return;
+    } else {
+		#ifdef APOLLODEBUG_APOLLO
+		ApolloDebugPutStr( "=SUCCESS\n");
+		#endif
+    }
+
+	fseek(file_handle, offset, SEEK_SET);
+
+    if (*buffer_draw == NULL) ApolloDebugPutStr( "ApolloShowFile: buffer memory ERROR\n");
+
+	#ifdef APOLLODEBUG_APOLLO
+	ApolloDebugPutStr("ApolloShowFile: Reading file -> ");
+	#endif
+
+	file_read = fread(*buffer_draw, 1, lenght, file_handle);
+    if(file_read != lenght)
+    {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "ERROR: cannot load file\n");
+		#endif	
+	    return;
+    } else {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "SUCCESS: file loaded\n");
+		#endif
+    }
+
+	#ifdef APOLLODEBUG_APOLLO
+    	ApolloDebugPutStr("ApolloShowFile: Closing file -> ");
+	#endif
+
+    if (fclose(file_handle) == EOF)
+    {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "ERROR: cannot close file\n");
+		#endif
+    } else {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "SUCCESS: file closed\n");
+		#endif
+    }
+
+	if (endianswap) ApolloEndianSwap8Loop((UWORD*)*buffer_draw, (ULONG)lenght);
+
+	buffer_temp = *buffer_live;
+	*buffer_live = *buffer_draw;
+	*buffer_draw = buffer_temp;
+
+	*((volatile uint16_t*)0xDFF1E6) = (uint16_t)(gfx_modulo); 
+	*((volatile uint16_t*)0xDFF1F4) = (uint16_t)(gfx_mode);
+	*((volatile uint32_t*)0xDFF1EC) = (uint32_t)(*buffer_live);
+}
+
+void ApolloCacheFile(const char *filename, uint8_t **cache, uint32_t *lenght, uint16_t file_offset)
+{
+	static unsigned long file_size = 0;
+	static unsigned long file_read = 0;
+	static FILE *file_handle = 0; 
+
+    #ifdef APOLLODEBUG_APOLLO
+	ApolloDebugPutStr("ApolloCacheFile: Opening File = ");
+	ApolloDebugPutStr(filename);
+	#endif
+
+    file_handle = fopen(filename, "rb");
+    if (!file_handle)
+    {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "=ERROR\n");
+		#endif
+	    return;
+    } else {
+		#ifdef APOLLODEBUG_APOLLO
+		ApolloDebugPutStr( "=SUCCESS\n");
+		#endif
+    }
+
+    fseek(file_handle, 0, SEEK_END);						// goto end of file
+    file_size=ftell(file_handle);							// retrieve filesize
+
+	fseek(file_handle, file_offset, SEEK_SET);
+	file_size-=file_offset;
+
+    if (*cache == NULL) ApolloDebugPutStr( "ApolloCacheFile: *cache memory ERROR\n");
+
+	#ifdef APOLLODEBUG_APOLLO
+	ApolloDebugPutStr("ApolloCacheFile: Reading file -> ");
+	#endif
+
+	file_read = fread(*cache, 1, file_size, file_handle);
+    if(file_read != file_size)
+    {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "ERROR: cannot load file\n");
+		#endif	
+	    return;
+    } else {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "SUCCESS: file loaded\n");
+		#endif
+    }
+
+	#ifdef APOLLODEBUG_APOLLO
+    	ApolloDebugPutStr("ApolloCacheFile: Closing file -> ");
+	#endif
+
+    if (fclose(file_handle) == EOF)
+    {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "ERROR: cannot close file\n");
+		#endif
+    } else {
+		#ifdef APOLLODEBUG_APOLLO
+	    ApolloDebugPutStr( "SUCCESS: file closed\n");
+		#endif
+    }
+
+    *lenght = file_size;
+}
+
+bool ApolloPlay(int channel, int volume_left, int volume_right, bool loop, uint8_t *buffer, uint32_t lenght, uint16_t offset)
+{
+	// Check if channel is free
+	if ( (channel < 4) && (*((volatile uint16_t*)0xDFF002) & (1<<channel)) || (channel >=4) && (*((volatile uint16_t*)0xDFF202) & (1<<channel)))
+	{
+		return false;
+	}
+
+	#ifdef APOLLODEBUG_APOLLO
+		sprintf(ApolloDebugMessage, "ApolloPlay: Channel = %d | L=%d | O=%d | Vol-L = %d | Vol-R = %d | Loop = %d \n", channel, lenght, offset, volume_left, volume_right, loop);
+		ApolloDebugPutStr(ApolloDebugMessage);
+	#endif
+
+	*((volatile uint32_t*)(0xDFF400 + (channel * 0x10))) = (uint32_t)buffer+offset;        	   	// Set Channel Pointer
+	*((volatile uint32_t*)(0xDFF404 + (channel * 0x10))) = (uint32_t)(((lenght-offset)/8)-32);	// Set Channel Music Lenght (in pairs of stereo sample = 2 * 2 * 16-bit = 64-bit chunksize = filesize in bytes / 8)
+	
+	ApolloVolume(channel, volume_left, volume_right);
+
+	if (loop)
+	{
+		*((volatile uint16_t*)(0xDFF40A + (channel * 0x10))) = (uint16_t)0x0005;            // %0101 = $05 - Sample 16bit (bit0 = 1) / OneShot Disabled (bit1 = 0) / Stereo Enabled (bit2 = 1)
+	} else {
+		*((volatile uint16_t*)(0xDFF40A + (channel * 0x10))) = (uint16_t)0x0007;            // %0111 = $07 - Sample 16bit (bit0 = 1) / OneShot Enabled (bit1 = 1) / Stereo Enabled (bit2 = 1)
+	}
+	*((volatile uint16_t*)(0xDFF40C + (channel * 0x10))) = (uint16_t)80;					// PERIOD=44.1 Khz
+	if (channel < 4)
+	{ 
+		*((volatile uint16_t*)0xDFF096) = (uint16_t)(0x8000) + (1<<channel);                // DMACON = enable DMA and enable DMA for specific channel AUD0-3 (start current stream)    
+	} else {
+		*((volatile uint16_t*)0xDFF296) = (uint16_t)(0x8000) + (1<<(channel-4));            // DMACON = enable DMA and enable DMA for specific channel AUD4-15 (start current stream)       
+	}
+}
+
+void ApolloVolume(int channel, int volume_left, int volume_right)
+{
+	int volume = (volume_left << 8) + (volume_right);
+
+	#ifdef APOLLODEBUG_APOLLO
+    ApolloDebugPutHex("ApolloPlay: Volume", volume);
+	#endif
+
+	*((volatile uint16_t*)(0xDFF408 + (channel * 0x10))) = (uint16_t)volume;                // Set Channel Volume (0-FF / 0-FF) 
+}
 
 

@@ -83,42 +83,46 @@ void main(int argc, char *argv[])
     {
         printf("\nR8G8B8A8 Detected\n");
         
-        ULONG pixel;
-        ULONG color;
-        ULONG alpha;
+        ULONG pixel, color, alpha;
+        UWORD currentindex, nextfreeindex;
 
-        UBYTE sprite_data[64*32];
-        ULONG sprite_colors[256] = {0}; // Initialize all colors to 0 (fully transparent)
-        UWORD index;
-        UWORD nextfreeindex=1; // Start at 1 since color index 0 is reserved for transparency
+        struct ApolloPointer sprite_pointer;
 
-        sprite_colors[0] = 0x000000; // Color index 0 is reserved for transparency (fully transparent)
+        sprite_pointer.colors[0] = 0x000000; // Color index 0 is reserved for transparency (fully transparent)
 
+        currentindex = 1;
+        nextfreeindex = 1;
+                
         for (int rows=0; rows<32; rows++)
         {
             for (int pixels=0; pixels<32; pixels++)
             {
-                pixel = *(ULONG*)(SpritePointer_Source + (rows * 32 * 4) + (pixels * 4));
+                pixel = *(ULONG*)((sprite_bitmap.buffer + sprite_bitmap.position) + (rows * 32 * 4) + (pixels * 4));
                 
                 color = pixel & 0x00FFFFFF;    // Get R8G8B8 part of the pixel
-                alpha = pixel & 0xFF000000;    // Get A8 part of the pixel
-
-                for (index=0; index<nextfreeindex; index++)
+                alpha = (pixel>>24) & 0xFF;    // Get A8 part of the pixel
+                    
+                if(alpha == 0x00)
                 {
-                    if (sprite_colors[index] == color) break; // Color already exists in sprite_colors array, reuse index
+                    currentindex = 0; // Fully transparent  
+                } else {
+                    if(alpha != 0xFF) alpha = 0x00; // Semi-transparent
+
+                    for (currentindex=1; currentindex<nextfreeindex; currentindex++)
+                    {
+                        if (sprite_pointer.colors[currentindex] == color) break; // Color already exists in sprite_colors array, reuse index
+                    }
+                    if (currentindex == nextfreeindex) // New color, add to sprite_colors array
+                    {
+                        sprite_pointer.colors[nextfreeindex] = color;
+                        if (nextfreeindex < 255) nextfreeindex++;
+                    }
                 }
 
-                if (index == nextfreeindex) // New color, add to sprite_colors array
-                {
-                    ADX(sprintf(ApolloDebugMessage, "New Color Detected: 0x%06X | Assigned Index: %d\n", color, index);)
-                    ADX(ApolloDebugPutStr(ApolloDebugMessage);)
-                    sprite_colors[nextfreeindex] = color;
-                    if (nextfreeindex < 255) nextfreeindex++;
-                }
-                sprite_data[(rows * 32 * 2) + (pixels * 2)]     = index;                // Store color index in sprite data
-                sprite_data[(rows * 32 * 2) + (pixels * 2) + 1] = (UBYTE)(alpha>>24);   // Store alpha value in sprite data
+                sprite_pointer.data[(rows * 32 * 2) + (pixels * 2)]     = currentindex;         // Store color index in sprite data
+                sprite_pointer.data[(rows * 32 * 2) + (pixels * 2) + 1] = (UBYTE)alpha;   // Store alpha value in sprite data
 
-                ADX(sprintf(ApolloDebugMessage, "Pixel[%2d:%2d] Pixel =0x%08X | Color =0x%06X | Alpha =0x%08X | Index=0x%02X | Alpha=0x%02X | NextFreeIndex=%2d\n", rows, pixels, pixel, color, alpha, index, (UBYTE)(alpha>>24), nextfreeindex);)
+                ADX(sprintf(ApolloDebugMessage, "A8R8G8B8 Pixel[%2d:%2d] = 0x%08X | Sprite-Pixel-1 (Index) = 0x%02X | Sprite-Pixel-2 (Alpha) = 0x%02X | NextFreeIndex=%03d\n", rows, pixels, pixel, currentindex, (UBYTE)(alpha), nextfreeindex);)
                 ADX(ApolloDebugPutStr(ApolloDebugMessage);)
             }
         }
@@ -126,22 +130,12 @@ void main(int argc, char *argv[])
         ADX(sprintf(ApolloDebugMessage, "Total Unique Colors Detected (including transparency): %d\n", nextfreeindex);)
         ADX(ApolloDebugPutStr(ApolloDebugMessage);)
 
-        for (int i=0; i<nextfreeindex; i++)
+        for (int i=0; i<256; i++)
         {    
-            *(volatile uint16_t*)SAGA_VIDEO_SPRITECLUT_IDX = i;
-            *(volatile uint32_t*)SAGA_VIDEO_SPRITECLUT_RGB = sprite_colors[i];
-            //ADX(sprintf(ApolloDebugMessage, "CLUT Index:%3d Color=0x%06X\n", i, sprite_colors[i]);)
-            //ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+            *(volatile UWORD*)SAGA_VIDEO_SPRITECLUT_IDX = i;
+            *(volatile ULONG*)SAGA_VIDEO_SPRITECLUT_RGB = sprite_pointer.colors[i];
         }
-
-        for (int i=0; i<(64*32); i+=4)
-        {
-            *(LONG *)(SpritePointer_Target) = (sprite_data[i]<<24) + (sprite_data[i+1]<<16) + (sprite_data[i+2]<<8) + sprite_data[i+3];
-            SpritePointer_Target=SpritePointer_Target+4;
-            //ADX(sprintf(ApolloDebugMessage, "Sprite Data[%4d]=0x%08X\n", i, (sprite_data[i]<<24) + (sprite_data[i+1]<<16) + (sprite_data[i+2]<<8) + sprite_data[i+3]);)
-            //ADX(ApolloDebugPutStr(ApolloDebugMessage);)
-        }
-        goto exit;
+        ApolloCopyLongs((UBYTE*) &sprite_pointer.data, (UBYTE*)SpritePointer_Target, 64*32);
     }
 
     exit:
