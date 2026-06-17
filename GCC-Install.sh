@@ -38,10 +38,6 @@ make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e -n "\e[0m\e[36mClone Repos (>1 min) | "
 make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
-cd $ARCHIVES/MacOS
-cp -f * $SOURCES/amiga-gcc/projects/gcc/gcc
-cd $SOURCES/amiga-gcc
-
 echo -e -n "\e[0m\e[36mBuild Amiga-GCC (be patient) | "
 make all $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36mAdd LibDebug\e[0m]"
