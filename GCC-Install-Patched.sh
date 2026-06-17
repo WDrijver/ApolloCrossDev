@@ -39,10 +39,10 @@ make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e -n "\e[0m\e[36mClone Repos (>1 min)\e[0m\e[36m"
 make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
-# Apply Patches from Ioannis Kouretsidis (@JohnStuggi)
+# Apply Patches (Q4C) from Ioannis Kouretsidis (@JohnStuggi)
 echo -e "\e[0m\e[36mApplying Apollo 68080 Patches from Ioannis Kouretsidis (@JohnStuggi)\e[0m"
 cd $SOURCES/amiga-gcc/projects/gcc
-git apply $ARCHIVES/patches/q2g-stable.patch >>$LOGFILES/patch.log 2>>$LOGFILES/patch.log
+git apply $ARCHIVES/patches/q4c-candidate.patch >>$LOGFILES/patch.log 2>>$LOGFILES/patch.log
 
 # Apply Patches from Morten (@Morten)
 echo -e "\e[0m\e[36mApplying Apollo 68080 Patches from Morten (@Morten)"
