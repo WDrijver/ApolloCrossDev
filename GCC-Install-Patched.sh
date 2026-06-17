@@ -42,7 +42,7 @@ make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4
 # Apply Patches from Ioannis Kouretsidis (@JohnStuggi)
 echo -e "\e[0m\e[36mApplying Apollo 68080 Patches from Ioannis Kouretsidis (@JohnStuggi)\e[0m"
 cd $SOURCES/amiga-gcc/projects/gcc
-git apply $ARCHIVES/patches/q2g.patch >>$LOGFILES/patch.log 2>>$LOGFILES/patch.log
+git apply $ARCHIVES/patches/q2g-stable.patch >>$LOGFILES/patch.log 2>>$LOGFILES/patch.log
 
 # Apply Patches from Morten (@Morten)
 echo -e "\e[0m\e[36mApplying Apollo 68080 Patches from Morten (@Morten)"
