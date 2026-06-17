@@ -36,10 +36,10 @@ CC=gcc-12 CXX=g++-12 gmake drop-prefix $CPU PREFIX=$PREFIX >>$LOGFILES/part4_dro
 echo "\033[0m\033[36m   * Clone Repos (>1 min)"
 CC=gcc-12 CXX=g++-12 gmake update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
-# Apply Patches (Q4C) from Ioannis Kouretsidis (@JohnStuggi)
+# Apply Patches from Ioannis Kouretsidis (@JohnStuggi)
 echo "\033[0m\033[36m   * Applying Apollo 68080 Patches from Ioannis Kouretsidis (@JohnStuggi)\033[0m"
 cd $SOURCES/amiga-gcc/projects/gcc
-git apply $ARCHIVES/patches/q4c-candidate.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/q2g.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Apply Patches from Morten (@Morten)
 echo "\033[0m\033[36m   * Applying Apollo 68080 Patches from Morten (@Morten)\033[0m"
