@@ -3,7 +3,7 @@
 ## Content:
 ApolloCrossDev is based on the excellent Amiga-GCC repositories by Stefan -Bebbo- Franke
 1. BinUtils (ar=archiver | as=GNU ASM | ld=linker | nm=symbols | objdump=objects | ranlib=libindex)
-2. GNU-GCC Compilers for C and C++ (6.50 Stable | **6.50 Latest** | 13.1/2/3 Beta | 15.2 Beta)
+2. GNU-GCC Compilers for C and C++ (6.50 Stable | **6.50 Patched** | 13.1/2/3 Beta | 15.2 Beta)
 3. VASM Assembler (Apollo optimised Assembler from Dr. Volker Barthelsmann & Frank Wille) 
 4. Amiga OS Native Development Kits (1.3, 3.9 and 3.2 = default)
 5. Libraries/Includes (MUI5, SDL-Base+Mixer+TTF+Image, Vorbis, Ogg, GL, FreeType, Timidity, ZLib, JPeg, PNG)

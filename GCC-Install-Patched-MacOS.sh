@@ -1,4 +1,4 @@
-# ApolloCrossDev Secondary Install Script v1.0 - MacOS
+# ApolloCrossDev Secondary Install Script v1.1 - MacOS
 
 # INIT Terminal
 clear
