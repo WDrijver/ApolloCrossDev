@@ -1,4 +1,4 @@
-# ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup a Cross Compiler in a Virtual Ubuntu Linux.
+# ApolloCrossDev is intended to help (future) Amiga/Apollo developers to setup a Cross Compiler in Ubuntu Linux (x64) or MacOS (Silicon).
 
 ## Content:
 ApolloCrossDev is based on the excellent Amiga-GCC repositories by Stefan -Bebbo- Franke
