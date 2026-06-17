@@ -3,7 +3,7 @@
 ## Content:
 ApolloCrossDev is based on the excellent Amiga-GCC repositories by Stefan -Bebbo- Franke
 1. BinUtils (ar=archiver | as=GNU ASM | ld=linker | nm=symbols | objdump=objects | ranlib=libindex)
-2. GNU-GCC Compilers for C and C++ (6.50 Stable | **6.50 Patched** | 13.1/2/3 Beta | 15.2 Beta)
+2. GNU-GCC Compilers for C and C++ (6.50-Stable | **6.50-Patched (recommended)** | 13.1/2/3 Beta | 15.2 Beta)
 3. VASM Assembler (Apollo optimised Assembler from Dr. Volker Barthelsmann & Frank Wille) 
 4. Amiga OS Native Development Kits (1.3, 3.9 and 3.2 = default)
 5. Libraries/Includes (MUI5, SDL-Base+Mixer+TTF+Image, Vorbis, Ogg, GL, FreeType, Timidity, ZLib, JPeg, PNG)
@@ -13,10 +13,14 @@ ApolloCrossDev is based on the excellent Amiga-GCC repositories by Stefan -Bebbo
 9. ApolloExplorer = Great Client/Server File Transfer Utility created by @ronybeck 
 
 ## Requirements:
-1. Ubuntu 24.04.3 LTS amd64 (Intel) is the supported Linux (25.10 will fail) installed in a VM (8Gb+ RAM|50Gb+ HD|4+ Cores) 
-2. Git tools installed from CLI: open terminal and type: sudo apt install git
-3. Microsoft Visual Studio Code (VS-Code) downloaded and installed (https://code.visualstudio.com)
-4. Microsoft Visual Studio Code Extensions:
+1. Linux: 
+- Ubuntu 24.04.3 LTS amd64 (Intel) is the supported Linux (other Linux distro may fail unless you downgrade gcc to 12)
+- Intel or AMD X64 processor 8Gb+ RAM | 50Gb+ HD | 4+ Cores (VM and Docker ae supported)
+2.MacOS:
+- MacOS Sequoia, Tahoe or Golden Gate running on Mac Silicon M1-M2-M3-M4 hardware (Intel x64 is not tested/supported)
+3. Git tools installed from CLI: open terminal and type: sudo apt install git
+4. Microsoft Visual Studio Code (VS-Code) downloaded and installed (https://code.visualstudio.com)
+5. Microsoft Visual Studio Code Extensions:
    - Microsoft C/C++ (Intellisense, debugging and code browsing)
    - Microsoft C/C++ Themes (UI Theme Pack - high contrast recommeded)
    - Microsoft C/C++ Extension Pack (collection of popular extensions)
@@ -27,7 +31,7 @@ ApolloCrossDev is based on the excellent Amiga-GCC repositories by Stefan -Bebbo
 2. In drop-down list Select "git clone" and type https://github.com/WDrijver/ApolloCrossDev  
 3. After download Click "Open" and accept "trust the authors" and Click "Open Workspace" in the right corner popup window
 4. Select "Terminal" in the menu and then "New Terminal"
-5. In the terminal windows type ./GCC-6.50-Latest.sh to install the current ApolloCrossDev Toolchain
+5. In the terminal windows type ./GCC-6.50-Patched.sh (or ./GCC-6.50-Patched-MacOS.sh) to install the latest ApolloCrossDev Toolchain
 6. After the installation is finished type sudo nano ~/.bashrc
 7. At the end of the file add: export AMIGAHOST="IP-ADDRESS" and save (for example: export AMIGAHOST ="192.168.2.100")
 
@@ -68,6 +72,6 @@ TIP:  The Makefile template contains additional information on Compiler Options
 3. ApolloOS - Apollo V4 Open Source OS Distro Image   : http://www.apollo-computer.com/downloads.php
 
 ## Apollo 68080 C/C++ opcode support:
-C/C++ Compiler current opcode support for Apollo 68080    : cmpiw.l + addiw.l + dbra.l + moviw.l + bcc.s+ 
-C/C++ Compiler future  opcode support for Apollo 68080    : mov3q + clr.q + move2.b + movs.b/w + movz.b/w
+GCC-6.50-Patched Compiler opcode support for Apollo 68080      : cmpiw.l + addiw.l + dbra.l + moviw.l + bcc.s+ 
+Roadmap for future Compiler opcode support for Apollo 68080    : mov3q + clr.q + move2.b + movs.b/w + movz.b/w
 
