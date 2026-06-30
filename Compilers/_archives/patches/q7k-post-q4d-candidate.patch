@@ -1,0 +1,67 @@
+--- a/gcc/config/m68k/m68k-protos.h
++++ b/gcc/config/m68k/m68k-protos.h
+@@ -65,6 +65,7 @@
+ extern int valid_dbcc_comparison_p_2 (rtx, machine_mode);
+ extern rtx m68k_libcall_value (machine_mode);
+ extern rtx m68k_function_value (const_tree, const_tree);
++extern int m68k_register_move_cost (machine_mode, enum reg_class, enum reg_class);
+ extern int emit_move_sequence (rtx *, machine_mode, rtx);
+ extern bool m68k_movem_pattern_p (rtx, rtx, HOST_WIDE_INT, bool);
+ extern const char *m68k_output_movem (rtx *, rtx, HOST_WIDE_INT, bool);
+--- a/gcc/config/m68k/m68k.c
++++ b/gcc/config/m68k/m68k.c
+@@ -6023,6 +6023,32 @@
+   return false;
+ }
+ 
++/* Implement REGISTER_MOVE_COST.  */
++
++int
++m68k_register_move_cost (machine_mode mode, enum reg_class class1,
++                         enum reg_class class2)
++{
++  int cost;
++
++  cost = ((((class1) == FP_REGS) != ((class2) == FP_REGS)) ? 4 : 2);
++
++  /* On 68080, address registers are still excellent address registers, but
++     hardware measurements show dense integer chains through address registers
++     are far slower than equivalent data-register chains.  Nudge IRA/reload
++     away from using A-regs as pure integer scratch registers without banning
++     legitimate pointer/address allocation.  Keep the first Q6C probe small:
++     +2 matched the earlier safer regmove experiment and should be less likely
++     to increase spills than the aggressive +4 variant.  */
++  if (TUNE_68080
++      && INTEGRAL_MODE_P (mode)
++      && ((class1 == DATA_REGS && class2 == ADDR_REGS)
++          || (class1 == ADDR_REGS && class2 == DATA_REGS)))
++    return cost + 2;
++
++  return cost;
++}
++
+ /* Implement SECONDARY_RELOAD_CLASS.  */
+ 
+ enum reg_class
+--- a/gcc/config/m68k/m68k.h
++++ b/gcc/config/m68k/m68k.h
+@@ -509,7 +509,7 @@
+ 
+ /* Moves between fp regs and other regs are two insns.  */
+ #define REGISTER_MOVE_COST(MODE, CLASS1, CLASS2)	\
+-  ((((CLASS1) == FP_REGS) != ((CLASS2) == FP_REGS)) ? 4 : 2)
++  m68k_register_move_cost (MODE, CLASS1, CLASS2)
+ 
+ 
+ /* Stack layout; function entry, exit and calling.  */
+--- a/gcc/config/m68k/m68k.md
++++ b/gcc/config/m68k/m68k.md
+@@ -2615,7 +2615,7 @@
+ (define_insn "*addsi3_68080"
+   [(set (match_operand:SI 0 "nonimmediate_operand" "=m,d,?a,?a,?a")
+         (plus:SI (match_operand:SI 1 "general_operand" "%0,0,0,a,rJK")
+-                 (match_operand:SI 2 "general_src_operand" "dIKLT,mSdJIKLT,mSrIKLs,rJK,a")))]
++                 (match_operand:SI 2 "general_src_operand" "dIKLT,mSrIKLT,mSrIKLs,rJK,a")))]
+ 
+ 
+   "TUNE_68080"

@@ -1,0 +1,61 @@
+diff --git a/gcc/config/m68k/m68k-protos.h b/gcc/config/m68k/m68k-protos.h
+index 46faef29f6ce811bce5b7854f23651fe0632e7c8..8b7b4c0d9a0f5a2c7e6c9e7a0e2a1a9d1c3f4b5a 100644
+--- a/gcc/config/m68k/m68k-protos.h
++++ b/gcc/config/m68k/m68k-protos.h
+@@ -63,5 +63,6 @@ extern int valid_dbcc_comparison_p_2 (rtx, machine_mode);
+ extern rtx m68k_libcall_value (machine_mode);
+ extern rtx m68k_function_value (const_tree, const_tree);
++extern int m68k_register_move_cost (machine_mode, enum reg_class, enum reg_class);
+ extern int emit_move_sequence (rtx *, machine_mode, rtx);
+ extern bool m68k_movem_pattern_p (rtx, rtx, HOST_WIDE_INT, bool);
+ extern const char *m68k_output_movem (rtx *, rtx, HOST_WIDE_INT, bool);
+diff --git a/gcc/config/m68k/m68k.c b/gcc/config/m68k/m68k.c
+index 8dcb67b7a894dae13ffa9015f470ad26d4939fa8..c4c7b7f1f4fb1c9fd0c0d98c7097ea5e4b9c2a11 100644
+--- a/gcc/config/m68k/m68k.c
++++ b/gcc/config/m68k/m68k.c
+@@ -6023,6 +6023,32 @@ m68k_regno_mode_ok (int regno, machine_mode mode)
+   return false;
+ }
+ 
++/* Implement REGISTER_MOVE_COST.  */
++
++int
++m68k_register_move_cost (machine_mode mode, enum reg_class class1,
++                         enum reg_class class2)
++{
++  int cost;
++
++  cost = ((((class1) == FP_REGS) != ((class2) == FP_REGS)) ? 4 : 2);
++
++  /* On 68080, address registers are still excellent address registers, but
++     hardware measurements show dense integer chains through address registers
++     are far slower than equivalent data-register chains.  Nudge IRA/reload
++     away from using A-regs as pure integer scratch registers without banning
++     legitimate pointer/address allocation.  Keep the first Q6C probe small:
++     +2 matched the earlier safer regmove experiment and should be less likely
++     to increase spills than the aggressive +4 variant.  */
++  if (TUNE_68080
++      && INTEGRAL_MODE_P (mode)
++      && ((class1 == DATA_REGS && class2 == ADDR_REGS)
++          || (class1 == ADDR_REGS && class2 == DATA_REGS)))
++    return cost + 2;
++
++  return cost;
++}
++
+ /* Implement SECONDARY_RELOAD_CLASS.  */
+ 
+ enum reg_class
+diff --git a/gcc/config/m68k/m68k.h b/gcc/config/m68k/m68k.h
+index 2f5c1e4c16f485be07f866f5d3995363089f3ae9e..bf5c4b7bd1f592743365c14145edb89e59490195 100644
+--- a/gcc/config/m68k/m68k.h
++++ b/gcc/config/m68k/m68k.h
+@@ -509,7 +509,7 @@ extern enum reg_class regno_reg_class[];
+ 
+ /* Moves between fp regs and other regs are two insns.  */
+ #define REGISTER_MOVE_COST(MODE, CLASS1, CLASS2)	\
+-  ((((CLASS1) == FP_REGS) != ((CLASS2) == FP_REGS)) ? 4 : 2)
++  m68k_register_move_cost (MODE, CLASS1, CLASS2)
+ 
+ 
+ /* Stack layout; function entry, exit and calling.  */
