@@ -1,5 +1,8 @@
 # ApolloCrossDev Primary Install Script v1.1 - MacOS
 
+#Clear Terminal
+printf '\33c\e[3J'
+
 VERSION=1.1
 CPU=-j16
 
