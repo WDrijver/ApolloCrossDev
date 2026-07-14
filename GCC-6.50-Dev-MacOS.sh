@@ -1,12 +1,15 @@
 # ApolloCrossDev Primary Install Script v1.1 - MacOS
 
+#Clear Terminal
+printf '\33c\e[3J'
+
 VERSION=1.1
 CPU=-j16
 
 WORKSPACE="`pwd`"
 COMPILERS=Compilers
 PROJECTS=Projects
-COMPILER=GCC-6.50-Base
+COMPILER=GCC-6.50-Dev
 TARGET=m68k-amigaos
 PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
 
@@ -23,4 +26,4 @@ export PATH=$PREFIX/bin:$PATH
 sudo xcodebuild -license accept
 export PATH=$(brew --prefix bison)/bin:$PATH
 
-source GCC-Install-Base-MacOS.sh
+source GCC-Install-Dev-MacOS.sh

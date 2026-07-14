@@ -6,7 +6,7 @@ CPU=-j16
 WORKSPACE="`pwd`"
 COMPILERS=Compilers
 PROJECTS=Projects
-COMPILER=GCC-6.50-Patched
+COMPILER=GCC-6.50-Dev
 TARGET=m68k-amigaos
 PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
 
@@ -20,5 +20,5 @@ SOURCES=$PREFIX/_sources
 
 export PATH=$PREFIX/bin:$PATH
 
-source GCC-Install-Patched-Linux.sh
+source GCC-Install-Dev-Linux.sh
 

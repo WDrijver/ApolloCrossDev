@@ -9,7 +9,7 @@ CPU=-j16
 WORKSPACE="`pwd`"
 COMPILERS=Compilers
 PROJECTS=Projects
-COMPILER=GCC-6.50-Patched-Q7K
+COMPILER=GCC-6.50-Stable
 TARGET=m68k-amigaos
 PREFIX=$WORKSPACE/$COMPILERS/$COMPILER
 
@@ -26,4 +26,4 @@ export PATH=$PREFIX/bin:$PATH
 sudo xcodebuild -license accept
 export PATH=$(brew --prefix bison)/bin:$PATH
 
-source GCC-Install-Patched-MacOS.sh
+source GCC-Install-Stable-MacOS.sh
