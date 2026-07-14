@@ -58,7 +58,7 @@ make clean >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e -n "\e[0m\e[36mDrop Prefix | "
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
-echo -e -n "\e[0m\e[36mClone Repos (>1 min)\e[0m\e[36m"
+echo -e -n "\e[0m\e[36mClone Repos (>1 min)\e[0m\e[36m\n"
 make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Apply Patches from Ioannis Kouretsidis (@JohnStuggi)
@@ -86,7 +86,7 @@ cp -f * $SOURCES/amiga-gcc/projects/gcc/gcc
 cd $SOURCES/amiga-gcc
 echo -e -n "\e[0m\e[36mBuild Compiler (>5 min) | "
 make all $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
-echo -e "\e[0m\e[36mAdd LibDebug\e[0m]"
+echo -e "\e[0m\e[36mAdd LibDebug\e[0m"
 make libdebug PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Part 5: MUI
