@@ -213,7 +213,7 @@ cp -r -f cmake/* $PREFIX/lib >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 
 # Part 8: ApolloExplorer
 echo -e "\033[1m\033[37m8. ApolloExplorer (acp)\033[0m\033[36m"
-cd $WORKSPACE/$PROJECTS/ApolloExplorer
+cd $WORKSPACE/$PROJECTS/ApolloExplorer/acp
 qmake >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 if [ $? -ne 0 ]; then
     echo -e "\033[1m\033[31mQt qmake command not found\033[0;30m"
