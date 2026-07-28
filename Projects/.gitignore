@@ -1,6 +1,5 @@
 *.o
 *-log.txt
-ApolloExplorer
 bgdbserver
 ApolloDemo/ApolloDemo
 ApolloCoreDisplay/ApolloCoreDisplay

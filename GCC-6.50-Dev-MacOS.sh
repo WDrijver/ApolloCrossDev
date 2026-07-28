@@ -93,16 +93,6 @@ CC=gcc-12 CXX=g++-12 gmake all $CPU NDK=3.2 SHELL=$(brew --prefix)/bin/bash PREF
 echo -e "\033[0m\033[36m   * Add LibDebug\033[0m"
 CC=gcc-12 CXX=g++-12 gmake libdebug $CPU PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
-# Build Assembler (vasm)
-cd $ARCHIVES/vasm
-tar -xzf vasm.tar.tar
-cd vasm
-make CPU=m68k SYNTAX=mot >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
-cp -f vasmm68k_mot $PREFIX/bin/vasmm68k_mot >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
-cp -f vobjdump $PREFIX/bin/vobjdump >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
-cd $ARCHIVES/vasm
-rm -rf vasm
-
 # Part 5: MUI
 echo -e "\033[1m\033[37m5. Adding MUI5\033[0m\033[36m"
 cd $SOURCES/amiga-gcc
@@ -232,13 +222,29 @@ cp -r -f P96/* $PREFIX/$TARGET/include >>$LOGFILES/part7.log 2>>$LOGFILES/part7_
 cp -r -f cmake/* $PREFIX/lib >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 
 # Part 8: ApolloExplorer
-echo -e "\033[1m\033[37m8. ApolloExplorer\033[0m\033[36m"
-cd $WORKSPACE/$PROJECTS
-git clone --progress https://github.com/WDrijver/ApolloExplorer >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+echo -e "\033[1m\033[37m8. ApolloExplorer (acp)\033[0m\033[36m"
 cd $WORKSPACE/$PROJECTS/ApolloExplorer
-/opt/homebrew/opt/qt@5/bin/qmake -recursive >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
-make clean >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+qmake >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+if [ $? -ne 0 ]; then
+    echo -e "\033[1m\033[31mQt qmake command not found\033[0;30m"
+    printf 'Do you want to install Qt 6 from homebrew? (y/n):'
+    read answer
+    if [ "$answer" != "${answer#[Yy]}" ] ;then 
+        echo -e "Installing Qt 6 from homebrew (be patient)\033[0;30m"
+        brew install -qy qt@6 >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+    else 
+        echo -e "Please install Qt 6 (homebrew, Qt online installer or build from source)"
+        echo -e "Make sure qmake is in your \$PATH variable\033[0m"
+        exit
+    fi
+fi
+qmake MACOSX_DEPLOYMENT_TARGET="12.7.6" >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 make -j16 >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+grep -i "error" $LOGFILES/part8.log
+if [ $? -eq 0 ]; then
+    echo -e "\033[1m\033[31mError(s) found, check $LOGFILES/part8.log\033[0m"
+    exit
+fi
 make clean >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 
 # Part 9: BGDBServer
@@ -247,7 +253,7 @@ cd $WORKSPACE/$PROJECTS
 git clone --progress https://github.com/WDrijver/bgdbserver >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
 cd $WORKSPACE/$PROJECTS/bgdbserver
 make >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
-exit
+
 # PART 10: Cleanup
 echo -e "\033[1m\033[37m10. Cleanup\033[0m\033[36m"
 rm -rf $SOURCES
