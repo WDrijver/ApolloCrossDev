@@ -221,11 +221,30 @@ cp -r -f cmake/* $PREFIX/lib >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 
 # Part 8: ApolloExplorer
 echo -e "\e[1m\e[37m8. ApolloExplorer\e[0m\e[36m"
-cd $WORKSPACE/$PROJECTS
-git clone --progress https://github.com/ronybeck/ApolloExplorer >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
-cd $WORKSPACE/$PROJECTS/ApolloExplorer
-qmake >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
-make >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+cd $WORKSPACE/$PROJECTS/ApolloExplorer/acp
+
+cat /etc/os-release | grep -i "debian" >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+if [ $? -ne 0 ]; then
+    echo -e "\033[1m\033[31mThis script is only tested on Debian-based Linux distributions (Debian, Ubuntu, etc)\033[0;30m"
+    printf 'Do you want to continue anyway? (y/n):'
+    read answer
+    if [ "$answer" != "${answer#[Nn]}" ] ;then 
+        exit 1
+    fi
+fi
+
+sudo apt install -qy build-essential >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+sudo apt remove -qy qt5-base-dev qt5-tools-dev qt5-tools >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+sudo apt install -qy qt6-*dev* >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+
+qmake6 >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+make -j16 >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+grep -i "error" $LOGFILES/part8_err.log
+if [ $? -eq 0 ]; then
+    echo -e "\033[1m\033[31mError(s) found, check $LOGFILES/part8_err.log\033[0m"
+    exit 1
+fi
+make clean >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 
 # Part 9: BGDBServer
 echo -e "\e[1m\e[37m9. BGDG Server\e[0m\e[36m"
