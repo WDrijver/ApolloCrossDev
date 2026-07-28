@@ -89,6 +89,16 @@ make all $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_er
 echo -e "\e[0m\e[36mAdd LibDebug\e[0m"
 make libdebug PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# Build Assembler (vasm)
+cd $ARCHIVES/vasm
+tar -xzf vasm.tar.tar
+cd vasm
+make CPU=m68k SYNTAX=mot >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
+cp -f vasmm68k_mot $PREFIX/bin/vasmm68k_mot >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
+cp -f vobjdump $PREFIX/bin/vobjdump >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
+cd $ARCHIVES/vasm
+rm -rf vasm
+
 # Part 5: MUI
 echo -e "\e[1m\e[37m5. Adding MUI5\e[0m\e[36m"
 cd $SOURCES/amiga-gcc

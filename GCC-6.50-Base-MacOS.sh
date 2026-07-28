@@ -61,8 +61,6 @@ CC=gcc-12 CXX=g++-12 gmake drop-prefix $CPU PREFIX=$PREFIX >>$LOGFILES/part4_dro
 echo "\033[0m\033[36m   * Clone Repos (>1 min)"
 CC=gcc-12 CXX=g++-12 gmake update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
-
-
 # Apply Patches for ISL
 echo "\033[0m\033[36m   * Applying Patches for ISL\033[0m"
 cd $ARCHIVES/isl
@@ -74,6 +72,16 @@ echo "\033[0m\033[36m   * Build Amiga-GCC (be patient)\033[0m"
 CC=gcc-12 CXX=g++-12 gmake all $CPU NDK=3.2 SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo "\033[0m\033[36m   * Add LibDebug\033[0m"
 CC=gcc-12 CXX=g++-12 gmake libdebug $CPU PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
+# Build Assembler (vasm)
+cd $ARCHIVES/vasm
+tar -xzf vasm.tar.tar
+cd vasm
+make CPU=m68k SYNTAX=mot >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
+cp -f vasmm68k_mot $PREFIX/bin/vasmm68k_mot >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
+cp -f vobjdump $PREFIX/bin/vobjdump >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
+cd $ARCHIVES/vasm
+rm -rf vasm
 
 # Part 5: MUI
 echo "\033[1m\033[37m5. Adding MUI5\033[0m\033[36m"
