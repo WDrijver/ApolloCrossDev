@@ -824,9 +824,9 @@ void ApolloJoypad(ApolloJoypadState *JoypadState)
 
 void ApolloMouse(ApolloMouseState *MouseState)
 {
-	UBYTE MouseButtonLeft_Value;	
-	UBYTE MouseButtonRight_Value;	
-	UBYTE MouseButtonMiddle_Value;
+	UWORD MouseButtonLeft_Value;	
+	UWORD MouseButtonRight_Value;	
+	UWORD MouseButtonMiddle_Value;
 
 	// Initialize Mouse Buttons
 	MouseState->Button_Left = false;

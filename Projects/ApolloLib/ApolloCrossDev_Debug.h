@@ -82,6 +82,38 @@ extern void ApolloDebugPutHex(const char *what, uint32_t val);
 extern void ApolloDebugPutDec(const char *what, uint32_t val);
 extern void ApolloDebugPutHexVal(uint32_t val);
 
+#define BUG_RESET "\033[0m"
+#define BUG_BOLD "\033[1m"
+#define BUG_DIM "\033[2m"
+#define BUG_ITALIC "\033[3m"
+#define BUG_UNDERLINE "\033[4m"
+#define BUG_BLINK "\033[5m"
+#define BUG_BLINK2 "\033[6m"
+#define BUG_REVERSE "\033[7m"
+#define BUG_HIDDEN "\033[8m"
+#define BUG_STRIKE "\033[9m"
+
+#define BUG_BLACK "\033[0;30m"
+#define BUG_RED "\033[0;31m"
+#define BUG_GREEN "\033[0;32m"
+#define BUG_YELLOW "\033[0;33m"
+#define BUG_BLUE "\033[0;34m"
+#define BUG_MAGENTA "\033[0;35m"
+#define BUG_CYAN "\033[0;36m"
+#define BUG_GREY "\033[0;37m"
+
+#define BUG_BLACK2 "\033[0;90m"
+#define BUG_RED2 "\033[0;91m"
+#define BUG_GREEN2 "\033[0;92m"
+#define BUG_YELLOW2 "\033[0;93m"
+#define BUG_BLUE2 "\033[0;94m"
+#define BUG_MAGENTA2 "\033[0;95m"
+#define BUG_CYAN2 "\033[0;96m"
+#define BUG_GREY2 "\033[0;97m"
+
+
+
+
 #ifdef __cplusplus
 }
 #endif
