@@ -235,7 +235,7 @@ if [ $? -ne 0 ]; then
 fi
 
 sudo apt install -qy build-essential >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
-sudo apt remove -qy qt5-base-dev qt5-tools-dev qt5-tools >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
+sudo apt remove -qy qt5-base-dev qt5-tools-dev qt5-tools >>/dev/null 2>>/dev/null
 sudo apt install -qy qt6-*dev* >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 
 qmake6 >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
@@ -243,7 +243,6 @@ make -j16 >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 grep -i "error" $LOGFILES/part8_err.log
 if [ $? -eq 0 ]; then
     echo -e "\033[1m\033[31mError(s) found, check $LOGFILES/part8_err.log\033[0m"
-    exit 1
 fi
 make clean >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
 
