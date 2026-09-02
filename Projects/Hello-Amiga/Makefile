@@ -8,7 +8,7 @@ DIR = $(notdir $(shell pwd))
 APOLLO_V4_HOST = "${AMIGAHOST}:Ram Disk/"
 
 # Define ApolloCrossDev Compiler
-PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Stable
+PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Dev
 TARGET 	= m68k-amigaos
 ACP 	= $(PWD)/../../Projects/ApolloExplorer/acp/acp
 GDB		= $(PWD)/../../Projects/bgdbserver/bgdbserver
