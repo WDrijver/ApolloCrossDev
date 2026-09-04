@@ -17,7 +17,7 @@ ApolloCrossDev is based on the excellent Amiga-GCC repositories by Stefan -Bebbo
 - Ubuntu 24.04.3 LTS amd64 (Intel) is the supported Linux (other Linux distro may fail unless you downgrade gcc to 12)
 - Intel or AMD X64 processor 8Gb+ RAM | 50Gb+ HD | 4+ Cores (VM and Docker ae supported)
   
-2.MacOS:
+2. MacOS:
 - MacOS Sequoia, Tahoe or Golden Gate running on Mac Silicon M1-M2-M3-M4 hardware (Intel x64 is not tested/supported)
   
 3. Git tools installed from CLI: open terminal and type: sudo apt install git
