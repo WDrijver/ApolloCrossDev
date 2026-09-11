@@ -7,7 +7,7 @@ PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
 
 # Define ApolloCrossDev (Default = GCC 6.50, optional change to GCC 13.10 --> NO 68080 support yet!)
-PREFIX 	= Compilers/GCC-6.50-Stable
+PREFIX 	= Compilers/GCC-6.50-Dev
 # PREFIX 	= Compilers/GCC-13.10
 TARGET 	= m68k-amigaos
 ACP 	= ./Projects/ApolloExplorer/acp/acp
@@ -47,7 +47,7 @@ all: init cleanbefore build upload cleanafter exit
 init:
 	clear
 	@echo "\e[37m------------------------------------------------------------------\e[0m"
-	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-6.50-Stable Edition v0.8\e[0m"    
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-6.50-Dev Edition v0.8\e[0m"    
 	@echo "\e[36mC-Sources : \e[37m$(C_FILES)\e[0m"
 	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
 	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"

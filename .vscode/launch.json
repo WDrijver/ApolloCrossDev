@@ -144,7 +144,7 @@
             "externalConsole": false,
             "MIMode": "gdb",
             "miDebuggerServerAddress": "${env:AMIGAHOST}:2345",
-            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50/bin/m68k-amigaos-gdb",
+            "miDebuggerPath": "${workspaceFolder}/Compilers/GCC-6.50-Dev/bin/m68k-amigaos-gdb",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",

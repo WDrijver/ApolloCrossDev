@@ -16,8 +16,10 @@ ApolloCrossDev is based on the excellent Amiga-GCC repositories by Stefan -Bebbo
 1. Linux: 
 - Ubuntu 24.04.3 LTS amd64 (Intel) is the supported Linux (other Linux distro may fail unless you downgrade gcc to 12)
 - Intel or AMD X64 processor 8Gb+ RAM | 50Gb+ HD | 4+ Cores (VM and Docker ae supported)
-2.MacOS:
+  
+2. MacOS:
 - MacOS Sequoia, Tahoe or Golden Gate running on Mac Silicon M1-M2-M3-M4 hardware (Intel x64 is not tested/supported)
+  
 3. Git tools installed from CLI: open terminal and type: sudo apt install git
 4. Microsoft Visual Studio Code (VS-Code) downloaded and installed (https://code.visualstudio.com)
 5. Microsoft Visual Studio Code Extensions:
@@ -31,9 +33,11 @@ ApolloCrossDev is based on the excellent Amiga-GCC repositories by Stefan -Bebbo
 2. In drop-down list Select "git clone" and type https://github.com/WDrijver/ApolloCrossDev  
 3. After download Click "Open" and accept "trust the authors" and Click "Open Workspace" in the right corner popup window
 4. Select "Terminal" in the menu and then "New Terminal"
-5. In the terminal windows type ./GCC-6.50-Dev.sh (or ./GCC-6.50-Dev-MacOS.sh) to install the latest ApolloCrossDev Toolchain
+5. In the terminal windows type ./GCC-6.50-Dev-Linux.sh or ./GCC-6.50-Dev-MacOS.sh to install the latest ApolloCrossDev Toolchain (*)
 6. After the installation is finished type sudo nano ~/.bashrc
 7. At the end of the file add: export AMIGAHOST="IP-ADDRESS" and save (for example: export AMIGAHOST ="192.168.2.100")
+
+(*) GCC-6.50-Base = Original Baseline (Nov 2024) | GCC-6.50-Stable = Fallback if you have any issues with GCC-6.50-Dev
 
 ## Test Compiler and File-Transfer:
 1. Click "Terminal" in menu and select "Run Build Task" (or press CTRL-Shift-B)
