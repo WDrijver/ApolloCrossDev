@@ -80,7 +80,7 @@ echo -e "\e[0m\e[36mApplying Apollo 68080 Patches from Marcel (@RedBug)"
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/double-indirect-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
-echo -e "\e[0m\e[36mOverview of the Applied Patches: "
+echo -e "\e[0m\e[36mOverview of the Applied Patches: \e[0m"
 git diff --stat 
 
 # Apply Patches for ISL
