@@ -1,0 +1,24 @@
+diff --git a/gcc/config/m68k/m68k.c b/gcc/config/m68k/m68k.c
+index 621669091..3cff87984 100644
+--- a/gcc/config/m68k/m68k.c
++++ b/gcc/config/m68k/m68k.c
+@@ -2375,17 +2375,8 @@ decompose_one(rtx * loc, struct m68k_address_part *address)
+   // contains a double indirect address.
+   if (MEM_P(x))
+     {
+-      if (!flag_double_indirect)
+-	return false;
+-      // plus (mem) (mem)  does not work either
+-      if (address->mem_loc)
+-	return false;
+-
+-      address->mem_loc = loc;
+-      ++address;
+-      if (address->mem_loc == (rtx *)-1)
+-	return false;
+-      return decompose_one(&XEXP(x,0), address);
++      // reject all double indirect
++	  return false;
+     }
+   return false;
+ }
