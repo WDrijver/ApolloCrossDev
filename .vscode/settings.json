@@ -3,5 +3,6 @@
         "stdio.h": "c",
         "buffer": "c"
     },
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "cmake.sourceDirectory": "/Users/willemdrijver/ApolloCrossDev/Compilers/_archives/zlib-source"
 }
