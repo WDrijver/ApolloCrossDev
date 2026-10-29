@@ -77,6 +77,12 @@ git apply $ARCHIVES/patches/opt-pipeline-cc0-fix.patch >>$LOGFILES/part4.log 2>>
 git apply $ARCHIVES/patches/opt-shift-lsr-signext-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 git apply $ARCHIVES/patches/postinc-size-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# m68k backend fix: dbne_hi/dbge_hi with the loop counter in an address register (cmp.w there is
+# 32-bit: endless loops at -O2). See the patch's header.
+echo -e "\033[0m\033[36m   * Applying the m68k dbra HI address-register fix\033[0m"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/m68k-dbra-hi-addrreg-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
 echo -e "\033[0m\033[36m   * Overview of the Applied Patches:\033[0m"
 git diff --stat 
 

@@ -1,0 +1,58 @@
+m68k backend: dbne_hi / dbge_hi with the 16-bit counter in an ADDRESS register.
+
+They ended such a loop with "subq.w #1,An; cmp.w #-1,An; jne": both act on
+all 32 bits of an address register, while only the low word of a HImode
+value counts (the backend says so above *tsthi_internal) and its high word
+is often not the sign extension of the low one: ivopts builds such counters
+from a pointer ("not.l Dn; movea.l Dn,An; adda.w n,An; adda.w ptr_lo,An"),
+and cmp.w #-1 then never matches: ~4 billion turns at -O2 (always on an
+Amiga's fast RAM). Found in AmiScord's QR encoder, 2026-10-29.
+
+The fix tests the low word: on 68020+ "tst.w An; subq.w #1,An; jne" (subq to
+An keeps the flags, so the old value is tested, as the pattern says), else
+"subq.w #1,An; movea.w An,An; cmp.w #-1,An; jne". On the V4 (AC68080 core
+12841, CCC cycle counter) a turn with a 1-add/2-add/load body costs 3/3/3
+cycles instead of the wrong code's 3/4/4. 302 C files compiled at -O2
+(-m68020-60 and -m68000) give the same assembly except where such a loop is.
+The same patterns are in GCC 15.2.
+
+--- a/gcc/config/m68k/m68k.md	2026-10-29 10:06:41.331127861 +0100
++++ b/gcc/config/m68k/m68k.md	2026-10-29 10:25:10.753747449 +0100
+@@ -7232,6 +7232,18 @@
+     return "dbra %0,%l1";
+   if (GET_CODE (operands[0]) == MEM)
+     return "subq%.w #1,%0\;jcc %l1";
++  /* An address register: subq.w and cmp.w (cmpa.w) act on all 32 bits
++     there, and the high word of a 16-bit value in it need not be the sign
++     extension of the low word (ivopts builds such counters from pointers,
++     "not.l; movea.l; adda.w"): cmpa.w #-1 then never matched and the loop
++     ran ~4G times.  Test the low word itself: tst.w An (68020 and up)
++     before the decrement (subq to An leaves the flags), which is also
++     faster than the old sequence on the 68080 (3 cycles a turn, measured);
++     else make it a sign extension first (movea.w An,An).  */
++  if (ADDRESS_REG_P (operands[0]))
++    return TARGET_68020
++	   ? "tst%.w %0\;subq%.w #1,%0\;jne %l1"
++	   : "subq%.w #1,%0\;move%.w %0,%0\;cmp%.w #-1,%0\;jne %l1";
+   return "subq%.w #1,%0\;cmp%.w #-1,%0\;jne %l1";
+ })
+ 
+@@ -7281,6 +7293,18 @@
+     return "dbra %0,%l1";
+   if (GET_CODE (operands[0]) == MEM)
+     return "subq%.w #1,%0\;jcc %l1";
++  /* An address register: subq.w and cmp.w (cmpa.w) act on all 32 bits
++     there, and the high word of a 16-bit value in it need not be the sign
++     extension of the low word (ivopts builds such counters from pointers,
++     "not.l; movea.l; adda.w"): cmpa.w #-1 then never matched and the loop
++     ran ~4G times.  Test the low word itself: tst.w An (68020 and up)
++     before the decrement (subq to An leaves the flags), which is also
++     faster than the old sequence on the 68080 (3 cycles a turn, measured);
++     else make it a sign extension first (movea.w An,An).  */
++  if (ADDRESS_REG_P (operands[0]))
++    return TARGET_68020
++	   ? "tst%.w %0\;subq%.w #1,%0\;jne %l1"
++	   : "subq%.w #1,%0\;move%.w %0,%0\;cmp%.w #-1,%0\;jne %l1";
+   return "subq%.w #1,%0\;cmp%.w #-1,%0\;jne %l1";
+ })
+ 
