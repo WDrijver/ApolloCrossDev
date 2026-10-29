@@ -59,7 +59,8 @@ echo -e -n "\e[0m\e[36mDrop Prefix | "
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 echo -e -n "\e[0m\e[36mClone Repos (>1 min)\e[0m\e[36m\n"
-make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+# -k: a repository gone upstream (vbcc's master branch, 2026-10) no longer stops the others
+make update -k $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Apply Patches from Ioannis Kouretsidis (@JohnStuggi)
 echo -e "\e[0m\e[36mApplying Apollo 68080 Patches from Ioannis Kouretsidis (@JohnStuggi)\e[0m"
@@ -91,7 +92,7 @@ cp -f * $SOURCES/amiga-gcc/projects/gcc/gcc
 # Build Compiler
 cd $SOURCES/amiga-gcc
 echo -e -n "\e[0m\e[36mBuild Compiler (>5 min) | "
-make all $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+make all -k $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36mAdd LibDebug\e[0m"
 make libdebug PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
