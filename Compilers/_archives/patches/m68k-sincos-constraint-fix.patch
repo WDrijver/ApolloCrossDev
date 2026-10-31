@@ -1,0 +1,38 @@
+m68k backend: sincos<mode>2_68881 had no constraint on its input operand.
+
+  internal compiler error: in print_operand_address2, at config/m68k/m68k.c:5457
+
+with -m68881 -ffast-math (flag_unsafe_math_optimizations) on 68020/68030/68080
+targets; the sincos expander is off for 68040/68060. Operand 2 of the insn was
+written with an empty constraint (the expander carries "f<FP:dreg>m" on output
+operand 1 instead, where it means nothing). With no constraint reload never
+fixes that operand: when the pointer in its address gets no hard register, the
+pointer's memory equivalence is substituted and the operand becomes the
+memory-indirect address ([d,An],od), e.g. ([8,a5],1181332). This backend
+rejects double-indirect addresses (decompose_one), so print_operand_address2
+cannot decompose it and aborts. sin and cos of the same value in a function
+with some register pressure is enough; found in a game port, 2026-10-31.
+
+The fix gives operand 2 the constraint of the other 68881 monadic insns
+(<monads><mode>2_68881). It is a crash, not wrong code: nothing that built
+before changes. Checked with a rebuilt cc1: 69 C files x 3 flag sets
+(-m68080 -m68881 -ffast-math, -m68020-60, -Os -m68000) give byte-identical
+assembly; the failing file and a 30-line reproducer build. GCC 15.2 has no
+such pattern.
+
+--- a/gcc/config/m68k/m68k.md
++++ b/gcc/config/m68k/m68k.md
+@@ -9185,9 +9185,12 @@
+   "TARGET_68881 && flag_unsafe_math_optimizations && !TARGET_68060 && !TARGET_68040"
+   "")
+   
++;; Operand 2 needs the same constraint as the other 68881 monadic ops: with none, reload
++;; never fixes it and a spilled pointer in its address became a memory-indirect operand
++;; ([d,An],od), which print_operand_address rejects (ICE at m68k.c, -m68881 -ffast-math).
+ (define_insn "sincos<mode>2_68881"
+   [(set (match_operand:FP 0 "nonimmediate_operand" "=f")
+-        (unspec:FP [(match_operand:FP 2 "general_operand" "")] UNSPEC_COS)
++        (unspec:FP [(match_operand:FP 2 "general_operand" "f<FP:dreg>m")] UNSPEC_COS)
+    )
+    (set (match_operand:FP 1 "nonimmediate_operand" "=f")
+         (unspec:FP [(match_dup 2)] UNSPEC_SIN)
