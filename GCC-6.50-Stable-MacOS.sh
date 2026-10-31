@@ -77,6 +77,12 @@ git apply $ARCHIVES/patches/opt-pipeline-cc0-fix.patch >>$LOGFILES/part4.log 2>>
 git apply $ARCHIVES/patches/opt-shift-lsr-signext-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 git apply $ARCHIVES/patches/postinc-size-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# m68k backend fix: sincos<mode>2_68881 had no constraint on its input operand (ICE in
+# print_operand_address2 with -m68881 -ffast-math). See the patch's header.
+echo -e "\033[0m\033[36m   * Applying the m68k sincos constraint fix"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/m68k-sincos-constraint-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
 echo -e "\033[0m\033[36m   * Overview of the Applied Patches:\033[0m"
 git diff --stat 
 
