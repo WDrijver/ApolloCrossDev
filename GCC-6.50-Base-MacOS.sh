@@ -61,6 +61,13 @@ CC=gcc-12 CXX=g++-12 gmake drop-prefix $CPU PREFIX=$PREFIX >>$LOGFILES/part4_dro
 echo "\033[0m\033[36m   * Clone Repos (>1 min)"
 CC=gcc-12 CXX=g++-12 gmake update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# m68k backend fix: -mrtd crashed on every call (no call_pop patterns; bbb track_sp and
+# notice_update_cc did not know them either). See the patch's header.
+echo "\033[0m\033[36m   * Applying the m68k -mrtd call_pop fix"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/m68k-mrtd-call-pop.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+cd $SOURCES/amiga-gcc
+
 # Apply Patches for ISL
 echo "\033[0m\033[36m   * Applying Patches for ISL\033[0m"
 cd $ARCHIVES/isl
