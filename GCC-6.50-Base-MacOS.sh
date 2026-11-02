@@ -61,6 +61,14 @@ CC=gcc-12 CXX=g++-12 gmake drop-prefix $CPU PREFIX=$PREFIX >>$LOGFILES/part4_dro
 echo "\033[0m\033[36m   * Clone Repos (>1 min)"
 CC=gcc-12 CXX=g++-12 gmake update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# bbb-opts fixes: wrong code, opt_shift deleted across jumps, opt_elim_dead_assign dropped the
+# extension of a shift count still read behind the shift. See the patches' headers.
+echo "\033[0m\033[36m   * Applying the bbb-opts shift fixes"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/opt-shift-jump-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/opt-elim-shift-count-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+cd $SOURCES/amiga-gcc
+
 # Apply Patches for ISL
 echo "\033[0m\033[36m   * Applying Patches for ISL\033[0m"
 cd $ARCHIVES/isl

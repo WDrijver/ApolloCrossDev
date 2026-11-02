@@ -1,0 +1,29 @@
+bbb-opts opt_shift (-fbbb=h): wrong code, a value still needed past a jump is lost.
+
+The two backward scans stopped at labels but not at jumps. They deleted a
+"move.w dy,dx" in front of a conditional branch although the other path reads
+dx. Seen with -O2 -m68080 and -O2 -m68020 -mtune=68080. The scans now stop at
+jumps too.
+
+--- a/gcc/bbb-opts.c
++++ b/gcc/bbb-opts.c
+@@ -5884,7 +5884,9 @@
+       for (int jndex = index - 1; jndex > 0; --jndex)
+ 	{
+ 	  insn_info * jj = &(*infos)[jndex];
+-	  if (jj->is_label())
++	  /* Stay inside the block: past a jump, what is changed or deleted here
++	     is still needed on the other path.  */
++	  if (jj->is_label() || jj->is_jump())
+ 	    break;
+ 
+ 	  // skip unrelated insns
+@@ -5909,7 +5911,7 @@
+ 	      for (int kndex = jndex - 1; kndex > 0; --kndex)
+ 		{
+ 		  insn_info * kk = &(*infos)[kndex];
+-		  if (kk->is_label())
++		  if (kk->is_label() || kk->is_jump())
+ 		    break;
+ 
+ 		  // skip unrelated insns
