@@ -62,7 +62,8 @@ CC=gcc-12 CXX=g++-12 gmake clean $CPU >>$LOGFILES/part4_clean.log 2>>$LOGFILES/p
 echo -e "\033[0m\033[36m   * Clean ApolloCrossDev\033[0m"
 CC=gcc-12 CXX=g++-12 gmake drop-prefix $CPU PREFIX=$PREFIX >>$LOGFILES/part4_dropprefix.log 2>>$LOGFILES/part4_dropprefix_err.log
 echo -e "\033[0m\033[36m   * Clone Repos (>1 min)"
-CC=gcc-12 CXX=g++-12 gmake update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+# -k: a repository gone upstream (vbcc's master branch, 2026-10) no longer stops the others
+CC=gcc-12 CXX=g++-12 gmake update -k $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Apply Patches from Ioannis Kouretsidis (@JohnStuggi)
 echo -e "\033[0m\033[36m   * Applying Apollo 68080 Patches from Ioannis Kouretsidis (@JohnStuggi)\033[0m"
@@ -77,6 +78,7 @@ git apply $ARCHIVES/patches/opt-absolute-volatile-fix.patch >>$LOGFILES/part4.lo
 git apply $ARCHIVES/patches/opt-pipeline-cc0-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 git apply $ARCHIVES/patches/opt-shift-lsr-signext-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 git apply $ARCHIVES/patches/postinc-size-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/bbb-autoinc-direct-add-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Apply Patches from Marcel (@RedBug)
 echo -e "\e[0m\e[36mApplying Apollo 68080 Patches from Marcel (@RedBug)"
@@ -100,7 +102,7 @@ cp -f * $SOURCES/amiga-gcc/projects/gcc/gcc
 # Build Compiler
 cd $SOURCES/amiga-gcc
 echo -e "\033[0m\033[36m   * Build Amiga-GCC (be patient)\033[0m"
-CC=gcc-12 CXX=g++-12 gmake all $CPU NDK=3.2 SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+CC=gcc-12 CXX=g++-12 gmake all -k $CPU NDK=3.2 SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\033[0m\033[36m   * Add LibDebug\033[0m"
 CC=gcc-12 CXX=g++-12 gmake libdebug $CPU PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
@@ -109,6 +111,8 @@ echo -e "\033[1m\033[37m5. Adding MUI5\033[0m\033[36m"
 cd $SOURCES/amiga-gcc
 CC=gcc-12 CXX=g++-12 gmake sdk=mui $CPU PREFIX=$PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cp -r -f $SOURCES/amiga-gcc/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/include/mui >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+# MUI 3.8 is muimaster.library 19: lower MUI5's MUIMASTER_VMIN (20) so programs also open on MUI 3.8
+perl -pi -e 's/^(#define MUIMASTER_VMIN\s+)20\b/${1}19/' $PREFIX/$TARGET/include/libraries/mui.h >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
 # Copy proto headers to be compatible with Amiga-GCC (MacOS only)
 cd $ARCHIVES/proto

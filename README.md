@@ -77,5 +77,7 @@ TIP:  The Makefile template contains additional information on Compiler Options
 
 ## Apollo 68080 C/C++ opcode support:
 GCC-6.50-Patched Compiler opcode support for Apollo 68080      : cmpiw.l + addiw.l + dbra.l + moviw.l + bcc.s+ 
-Roadmap for future Compiler opcode support for Apollo 68080    : mov3q + clr.q + move2.b + movs.b/w + movz.b/w
+Roadmap for future Compiler opcode support for Apollo 68080    : move2.b
+Not planned (LineA, only on cores 10280-10904)                 : mov3q + clr.q + movs.b/w + movz.b/w
+  Use the fused pairs instead: moveq #0 + move.b/w (= movz), move.w + ext.l (= movs.w)
 
