@@ -1,0 +1,146 @@
+m68k backend: -mrtd was unusable (ICE on every call), three fixes.
+
+  internal compiler error: in invalid_rtx_rtx_rtx_rtx_rtx, at ./insn-target-def.h:130
+
+-mrtd makes the callee pop its stack arguments with rtd #n (varargs functions
+keep rts). Any call to a function with stack arguments crashed, at every -O
+level; the callee side (rtd #n) was already right.
+
+1. m68k.md has no call_pop / call_value_pop. When the callee pops,
+   calls.c:emit_call_1 must use them, and targetm.gen_call_value_pop was the
+   invalid default. Added the expanders and *call_pop / *call_value_pop:
+   the same output as the plain call (output_call), plus
+   (set sp (plus sp n)). Only with TARGET_RTD.
+2. bbb-opts.c track_sp() (bebbo pass f, shrink stack frame) followed pushes
+   and sp = sp + n, but not the SP adjustment inside a call_pop: a function
+   without a frame pointer got an extra lea (n,sp),sp before its rts (with
+   link/unlk the unlk hid it). It now counts that adjustment as a pop.
+3. m68k.c notice_update_cc() (cc0): a PARALLEL starting with
+   (set d0 (call ...)) was taken as a move to d0, so the flags were believed
+   to reflect d0 after the call and a tst.l d0 was dropped (-Os: jsr / jgt).
+   As in the plain SET case, a CALL source now resets the cc status.
+
+Nothing changes without -mrtd: 400 C files x 3 flag sets (-m68020 -O2,
+-m68080 -O2 -fomit-frame-pointer, -m68000 -Os) and 38 C++ files give
+byte-identical assembly. With -mrtd, a test program built entirely with it
+(0-8 arguments, structs by value and returned, recursion and sibling calls,
+function pointers, varargs mixed in, callbacks, VLAs; about 42 rtd per
+binary) gives the PC's results at -O0..-O3/-Os, -fomit-frame-pointer,
+68020/68040/68080, under vamos and on a Vampire V4. GCC 15.2 has the same
+ICE; it only needs fix 1 (no bbb-opts, no cc0).
+
+diff --git a/gcc/bbb-opts.c b/gcc/bbb-opts.c
+index 9749c04ed..ec363bd44 100644
+--- a/gcc/bbb-opts.c
++++ b/gcc/bbb-opts.c
+@@ -3881,6 +3881,28 @@ track_sp (int & a5_touched)
+ 	      continue;
+ 	    }
+ 
++	  // -mrtd : a call_pop / call_value_pop also does sp = sp + n (the
++	  // callee pops its arguments with rtd #n)
++	  if (CALL_P (ii.get_insn ()) && GET_CODE (PATTERN (ii.get_insn ())) == PARALLEL)
++	    {
++	      rtx par = PATTERN (ii.get_insn ());
++	      for (int k = 0; k < XVECLEN (par, 0); ++k)
++		{
++		  rtx set = XVECEXP (par, 0, k);
++		  if (GET_CODE (set) == SET && REG_P (SET_DEST (set))
++		      && REGNO (SET_DEST (set)) == STACK_POINTER_REGNUM)
++		    {
++		      rtx src = SET_SRC (set);
++		      if (GET_CODE (src) != PLUS || !REG_P (XEXP (src, 0))
++			  || REGNO (XEXP (src, 0)) != STACK_POINTER_REGNUM
++			  || !CONST_INT_P (XEXP (src, 1)))
++			return E_SP_MISMATCH;
++		      sp_offset -= INTVAL (XEXP (src, 1));  // a push counts +, a pop -
++		    }
++		}
++	      continue;
++	    }
++
+ 	  // is sp modified directly
+ 	  if (ii.is_dst_reg () && ii.get_dst_regno () == STACK_POINTER_REGNUM)
+ 	    {
+diff --git a/gcc/config/m68k/m68k.c b/gcc/config/m68k/m68k.c
+index e3c520c8b..ac38af3b0 100644
+--- a/gcc/config/m68k/m68k.c
++++ b/gcc/config/m68k/m68k.c
+@@ -4741,7 +4741,11 @@ notice_update_cc (rtx exp, rtx insn)
+       rtx dest = SET_DEST (XVECEXP (exp, 0, 0));
+       rtx src  = SET_SRC  (XVECEXP (exp, 0, 0));
+ 
+-      if (ADDRESS_REG_P (dest))
++      /* call_value_pop (-mrtd) : the flags after a call say nothing about
++	 the returned value, as for the plain call_value above.  */
++      if (GET_CODE (src) == CALL)
++	CC_STATUS_INIT;
++      else if (ADDRESS_REG_P (dest))
+ 	CC_STATUS_INIT;
+       else if (dest != pc_rtx)
+ 	{
+diff --git a/gcc/config/m68k/m68k.md b/gcc/config/m68k/m68k.md
+index e189fc295..470731425 100644
+--- a/gcc/config/m68k/m68k.md
++++ b/gcc/config/m68k/m68k.md
+@@ -7428,6 +7428,60 @@
+   [(set_attr "type" "bsr")
+    (set_attr "opx" "1")])
+ 
++;; -mrtd : the callee pops its arguments (rtd #n). calls.c then needs
++;; call_pop / call_value_pop, which this backend did not have : every
++;; call to a function with stack arguments ended in an ICE
++;; (invalid_rtx_... in insn-target-def.h). Same output as the plain call,
++;; plus the SP adjustment the callee does itself.
++(define_expand "call_pop"
++  [(parallel [(call (match_operand:QI 0 "memory_operand" "")
++		    (match_operand:SI 1 "general_operand" ""))
++	      (set (reg:SI SP_REG)
++		   (plus:SI (reg:SI SP_REG)
++			    (match_operand:SI 3 "const_int_operand" "")))])]
++  "TARGET_RTD"
++{
++  operands[0] = m68k_legitimize_call_address (operands[0]);
++})
++
++(define_insn "*call_pop"
++  [(call (mem:QI (match_operand:SI 0 "call_operand" "a,W,Z"))
++	 (match_operand:SI 1 "general_operand" "g,g,g"))
++   (set (reg:SI SP_REG)
++	(plus:SI (reg:SI SP_REG)
++		 (match_operand:SI 2 "const_int_operand" "n,n,n")))]
++  "TARGET_RTD && !SIBLING_CALL_P (insn)"
++{
++  return output_call (operands[0]);
++}
++  [(set_attr "type" "jsr")])
++
++(define_expand "call_value_pop"
++  [(parallel [(set (match_operand 0 "" "")
++		   (call (match_operand:QI 1 "memory_operand" "")
++			 (match_operand:SI 2 "general_operand" "")))
++	      (set (reg:SI SP_REG)
++		   (plus:SI (reg:SI SP_REG)
++			    (match_operand:SI 4 "const_int_operand" "")))])]
++  "TARGET_RTD"
++{
++  operands[1] = m68k_legitimize_call_address (operands[1]);
++})
++
++(define_insn "*call_value_pop"
++  [(set (match_operand 0 "" "=rf,rf,rf")
++	(call (mem:QI (match_operand:SI 1 "call_operand" "a,W,Z"))
++	      (match_operand:SI 2 "general_operand" "g,g,g")))
++   (set (reg:SI SP_REG)
++	(plus:SI (reg:SI SP_REG)
++		 (match_operand:SI 3 "const_int_operand" "n,n,n")))]
++  "TARGET_RTD && !SIBLING_CALL_P (insn)"
++{
++  operands[0] = operands[1];
++  return output_call (operands[0]);
++}
++  [(set_attr "type" "jsr")])
++
+ ;; Call subroutine returning any type.
+ 
+ (define_expand "untyped_call"

@@ -88,6 +88,12 @@ echo -e "\e[0m\e[36mApplying the m68k sincos constraint fix"
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/m68k-sincos-constraint-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# m68k backend fix: -mrtd crashed on every call (no call_pop patterns; bbb track_sp and
+# notice_update_cc did not know them either). See the patch's header.
+echo -e "\e[0m\e[36mApplying the m68k -mrtd call_pop fix"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/m68k-mrtd-call-pop.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
 echo -e "\e[0m\e[36mOverview of the Applied Patches: "
 git diff --stat 
 
