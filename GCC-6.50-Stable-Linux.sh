@@ -82,6 +82,12 @@ echo -e "\e[0m\e[36mApplying the m68k dbra HI address-register fix"
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/m68k-dbra-hi-addrreg-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# m68k backend fix: sincos<mode>2_68881 had no constraint on its input operand (ICE in
+# print_operand_address2 with -m68881 -ffast-math). See the patch's header.
+echo -e "\e[0m\e[36mApplying the m68k sincos constraint fix"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/m68k-sincos-constraint-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
 echo -e "\e[0m\e[36mOverview of the Applied Patches: "
 git diff --stat 
 
