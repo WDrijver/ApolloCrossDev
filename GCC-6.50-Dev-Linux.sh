@@ -59,7 +59,8 @@ echo -e -n "\e[0m\e[36mDrop Prefix | "
 make drop-prefix PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 echo -e -n "\e[0m\e[36mClone Repos (>1 min)\e[0m\e[36m\n"
-make update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+# -k: a repository gone upstream (vbcc's master branch, 2026-10) no longer stops the others
+make update -k $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Apply Patches from Ioannis Kouretsidis (@JohnStuggi)
 echo -e "\e[0m\e[36mApplying Apollo 68080 Patches from Ioannis Kouretsidis (@JohnStuggi)\e[0m"
@@ -74,6 +75,7 @@ git apply $ARCHIVES/patches/opt-absolute-volatile-fix.patch >>$LOGFILES/part4.lo
 git apply $ARCHIVES/patches/opt-pipeline-cc0-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 git apply $ARCHIVES/patches/opt-shift-lsr-signext-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 git apply $ARCHIVES/patches/postinc-size-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/bbb-autoinc-direct-add-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Apply Patches from Marcel (@RedBug)
 echo -e "\e[0m\e[36mApplying Apollo 68080 Patches from Marcel (@RedBug)"
@@ -85,6 +87,11 @@ git apply $ARCHIVES/patches/double-indirect-fix.patch >>$LOGFILES/part4.log 2>>$
 echo -e "\e[0m\e[36mApplying the m68k -mrtd call_pop fix"
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/m68k-mrtd-call-pop.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+# m68k backend fix: sincos<mode>2_68881 had no constraint on its input operand (ICE in
+# print_operand_address2 with -m68881 -ffast-math). See the patch's header.
+echo -e "\e[0m\e[36mApplying the m68k sincos constraint fix"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/m68k-sincos-constraint-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 echo -e "\e[0m\e[36mOverview of the Applied Patches: \e[0m"
 git diff --stat 
@@ -97,7 +104,7 @@ cp -f * $SOURCES/amiga-gcc/projects/gcc/gcc
 # Build Compiler
 cd $SOURCES/amiga-gcc
 echo -e -n "\e[0m\e[36mBuild Compiler (>5 min) | "
-make all $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+make all -k $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36mAdd LibDebug\e[0m"
 make libdebug PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
@@ -116,6 +123,8 @@ echo -e "\e[1m\e[37m5. Adding MUI5\e[0m\e[36m"
 cd $SOURCES/amiga-gcc
 make sdk=mui PREFIX=$PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cp -r -f $SOURCES/amiga-gcc/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/include/mui >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+# MUI 3.8 is muimaster.library 19: lower MUI5's MUIMASTER_VMIN (20) so programs also open on MUI 3.8
+perl -pi -e 's/^(#define MUIMASTER_VMIN\s+)20\b/${1}19/' $PREFIX/$TARGET/include/libraries/mui.h >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
 # Part 6: PortLibs (amiga-gcc takes care of Open-GL, SDL and GDB - we add Freetype, ZLib and BZip2)
 echo -e -n "\e[1m\e[37m6. Adding Porting Libs: "

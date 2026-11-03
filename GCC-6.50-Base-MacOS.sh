@@ -59,7 +59,22 @@ CC=gcc-12 CXX=g++-12 gmake clean $CPU >>$LOGFILES/part4_clean.log 2>>$LOGFILES/p
 echo "\033[0m\033[36m   * Clean ApolloCrossDev\033[0m"
 CC=gcc-12 CXX=g++-12 gmake drop-prefix $CPU PREFIX=$PREFIX >>$LOGFILES/part4_dropprefix.log 2>>$LOGFILES/part4_dropprefix_err.log
 echo "\033[0m\033[36m   * Clone Repos (>1 min)"
-CC=gcc-12 CXX=g++-12 gmake update $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+# -k: a repository gone upstream (vbcc's master branch, 2026-10) no longer stops the others
+CC=gcc-12 CXX=g++-12 gmake update -k $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
+# m68k backend fix: dbne_hi/dbge_hi with the loop counter in an address register (cmp.w there is
+# 32-bit: endless loops at -O2). See the patch's header.
+echo -e "\033[0m\033[36m   * Applying the m68k dbra HI address-register fix\033[0m"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/m68k-dbra-hi-addrreg-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+cd $SOURCES/amiga-gcc
+
+# m68k backend fix: sincos<mode>2_68881 had no constraint on its input operand (ICE in
+# print_operand_address2 with -m68881 -ffast-math). See the patch's header.
+echo "\033[0m\033[36m   * Applying the m68k sincos constraint fix"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/m68k-sincos-constraint-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+cd $SOURCES/amiga-gcc
 
 # m68k backend fix: -mrtd crashed on every call (no call_pop patterns; bbb track_sp and
 # notice_update_cc did not know them either). See the patch's header.
@@ -76,7 +91,7 @@ cp -f * $SOURCES/amiga-gcc/projects/gcc/gcc
 # Build Compiler
 cd $SOURCES/amiga-gcc
 echo "\033[0m\033[36m   * Build Amiga-GCC (be patient)\033[0m"
-CC=gcc-12 CXX=g++-12 gmake all $CPU NDK=3.2 SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+CC=gcc-12 CXX=g++-12 gmake all -k $CPU NDK=3.2 SHELL=$(brew --prefix)/bin/bash PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo "\033[0m\033[36m   * Add LibDebug\033[0m"
 CC=gcc-12 CXX=g++-12 gmake libdebug $CPU PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
@@ -95,6 +110,8 @@ echo "\033[1m\033[37m5. Adding MUI5\033[0m\033[36m"
 cd $SOURCES/amiga-gcc
 CC=gcc-12 CXX=g++-12 gmake sdk=mui $CPU PREFIX=$PREFIX >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 cp -r -f $SOURCES/amiga-gcc/build/mui/SDK/MUI/C/include/mui/* $PREFIX/$TARGET/include/mui >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
+# MUI 3.8 is muimaster.library 19: lower MUI5's MUIMASTER_VMIN (20) so programs also open on MUI 3.8
+perl -pi -e 's/^(#define MUIMASTER_VMIN\s+)20\b/${1}19/' $PREFIX/$TARGET/include/libraries/mui.h >>$LOGFILES/part5.log 2>>$LOGFILES/part5_err.log
 
 # Copy proto headers to be compatible with Amiga-GCC (MacOS only)
 cd $ARCHIVES/proto
