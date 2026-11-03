@@ -61,35 +61,6 @@ echo -e -n "\e[0m\e[36mClone Repos (>1 min) | "
 # -k: a repository gone upstream (vbcc's master branch, 2026-10) no longer stops the others
 make update -k $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
-# m68k backend fix: dbne_hi/dbge_hi with the loop counter in an address register (cmp.w there is
-# 32-bit: endless loops at -O2). See the patch's header.
-echo -e "\e[0m\e[36mApplying the m68k dbra HI address-register fix"
-cd $SOURCES/amiga-gcc/projects/gcc
-git apply $ARCHIVES/patches/m68k-dbra-hi-addrreg-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
-cd $SOURCES/amiga-gcc
-
-# m68k backend fix: sincos<mode>2_68881 had no constraint on its input operand (ICE in
-# print_operand_address2 with -m68881 -ffast-math). See the patch's header.
-echo -e "\e[0m\e[36mApplying the m68k sincos constraint fix"
-cd $SOURCES/amiga-gcc/projects/gcc
-git apply $ARCHIVES/patches/m68k-sincos-constraint-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
-cd $SOURCES/amiga-gcc
-
-# m68k backend fix: -mrtd crashed on every call (no call_pop patterns; bbb track_sp and
-# notice_update_cc did not know them either). See the patch's header.
-echo -e "\e[0m\e[36mApplying the m68k -mrtd call_pop fix"
-cd $SOURCES/amiga-gcc/projects/gcc
-git apply $ARCHIVES/patches/m68k-mrtd-call-pop.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
-cd $SOURCES/amiga-gcc
-
-# bbb-opts fixes: wrong code, opt_shift deleted across jumps, opt_elim_dead_assign dropped the
-# extension of a shift count still read behind the shift. See the patches' headers.
-echo -e "\e[0m\e[36mApplying the bbb-opts shift fixes"
-cd $SOURCES/amiga-gcc/projects/gcc
-git apply $ARCHIVES/patches/opt-shift-jump-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
-git apply $ARCHIVES/patches/opt-elim-shift-count-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
-cd $SOURCES/amiga-gcc
-
 echo -e -n "\e[0m\e[36mBuild Amiga-GCC (be patient) | "
 make all -k $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36mAdd LibDebug\e[0m"
