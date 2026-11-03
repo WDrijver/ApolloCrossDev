@@ -83,6 +83,14 @@ cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/m68k-mrtd-call-pop.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 cd $SOURCES/amiga-gcc
 
+# bbb-opts fixes: wrong code, opt_shift deleted across jumps, opt_elim_dead_assign dropped the
+# extension of a shift count still read behind the shift. See the patches' headers.
+echo "\033[0m\033[36m   * Applying the bbb-opts shift fixes"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/opt-shift-jump-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/opt-elim-shift-count-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+cd $SOURCES/amiga-gcc
+
 # Apply Patches for ISL
 echo "\033[0m\033[36m   * Applying Patches for ISL\033[0m"
 cd $ARCHIVES/isl

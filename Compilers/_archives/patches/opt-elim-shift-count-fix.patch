@@ -1,0 +1,32 @@
+bbb-opts opt_elim_dead_assign (-fbbb=e): wrong code, ext.l of a shift count dropped.
+
+The extension of a register used as a shift count was deleted as superfluous
+without checking that the register is dead behind the shift, and also across
+jumps. "int n = *short_ptr; return (x << n) + n;" gave
+    move.w (a0),d1 / lsl.l d1,d0 / add.l d1,d0
+so add.l read a register whose high word was never set. -O2 and -Os, every CPU.
+The scan now stops at jumps and the extension only goes if the register is dead.
+
+--- a/gcc/bbb-opts.c
++++ b/gcc/bbb-opts.c
+@@ -4790,13 +4790,18 @@
+ 	      for (int jndex = index - 1; jndex > 0; --jndex)
+ 		{
+ 		  insn_info & jj = (*infos)[jndex];
+-		  if (jj.is_label())
++		  /* Stay inside the block: past a jump the other path may read
++		     the extended value.  */
++		  if (jj.is_label() || jj.is_jump())
+ 		    break;
+ 
+ 		  // ZERO_EXTEND and SIGN_EXTEND use and def that register.
+ 		  if (jj.is_myuse(opreg))
+ 		    {
+-		      if (jj.get_dst_regno() == opreg &&
++		      /* The shift reads only the low bits of the count, whatever
++		         comes after it may read all of them: the extension is only
++		         superfluous if the register is dead behind the shift.  */
++		      if (jj.get_dst_regno() == opreg && is_reg_dead (opreg, index) &&
+ 			  (jj.get_src_op() == ZERO_EXTEND || jj.get_src_op() == SIGN_EXTEND))
+ 			{
+ 			  delete_and_update(jndex);

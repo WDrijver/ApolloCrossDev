@@ -82,6 +82,14 @@ cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/m68k-mrtd-call-pop.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 cd $SOURCES/amiga-gcc
 
+# bbb-opts fixes: wrong code, opt_shift deleted across jumps, opt_elim_dead_assign dropped the
+# extension of a shift count still read behind the shift. See the patches' headers.
+echo -e "\e[0m\e[36mApplying the bbb-opts shift fixes"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/opt-shift-jump-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/opt-elim-shift-count-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+cd $SOURCES/amiga-gcc
+
 echo -e -n "\e[0m\e[36mBuild Amiga-GCC (be patient) | "
 make all -k $CPU NDK=3.2 PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 echo -e "\e[0m\e[36mAdd LibDebug\e[0m"
