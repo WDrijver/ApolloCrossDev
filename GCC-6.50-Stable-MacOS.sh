@@ -76,6 +76,7 @@ git apply $ARCHIVES/patches/opt-absolute-volatile-fix.patch >>$LOGFILES/part4.lo
 git apply $ARCHIVES/patches/opt-pipeline-cc0-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 git apply $ARCHIVES/patches/opt-shift-lsr-signext-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 git apply $ARCHIVES/patches/postinc-size-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+git apply $ARCHIVES/patches/bbb-autoinc-direct-add-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 echo -e "\033[0m\033[36m   * Overview of the Applied Patches:\033[0m"
 git diff --stat 

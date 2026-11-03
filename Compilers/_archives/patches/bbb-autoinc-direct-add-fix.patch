@@ -1,0 +1,18 @@
+diff --git a/gcc/bbb-opts.c b/gcc/bbb-opts.c
+index 9749c04ed..2276540bf 100644
+--- a/gcc/bbb-opts.c
++++ b/gcc/bbb-opts.c
+@@ -5352,8 +5352,11 @@ try_auto_inc (unsigned index, insn_info & ii, rtx reg, int size, int addend)
+ 	      fix = true;
+ 	    }
+ 
+-	  // direct add
+-	  if (jj.get_src_regno() == jj.get_dst_regno() && jj.get_src_op() == PLUS && jj.get_src_intval() >= size)
++	  // direct add: only add #n,reg on this register. src and dst regno are both -1 when
++	  // neither is a plain register, e.g. pea (3,a0,d0.l) = (plus (plus a0 d0) 3) pushed:
++	  // auto_inc_fixup cannot fix that one and the offset would keep the old address.
++	  if (jj.get_dst_regno() == regno && jj.get_src_regno() == regno && jj.get_src_op() == PLUS
++	      && jj.is_src_const() && jj.get_src_intval() >= size)
+ 	    fix = true;
+ 
+ 	  if (!fix)
