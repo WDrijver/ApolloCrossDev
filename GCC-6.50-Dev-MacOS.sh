@@ -85,6 +85,10 @@ git apply $ARCHIVES/patches/bbb-autoinc-direct-add-fix.patch >>$LOGFILES/part4.l
 # Apply Patches from Marcel (@RedBug)
 echo -e "\e[0m\e[36mApplying Apollo 68080 Patches from Marcel (@RedBug)"
 cd $SOURCES/amiga-gcc/projects/gcc
+# KNOWN ISSUE (2026-11-03, unconfirmed): suspected cause of an ICE in print_operand_address2
+# (m68k.c:5461) on computed gotos through a static table (goto *disptab[i]) for 68020+:
+# the jmp ([disptab,dN.l*4]) operand is double indirect, which this patch now rejects.
+# Breaks the LUA port lib (lvm.c). The build without this patch (June 2026) compiled it fine.
 git apply $ARCHIVES/patches/double-indirect-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # m68k backend fix: dbne_hi/dbge_hi with the loop counter in an address register (cmp.w there is
