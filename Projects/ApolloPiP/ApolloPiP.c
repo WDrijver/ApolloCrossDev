@@ -1,4 +1,4 @@
-// SAGAPiP Example Code for Apollo Picture in Picture Feature
+// ApolloPiP Example Code for Apollo Picture in Picture Feature
 // 30-3-2026 Willem Drijver
 //
 // This example code demonstrates how to use the Apollo SAGA Picture in Picture (PiP) feature
@@ -16,7 +16,7 @@ extern char ApolloDebugMessage[256];
 int main(void)
 {
     AD(ApolloDebugInit();)
-    AD(ApolloDebugPutStr("SAGAPiP 3.0 Example Program Start\n");)
+    AD(ApolloDebugPutStr("ApolloPiP 3.0 Example Program Start\n");)
    
     struct Screen *mainscreen = LockPubScreen(NULL);
 
@@ -50,7 +50,7 @@ int main(void)
     result = ApolloLoadSound(&soundtrack);
     if(result != 0x0)
     {
-        sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot load PiP Soundtrack %s (Error Code: %d)\n", soundtrack.filename, result);
+        sprintf(ApolloDebugMessage, "ApolloPiP Example Program: ERROR - Cannot load PiP Soundtrack %s (Error Code: %d)\n", soundtrack.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
         goto exit; 
     }
@@ -58,7 +58,7 @@ int main(void)
     result = ApolloPlaySound(&soundtrack);
     if(result != 0x0)
     {
-        sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot play Soundtrack %s (Error Code: %d)\n", soundtrack.filename, result);
+        sprintf(ApolloDebugMessage, "ApolloPiP Example Program: ERROR - Cannot play Soundtrack %s (Error Code: %d)\n", soundtrack.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
         goto exit; 
     }
@@ -71,7 +71,7 @@ int main(void)
     CyberGfxBase = OpenLibrary((CONST_STRPTR)"cybergraphics.library", 0);
     if (!CyberGfxBase)
     {
-        ApolloDebugPutStr("SAGAPiP Example Program: ERROR - Cannot open cybergraphics.library\n");
+        ApolloDebugPutStr("ApolloPiP Example Program: ERROR - Cannot open cybergraphics.library\n");
         goto exit;
     }
 
@@ -83,7 +83,7 @@ int main(void)
     result = ApolloLoadPicture(&pip_background_bitmap);
     if(result != 0x0)
     {
-        sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot load PiP Background Bitmap %s (Error Code: %d)\n", pip_background_bitmap.filename, result);
+        sprintf(ApolloDebugMessage, "ApolloPiP Example Program: ERROR - Cannot load PiP Background Bitmap %s (Error Code: %d)\n", pip_background_bitmap.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
         goto exit;
     }
@@ -91,7 +91,7 @@ int main(void)
     result = ApolloShowPicture(&pip_background_bitmap);
     if(result != 0x0)
     {
-        sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot show PiP Background Bitmap %s (Error Code: %d)\n", pip_background_bitmap.filename, result);
+        sprintf(ApolloDebugMessage, "ApolloPiP Example Program: ERROR - Cannot show PiP Background Bitmap %s (Error Code: %d)\n", pip_background_bitmap.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
         goto exit;
     }
@@ -115,7 +115,7 @@ int main(void)
     result = ApolloLoadPicture(&pip_window_picture);
     if(result != 0x0)
     {
-        sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot load PiP Window Bitmap %s (Error Code: %d)\n", pip_window_picture.filename, result);
+        sprintf(ApolloDebugMessage, "ApolloPiP Example Program: ERROR - Cannot load PiP Window Bitmap %s (Error Code: %d)\n", pip_window_picture.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
         goto exit;
     }
@@ -124,7 +124,7 @@ int main(void)
     pip_window_bitmap = AllocBitMap(640, 480, 24, BMF_DISPLAYABLE | BMF_CLEAR | BMF_INTERLEAVED, mainscreen->RastPort.BitMap );
     if (!pip_window_bitmap)
     {
-        ApolloDebugPutStr("SAGAPiP Example Program: ERROR - Cannot allocate PiP Window BitMap\n");
+        ApolloDebugPutStr("ApolloPiP Example Program: ERROR - Cannot allocate PiP Window BitMap\n");
         goto exit;
     }    
 
@@ -174,10 +174,10 @@ int main(void)
     FreeVec(pip_window_template);
     if (!pipwindow)
     {
-        ApolloDebugPutStr("SAGAPiP Example Program: ERROR - Cannot open Workbench Window\n");
+        ApolloDebugPutStr("ApolloPiP Example Program: ERROR - Cannot open Workbench Window\n");
         goto exit;
     } else {
-        sprintf(ApolloDebugMessage,"SAGAPiP Example Program: Workbench Window opened at (X=%d,Y=%d) with size (W=%d,H=%d)\n",
+        sprintf(ApolloDebugMessage,"ApolloPiP Example Program: Workbench Window opened at (X=%d,Y=%d) with size (W=%d,H=%d)\n",
         pipwindow->LeftEdge, pipwindow->TopEdge, pipwindow->Width, pipwindow->Height);
         ApolloDebugPutStr(ApolloDebugMessage);
     }
@@ -195,7 +195,7 @@ int main(void)
     result = ApolloLoadPicture(&pip1_overlay_picture);
     if(result != 0x0)
     {
-        sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot load PiP Overlay Bitmap %s (Error Code: %d)\n", pip1_overlay_picture.filename, result);
+        sprintf(ApolloDebugMessage, "ApolloPiP Example Program: ERROR - Cannot load PiP Overlay Bitmap %s (Error Code: %d)\n", pip1_overlay_picture.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
         goto exit;
     }
@@ -221,7 +221,7 @@ int main(void)
     result = ApolloLoadPicture(&pip2_overlay_picture);
     if(result != 0x0)
     {
-        sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot load PiP Overlay Bitmap %s (Error Code: %d)\n", pip2_overlay_picture.filename, result);
+        sprintf(ApolloDebugMessage, "ApolloPiP Example Program: ERROR - Cannot load PiP Overlay Bitmap %s (Error Code: %d)\n", pip2_overlay_picture.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
         goto exit;
     }
@@ -268,7 +268,7 @@ int main(void)
                     switch(message->Code)                   // Mouse button event    
                     {
                         case SELECTDOWN:                    // Fill a Square with Transparent Pixels
-                            ApolloDebugPutStr("SAGAPiP Example Program: Mouse Button Event - SELECT DOWN\n");
+                            ApolloDebugPutStr("ApolloPiP Example Program: Mouse Button Event - SELECT DOWN\n");
                             *(volatile uint32_t*)APOLLO_SAGA_PIP1CHK_COL = 0xFFFF00FF;  // Set PiP Overlay Color [FF] to R=0xFF G=0x00 B=0xFF
                             ApolloFillBitMap(pip1_overlay_picture.buffer + 160*(pip1_overlay_picture.depth/8) + (120*640*(pip1_overlay_picture.depth/8)), 320, 240, pip1_overlay_picture.depth, 320, 0xFFFFFFFF); 
                             
@@ -327,7 +327,7 @@ int main(void)
             switch(message->Class)
             {
                 case IDCMP_CLOSEWINDOW:                     // Close window event
-                    ApolloDebugPutStr("SAGAPiP Example Program: Close Window Event\n");
+                    ApolloDebugPutStr("ApolloPiP Example Program: Close Window Event\n");
                     close = true; 
                     break;
             }
@@ -362,6 +362,6 @@ exit:
 
     if (CyberGfxBase) CloseLibrary(CyberGfxBase);
     UnlockPubScreen(NULL, mainscreen);
-    AD(ApolloDebugPutStr("SAGAPiP Example Program End\n");)
+    AD(ApolloDebugPutStr("ApolloPiP Example Program End\n");)
     return 0;   
 }
