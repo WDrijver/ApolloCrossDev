@@ -232,7 +232,7 @@ uint8_t ApolloLoadSound( struct ApolloSound *sound)
 
 	sound->position = buffer_aligned-sound->buffer;				// Report back position of aligned buffer within allocated buffer
 
-	ADX(sprintf(ApolloDebugMessage, "ApolloLoadSound: %s | Filesize: %d | Format: %d | Size = %8d Bytes | SampleRate = %d | Period = %d | Position = %d | Offset = %d\n",
+	ADX(sprintf(ApolloDebugMessage, "ApolloLoadSound: %s | Filesize: %lu | Format: %d | Size = %8d Bytes | SampleRate = %d | Period = %d | Position = %d | Offset = %d\n",
 		 sound->filename, file_size, sound->format, sound->size, samplerate_fraction, sound->period, sound->position, offset);)
 	ADX(ApolloDebugPutStr(ApolloDebugMessage);)
 
@@ -262,7 +262,7 @@ uint8_t ApolloPlaySound( struct ApolloSound *sound)
 	}
 
 	AD(sprintf(ApolloDebugMessage, "ApolloPlaySound: File=%-25s | Size=%8d | Cache=%12d | Channel=%02d | Vol-L = %3d | Vol-R = %3d | Loop = %d | Fadein = %d | Period = %3d | Pan = %3d\n",
-		sound->filename, sound->size, sound->position, sound->channel, sound->volume_left, sound->volume_right, sound->loop, sound->fadein, sound->period);)
+		sound->filename, sound->size, sound->position, sound->channel, sound->volume_left, sound->volume_right, sound->loop, sound->fadein, sound->period, sound->pan);)
 	AD(ApolloDebugPutStr(ApolloDebugMessage);)
 
 	*((volatile uint32_t*)(0xDFF400 + (sound->channel * 0x10))) = (uint32_t)(sound->buffer+sound->position);  	// Set Channel Pointer
@@ -397,7 +397,7 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 	static unsigned long file_size = 0;    					// length of file
 	static unsigned long file_read = 0;   					// bytes read from file
 	static FILE *file_handle = 0;          					// stream of file 
-	uint32_t offset = 0, endclipping = 0;
+	uint32_t offset = 0;
 
 	uint32_t color;
 
@@ -549,7 +549,7 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 	{
 		ADX(ApolloDebugPutStr( "ApolloLoad: Converting to Big Endian format\n"); )
 
-		uint8_t *buffer_pixel;
+		uint8_t buffer_pixel[1];										// One byte of storage for the swap
 
 		switch(picture->depth)
 		{
@@ -619,7 +619,7 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 		}
 	}
 
-	ADX(sprintf(ApolloDebugMessage, "ApolloLoad: Picture File Loaded: %s | Filesize = %8d | Format: %d | Size = %8d BYTES | Width = %d | Height = %d | Depth = %d | Palettesize = %d | Position = %d | Offset = %d\n",
+	ADX(sprintf(ApolloDebugMessage, "ApolloLoad: Picture File Loaded: %s | Filesize = %8lu | Format: %d | Size = %8d BYTES | Width = %d | Height = %d | Depth = %d | Palettesize = %d | Position = %d | Offset = %d\n",
 		  picture->filename, file_size, picture->format, picture->size, picture->width, picture->height, picture->depth, picture->palettesize, picture->position, offset);)
 	ADX(ApolloDebugPutStr(ApolloDebugMessage);)
 	
@@ -706,6 +706,7 @@ uint8_t ApolloShowPicture(struct ApolloPicture *picture)
 	*((volatile uint16_t*)0xDFF1F4) = (uint16_t)(gfx_mode);
 	*((volatile uint16_t*)0xDFF1E6) = (int16_t)(picture->modulo); 
 	*((volatile uint32_t*)0xDFF1EC) = (uint32_t)(picture->buffer + picture->position);
+	return APOLLO_PICTURE_OK;
 }
 
 void ApolloShowPiP1( struct ApolloPicture *picture)
@@ -826,7 +827,6 @@ void ApolloMouse(ApolloMouseState *MouseState)
 {
 	UWORD MouseButtonLeft_Value;	
 	UWORD MouseButtonRight_Value;	
-	UWORD MouseButtonMiddle_Value;
 
 	// Initialize Mouse Buttons
 	MouseState->Button_Left = false;
@@ -962,7 +962,7 @@ void ApolloMouse(ApolloMouseState *MouseState)
 void ApolloKeyboard(ApolloKeyBoardState *KeyboardState)
 {
 	UBYTE* const 	Keyboard_Pointer = (UBYTE*)0xBFEC01; 
-	UBYTE			Keyboard_Raw, Keyboard_Now;
+	UBYTE			Keyboard_Raw;
 
 	Keyboard_Raw = *Keyboard_Pointer;														// retrieve RAW value from register
 	Keyboard_Raw = ~Keyboard_Raw;															// not.b
@@ -972,8 +972,8 @@ void ApolloKeyboard(ApolloKeyBoardState *KeyboardState)
 	{
 		KeyboardState->Previous_Key = KeyboardState->Current_Key;							// Use only "Low" KB values (0-127)
 
-		sprintf(ApolloDebugMessage,"Keyboard_Now: %d\n", Keyboard_Now);
-		ApolloDebugPutStr(ApolloDebugMessage);
+		ADX(sprintf(ApolloDebugMessage,"Keyboard: %d\n", KeyboardState->Current_Key);)
+		ADX(ApolloDebugPutStr(ApolloDebugMessage);)
 
 	} else {
 		KeyboardState->Current_Key = 127;
@@ -982,8 +982,6 @@ void ApolloKeyboard(ApolloKeyBoardState *KeyboardState)
 
 UBYTE ApolloKeyboardToUnicode(UBYTE KeyboardAmiga)
 {
-	UBYTE KeyboardUnicode;
-
 	switch (KeyboardAmiga)
 	{
 		case 0x0:	return  96;		// '
@@ -1164,7 +1162,7 @@ void ApolloPlayFile(const char *filename, uint8_t *buffer, uint16_t offset, int 
     }
 
 	// If channel is busy, stop channel
-	if ( (channel < 4) && (*((volatile uint16_t*)0xDFF002) & (1<<channel)) || (channel >=4) && (*((volatile uint16_t*)0xDFF202) & (1<<channel)))
+	if ( ((channel < 4) && (*((volatile uint16_t*)0xDFF002) & (1<<channel))) || ((channel >=4) && (*((volatile uint16_t*)0xDFF202) & (1<<(channel-4)))) )
 	{
         if (channel < 4)
         { 
@@ -1217,7 +1215,6 @@ void ApolloFadeOut(int channel, int volume_start, int volume_end)
 
 void ApolloShowFile(const char *filename, uint8_t **buffer_draw, uint8_t **buffer_live, uint32_t lenght, uint16_t offset, uint16_t gfx_mode, uint16_t gfx_modulo, bool endianswap)
 {
-	static unsigned long file_size = 0;
 	static unsigned long file_read = 0;
 	static FILE *file_handle = 0; 
 
@@ -1358,7 +1355,7 @@ void ApolloCacheFile(const char *filename, uint8_t **cache, uint32_t *lenght, ui
 bool ApolloPlay(int channel, int volume_left, int volume_right, bool loop, uint8_t *buffer, uint32_t lenght, uint16_t offset)
 {
 	// Check if channel is free
-	if ( (channel < 4) && (*((volatile uint16_t*)0xDFF002) & (1<<channel)) || (channel >=4) && (*((volatile uint16_t*)0xDFF202) & (1<<channel)))
+	if ( ((channel < 4) && (*((volatile uint16_t*)0xDFF002) & (1<<channel))) || ((channel >=4) && (*((volatile uint16_t*)0xDFF202) & (1<<(channel-4)))) )
 	{
 		return false;
 	}
@@ -1386,6 +1383,7 @@ bool ApolloPlay(int channel, int volume_left, int volume_right, bool loop, uint8
 	} else {
 		*((volatile uint16_t*)0xDFF296) = (uint16_t)(0x8000) + (1<<(channel-4));            // DMACON = enable DMA and enable DMA for specific channel AUD4-15 (start current stream)       
 	}
+	return true;
 }
 
 void ApolloVolume(int channel, int volume_left, int volume_right)
