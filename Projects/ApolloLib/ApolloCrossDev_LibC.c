@@ -275,7 +275,7 @@ uint8_t ApolloPlaySound( struct ApolloSound *sound)
 	} else {
 		*((volatile uint16_t*)(0xDFF40A + (sound->channel * 0x10))) = (uint16_t)0x0007;            				// %0111 = $07 - Sample 16bit (bit0 = 1) / OneShot Enabled (bit1 = 1) / Stereo Enabled (bit2 = 1)
 	}
-	*((volatile uint16_t*)(0xDFF40C + (sound->channel * 0x10))) = (uint16_t)sound->period;						// PERIOD= 3640000 * (1/44100 Hz)
+	*((volatile uint16_t*)(0xDFF40C + (sound->channel * 0x10))) = (uint16_t)sound->period;						// PERIOD = APOLLO_PAL_CLOCK / sample rate (3546895 / 44100 = 80)
 	if (sound->channel < 4)
 	{ 
 		*((volatile uint16_t*)0xDFF096) = (uint16_t)(0x8000) + (1<<sound->channel);                				// DMACON Write  = enable DMA and enable DMA for specific channel AUD0-3 (start current stream)    
