@@ -257,8 +257,9 @@ typedef struct
 struct ApolloPointer
 {
     bool    bLoaded;                 // Indicates if the pointer is loaded and ready to use
-    UBYTE   data[64*32*2];           // Pointer Sprite pixel data (64x32 pixels, 2 bytes per pixel for color index (BYTE-1) and alpha value (BYTE-2))
+    UBYTE   data[64*32*2];           // Pointer Sprite pixel data: 32x32 pixels used, 2 bytes per pixel: colour index, then $FF opaque / $00 semi-transparent
     ULONG   colors[256];             // Pointer Sprite color palette (256 color indices, 24 bits per color in R8G8B8 format)
+    // hotspotX/Y are not used by ApolloLib yet
     FLOAT   hotspotX;                // X coordinate of the pointer's hotspot (e.g., 0 for top-left corner, 16 for center of a 32x32 pointer)
     FLOAT   hotspotY;                // Y coordinate of the pointer's hotspot (e.g., 0 for top-left corner, 16 for center of a 32x32 pointer) 
 };
@@ -365,7 +366,7 @@ extern void ApolloBlitAlphaConstLoop( _A0(UWORD* s), _A1(UWORD* d), _D3(UWORD w)
 extern void ApolloBlitAlphaKeyTransLoop( _A0(UWORD* s), _A1(UWORD* d), _D3(UWORD w), _D4(UWORD h), _D5(ULONG spitch), _D6(ULONG dpitch), _D7(UWORD al), _A2(UWORD ac));
 extern void ApolloBlitAlphaHorizontalLineLoop( _A0(UWORD* s), _A1(UWORD* d), _D3(UWORD w), _D6(ULONG ac), _D7(UWORD al));
 
-extern void ApolloLoadPointer(struct ApolloPointer *sprite_pointer, struct ApolloPicture *sprite_bitmap);
+extern uint8_t ApolloLoadPointer(struct ApolloPointer *sprite_pointer, struct ApolloPicture *sprite_bitmap);	// APOLLO_PICTURE_OK or an error code
 extern void ApolloShowPointer(struct ApolloPointer *sprite_pointer);
 
 extern ULONG ApolloGetMouseDelta(_A0(UWORD *Mouse_Old));
