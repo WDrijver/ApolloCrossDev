@@ -9,16 +9,130 @@
 extern "C"{
 #endif 
 
-#include "ApolloCrossDev_Defines.h"
+#ifndef _DEBUG_H
+#define _DEBUG_H
+
+#ifdef __INTELLISENSE__
+#define asm(x)
+#endif
+
+#include <exec/execbase.h>
+#include <proto/exec.h>
+#include <exec/types.h>
+#include <stdarg.h>
 
 // Global Variables
 extern char ApolloDebugMessage[256];
+#include <stdint.h>
+
+
+#define DBG_INFO  1
+#define DBG_WARN  2
+#define DBG_ERROR 4
+#define DBG_FLAG  8
+#define DBG_TRACE 16
+#define DBG_CMD   32
+#define DBG_MEM   64
+
+#ifndef RawDoFmt
+APTR __stdargs RawDoFmt(CONST_STRPTR formatString, APTR dataStream, VOID (*putChProc)(), APTR putChData);
+#endif
+
+int ApolloDebugPutChar(register int chr);
+
+
+static void bug_putch(APTR data asm("a3"), UBYTE ch asm("d0"))
+{
+    (void)data;
+    ApolloDebugPutChar(ch);
+}
+
+static inline void bug_print(const char *type, const char *project, const char *file, const char *func, LONG line, const char *fmt, ...)
+{
+    struct ExecBase *SysBase = *(struct ExecBase **)4UL;
+    va_list args;
+    ULONG header[4];
+
+    header[0] = (ULONG)project;
+    header[1] = (ULONG)file;
+    header[2] = (ULONG)func;
+    header[3] = (ULONG)line;
+    Forbid();
+    switch (type[0]) {
+        case 'I': RawDoFmt((CONST_STRPTR)"[%-20s][%-20s][%-20s][%5ld] [INFO ] ", header, (APTR)bug_putch, NULL); break;
+        case 'W': RawDoFmt((CONST_STRPTR)"\033[93m[%-20s][%-20s][%-20s][%5ld] [WARN ] \033[0m", header, (APTR)bug_putch, NULL); break;
+        case 'E': RawDoFmt((CONST_STRPTR)"\033[91m[%-20s][%-20s][%-20s][%5ld] [ERROR]\033[0m ", header, (APTR)bug_putch, NULL); break;
+        case 'T': RawDoFmt((CONST_STRPTR)"\033[90m[%-20s][%-20s][%-20s][%5ld] [TRACE] \033[0m", header, (APTR)bug_putch, NULL); break;
+        case 'F': RawDoFmt((CONST_STRPTR)"\033[6m\033[95m[%-20s][%-20s][%-20s][%5ld] [FLAG ] \033[0m", header, (APTR)bug_putch, NULL); break;
+        default:  RawDoFmt((CONST_STRPTR)"[%-20s][%-20s][%-20s][%5ld] [BUG  ]  ", header, (APTR)bug_putch, NULL); break;
+    }   
+    va_start(args, fmt);
+    RawDoFmt((CONST_STRPTR)fmt, (APTR)args, (APTR)bug_putch, NULL);
+    va_end(args);
+    Permit();
+}
+
+#define bug(type, format, args...) bug_print(type, PROJECT_NAME, BASE_FILE_NAME, __func__, __LINE__, format, ##args)
+
+#endif
+
+#if DEBUG & DBG_INFO
+#define Debug_Info(...) bug("INFO", __VA_ARGS__)
+#else
+#define Debug_Info(...)
+#endif
+
+#if DEBUG & DBG_WARN
+#define Debug_Warn(...) bug("WARN", __VA_ARGS__)
+#else
+#define Debug_Warn(...)
+#endif
+
+#if DEBUG & DBG_ERROR
+#define Debug_Error(...) bug("ERROR", __VA_ARGS__)
+#else
+#define Debug_Error(...)
+#endif
+
+#if DEBUG & DBG_TRACE
+#define Debug_Trace(...) bug("TRACE", __VA_ARGS__)
+#else
+#define Debug_Trace(...)
+#endif
+
+#if DEBUG & DBG_FLAG
+#define Debug_Flag(...) bug("FLAG", __VA_ARGS__)
+#else
+#define Debug_Flag(...)
+#endif
+
+#if DEBUG & DBG_CMD
+void traceCommand(struct IOStdReq *req);
+#else
+#define traceCommand
+#endif
+
+#if DEBUG & DBG_MEM
+void * DebugAllocMem(char *file, int line, ULONG byteSize, ULONG attributes);
+#undef AllocMem
+#define AllocMem(x,y) DebugAllocMem(__FILE__,__LINE__,x,y)
+
+void DebugFreeMem(char *file, int line, void *memBlock, ULONG byteSize);
+#undef FreeMem
+#define FreeMem(x,y) DebugFreeMem(__FILE__,__LINE__,x,y)
+#endif
+
 
 /** Screen/Serial Debug **/
 
+#define SERDAT  0xDFF030
+#define ADKCON  0xDFF09E
+#define SERDATR 0xDFF018
+#define SERPER  0xDFF032
+#define INTREQ  0xDFF09C
+
 #define SERPER_BASE_PAL		3546895
 #define SERPER_BASE_NTSC	3579545
-
 #define SERPER_BAUD(base, x)    ((((base + (x)/2))/(x)-1) & 0x7fff)	/* Baud rate */
 
 #define SERDATR_OVRUN		    (1 << 15)	    /* Overrun */
@@ -70,9 +184,8 @@ extern char ApolloDebugMessage[256];
 #define INTB_SETCLR       15
 #define INTF_SETCLR  (1L<<15)
 
-
-void reg_w(uint32_t reg, uint16_t val);
-uint16_t reg_r(uint32_t reg);
+void WriteRegisterWord(uint32_t reg, uint16_t val);
+uint16_t ReadRegisterWord(uint32_t reg);
 
 extern void ApolloDebugInit(void);
 extern int  ApolloDebugPutChar(register int chr);
@@ -111,9 +224,9 @@ extern void ApolloDebugPutHexVal(uint32_t val);
 #define BUG_CYAN2 "\033[0;96m"
 #define BUG_GREY2 "\033[0;97m"
 
-
-
-
 #ifdef __cplusplus
 }
-#endif
+
+
+
+#endif /* _DEBUG_H */

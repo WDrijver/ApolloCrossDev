@@ -23,7 +23,6 @@ extern "C"{
 #include <exec/io.h>
 #include <devices/input.h>
 
-/*
 #include <exec/ports.h>
 #include <exec/io.h>
 
@@ -53,7 +52,6 @@ extern "C"{
 #include <proto/keymap.h>
 #include <proto/asl.h>
 #include <proto/cybergraphics.h>
-*/
 
 // Apollo Debug
 #ifdef APOLLO_DEBUG
@@ -180,8 +178,8 @@ extern "C"{
 #define APOLLO_SAGA_15_1R5G5B5	0x0003      // Bit[0-7] APOLLO_SAGA_PIP_GFXMODE & APOLLO_SAGA_PIP_GFXMODE  
 #define APOLLO_SAGA_24_R8G8B8	0x0004		// Bit[0-7] APOLLO_SAGA_PIP_GFXMODE - Not Supported on PiP
 #define APOLLO_SAGA_32_A8R8G8B8	0x0005		// Bit[0-7] APOLLO_SAGA_PIP_GFXMODE - Not Supported on PiP
-#define APOLLO_SAGA_YUV_888		0x0006		// Bit[0-7] APOLLO_SAGA_PIP_GFXMODE - Not Supported on PiP
-#define APOLLO_SAGA_YUV_444		0x000E		// Bit[0-7] APOLLO_SAGA_PIP_GFXMODE - Not Supported on PiP
+#define APOLLO_SAGA_YUV_888		0x0006		// Bit[0-7] APOLLO_SAGA_PIP_GFXMODE - Supported on PiP
+#define APOLLO_SAGA_YUV_444		0x000E		// Bit[0-7] APOLLO_SAGA_PIP_GFXMODE - Supported on PiP
 #define APOLLO_ATARI_1BIT		0x0008		// Bit[0-7] APOLLO_SAGA_PIP_GFXMODE - Not Supported on PiP
 #define APOLLO_ATARI_2BIT		0x0009		// Bit[0-7] APOLLO_SAGA_PIP_GFXMODE - Not Supported on PiP
 #define APOLLO_ATARI_4BIT		0x000A		// Bit[0-7] APOLLO_SAGA_PIP_GFXMODE - Not Supported on PiP
