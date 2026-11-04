@@ -13,7 +13,7 @@
 
 extern char ApolloDebugMessage[256];
 
-void main()
+int main(void)
 {
     AD(ApolloDebugInit();)
     AD(ApolloDebugPutStr("SAGAPiP 3.0 Example Program Start\n");)
@@ -22,9 +22,23 @@ void main()
 
     uint8_t result;
 
+    // All resources start cleared, so the single exit path frees only what was acquired
+    struct ApolloSound soundtrack = {0};
+    struct ApolloPicture pip_background_bitmap = {0}, pip_window_picture = {0};
+    struct ApolloPicture pip1_overlay_picture = {0}, pip2_overlay_picture = {0};
+    struct Library *CyberGfxBase = NULL;
+    struct BitMap *pip_window_bitmap = NULL;
+    struct Window *pipwindow = NULL;
+    bool sound_playing = false;
+    APTR handle;
+
+    // Save the current SAGA mode, chunky pointer and modulo from their read-back shadows at $DFExxx
+    uint16_t saved_gfxmode = *(volatile uint16_t*)(APOLLO_SAGA_GFXMODE - 0x1000);
+    uint32_t saved_pointer = *(volatile uint32_t*)(APOLLO_SAGA_POINTER - 0x1000);
+    uint16_t saved_modulo  = *(volatile uint16_t*)(APOLLO_SAGA_MODULO - 0x1000);
+
     // Step 1: Load and Play Soundtrack
 
-    struct ApolloSound soundtrack;
     strcpy(soundtrack.filename, "DOTC-Peter_Clarke_Intro.aiff");
     soundtrack.format = APOLLO_AIFF_FORMAT;
     soundtrack.loop = true;
@@ -38,7 +52,7 @@ void main()
     {
         sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot load PiP Soundtrack %s (Error Code: %d)\n", soundtrack.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
-        goto exit1; 
+        goto exit; 
     }
 
     result = ApolloPlaySound(&soundtrack);
@@ -46,37 +60,32 @@ void main()
     {
         sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot play Soundtrack %s (Error Code: %d)\n", soundtrack.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
-        goto exit2; 
+        goto exit; 
     }
+    sound_playing = true;
 
     // Step 2: Load PiP Background
 
     // Step 2.1 Secure WorkBench Screen Pointer
 
-    struct Library *CyberGfxBase = OpenLibrary("cybergraphics.library", 0);
+    CyberGfxBase = OpenLibrary((CONST_STRPTR)"cybergraphics.library", 0);
     if (!CyberGfxBase)
     {
         ApolloDebugPutStr("SAGAPiP Example Program: ERROR - Cannot open cybergraphics.library\n");
-        goto exit4;
+        goto exit;
     }
 
-    APTR    workbench_screen_pointer;
-    APTR    handle;
-
-    struct Screen *workbench_screen = LockPubScreen("Workbench");
-
-    handle = LockBitMapTags(workbench_screen->RastPort.BitMap, LBMI_BASEADDRESS, (ULONG)&workbench_screen_pointer, TAG_DONE);
-    
-    UnLockBitMap(handle);
-
-    struct ApolloPicture pip_background_bitmap = {"RHLOS_1280x720x16.dds", APOLLO_DDS_FORMAT, true, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    strcpy(pip_background_bitmap.filename, "RHLOS_1280x720x16.dds");
+    pip_background_bitmap.format = APOLLO_DDS_FORMAT;
+    pip_background_bitmap.endian = true;
+    pip_background_bitmap.target = APOLLO_PIC_TARGET_SAGA;
     
     result = ApolloLoadPicture(&pip_background_bitmap);
     if(result != 0x0)
     {
         sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot load PiP Background Bitmap %s (Error Code: %d)\n", pip_background_bitmap.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
-        goto exit2;
+        goto exit;
     }
 
     result = ApolloShowPicture(&pip_background_bitmap);
@@ -84,36 +93,39 @@ void main()
     {
         sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot show PiP Background Bitmap %s (Error Code: %d)\n", pip_background_bitmap.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
-        goto exit3;
+        goto exit;
     }
 
-    ApolloCPUDelay(2000);
+    Delay(100);                                                 // 2 seconds (dos.library, 50 ticks per second)
 
     // Step 2.1 = Restore WorkBench Screen
 
-    *(volatile LONG*)APOLLO_SAGA_POINTER = (uint32_t)(workbench_screen_pointer);
-    *(volatile uint16_t*)APOLLO_SAGA_GFXMODE = 0x0A04; // Set SAGA Gfxmode to 1280x720x24-Bit
-    *(volatile uint16_t*)APOLLO_SAGA_MODULO = 0;
+    *(volatile LONG*)APOLLO_SAGA_POINTER = saved_pointer;
+    *(volatile uint16_t*)APOLLO_SAGA_GFXMODE = saved_gfxmode;   // the mode saved at the start, not a fixed $0A04
+    *(volatile uint16_t*)APOLLO_SAGA_MODULO = saved_modulo;
 
     // Step 3: Load and Show PiP Window
 
     // Step 3.1 = Load PiP Window Bitmap
     
-    struct ApolloPicture pip_window_picture = {"DOTC-640x480x24.dds", APOLLO_DDS_FORMAT, true, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    strcpy(pip_window_picture.filename, "DOTC-640x480x24.dds");
+    pip_window_picture.format = APOLLO_DDS_FORMAT;
+    pip_window_picture.endian = true;
+    pip_window_picture.target = APOLLO_PIC_TARGET_SAGA;
     result = ApolloLoadPicture(&pip_window_picture);
     if(result != 0x0)
     {
         sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot load PiP Window Bitmap %s (Error Code: %d)\n", pip_window_picture.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
-        goto exit3;
+        goto exit;
     }
 
     // Step 3.2 = Prepare PiP Window BitMap 
-    struct BitMap *pip_window_bitmap = AllocBitMap(640, 480, 24, BMF_DISPLAYABLE | BMB_CLEAR | BMB_HIJACKED | BMB_INTERLEAVED | BMB_RTGCHECK , mainscreen->RastPort.BitMap );
+    pip_window_bitmap = AllocBitMap(640, 480, 24, BMF_DISPLAYABLE | BMF_CLEAR | BMF_INTERLEAVED, mainscreen->RastPort.BitMap );
     if (!pip_window_bitmap)
     {
         ApolloDebugPutStr("SAGAPiP Example Program: ERROR - Cannot allocate PiP Window BitMap\n");
-        goto exit4;
+        goto exit;
     }    
 
     sprintf(ApolloDebugMessage,"AllocBitMap PiP Window BitMap: BPR = %d | Rows = %d | Flags = %x | Depth = %d | Pad = %x\n",
@@ -149,7 +161,7 @@ void main()
     pip_window_template->Flags =  WFLG_SUPER_BITMAP | WFLG_DRAGBAR | WFLG_CLOSEGADGET | WFLG_RMBTRAP | WFLG_ACTIVATE | WFLG_NOCAREREFRESH ; // 
     pip_window_template->FirstGadget = NULL;
     pip_window_template->CheckMark = NULL;
-    pip_window_template->Title = "Apollo SAGA PiP Window";
+    pip_window_template->Title = (UBYTE *)"Apollo SAGA PiP Window";
     pip_window_template->Screen = mainscreen;
     pip_window_template->BitMap = pip_window_bitmap;
     pip_window_template->MinWidth = 640;
@@ -158,31 +170,34 @@ void main()
     pip_window_template->MaxHeight = 480;
     pip_window_template->Type = WBENCHSCREEN;
 
-    struct Window *pipwindow = OpenWindowTags(pip_window_template, TAG_DONE);
-    if (!&pipwindow)
+    pipwindow = OpenWindowTags(pip_window_template, TAG_DONE);
+    FreeVec(pip_window_template);
+    if (!pipwindow)
     {
         ApolloDebugPutStr("SAGAPiP Example Program: ERROR - Cannot open Workbench Window\n");
-        goto exit1;
+        goto exit;
     } else {
         sprintf(ApolloDebugMessage,"SAGAPiP Example Program: Workbench Window opened at (X=%d,Y=%d) with size (W=%d,H=%d)\n",
         pipwindow->LeftEdge, pipwindow->TopEdge, pipwindow->Width, pipwindow->Height);
         ApolloDebugPutStr(ApolloDebugMessage);
     }
-    FreeVec(pip_window_template);
 
-    ApolloCPUDelay(3000);
+    Delay(150);                                                 // 3 seconds
 
     // Step 4 = Load and Show PiP *Overlay* on Top of PiP Window Bitmap
 
     // Step 4.1 = Load PiP-1 Overlay Bitmap
 
-    struct ApolloPicture pip1_overlay_picture = {"DOTC-640x480x8.bmp", APOLLO_BMP_FORMAT, true, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+    strcpy(pip1_overlay_picture.filename, "DOTC-640x480x8.bmp");
+    pip1_overlay_picture.format = APOLLO_BMP_FORMAT;
+    pip1_overlay_picture.endian = true;
+    pip1_overlay_picture.target = APOLLO_PIC_TARGET_PIP1;
     result = ApolloLoadPicture(&pip1_overlay_picture);
     if(result != 0x0)
     {
         sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot load PiP Overlay Bitmap %s (Error Code: %d)\n", pip1_overlay_picture.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
-        goto exit5;
+        goto exit;
     }
 
     // Step 4.2 = Set Apollo SAGA PiP-1 Registers for PiP Overlay Mode
@@ -195,17 +210,20 @@ void main()
     *(volatile int16_t*)APOLLO_SAGA_PIP1_GFXMODE = APOLLO_SAGA_PIP_TRANSON + APOLLO_SAGA_8_INDEX;                           // Match Apollo SAGA with PiP Overlay Bitmap format                         
     *(volatile int16_t*)APOLLO_SAGA_PIP1_MODULO = 0;                                                                        // No Modulo (PiP Bitmap width matches PiP Window width)                                   
     *(volatile int16_t*)APOLLO_SAGA_PIP1_CLRKEY = 0x0000;                                                                   // Colorkey = 0 -> ChromKey mode disable -> Overlay Mode Enabled
-    *(volatile int16_t*)APOLLO_SAGA_PIP1_DMAROWS = pip1_overlay_picture.width*(pip1_overlay_picture.depth/8);                 // DMA fetch = number of pixels per row = width*bytes per pixel
+    ApolloShowPiP1(&pip1_overlay_picture);                 // DMA fetch = number of pixels per row = width*bytes per pixel
     
     // Step 4.3 = Load PiP-2 Overlay Bitmap
 
-    struct ApolloPicture pip2_overlay_picture = {"DOTC2-320x240x8.bmp", APOLLO_BMP_FORMAT, true, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 2};
+    strcpy(pip2_overlay_picture.filename, "DOTC2-320x240x8.bmp");
+    pip2_overlay_picture.format = APOLLO_BMP_FORMAT;
+    pip2_overlay_picture.endian = true;
+    pip2_overlay_picture.target = APOLLO_PIC_TARGET_PIP2;
     result = ApolloLoadPicture(&pip2_overlay_picture);
     if(result != 0x0)
     {
         sprintf(ApolloDebugMessage, "SAGAPiP Example Program: ERROR - Cannot load PiP Overlay Bitmap %s (Error Code: %d)\n", pip2_overlay_picture.filename, result);
         ApolloDebugPutStr(ApolloDebugMessage);
-        goto exit5;
+        goto exit;
     }
 
     // Step 4.4 = Set Apollo SAGA PiP-2 Registers for PiP Overlay Mode
@@ -218,7 +236,7 @@ void main()
     *(volatile int16_t*)APOLLO_SAGA_PIP2_GFXMODE = APOLLO_SAGA_PIP_TRANSON + APOLLO_SAGA_8_INDEX;                           // Match Apollo SAGA with PiP Overlay Bitmap format                         
     *(volatile int16_t*)APOLLO_SAGA_PIP2_MODULO = 0;                                                                        // No Modulo (PiP Bitmap width matches PiP Window width)                                   
     *(volatile int16_t*)APOLLO_SAGA_PIP2_CLRKEY = 0x0000;                                                                   // Colorkey = 0 -> ChromKey mode disable -> Overlay Mode Enabled
-    *(volatile int16_t*)APOLLO_SAGA_PIP2_DMAROWS = pip2_overlay_picture.width*(pip2_overlay_picture.depth/8);                 // DMA fetch = number of pixels per row = width*bytes per pixel
+    ApolloShowPiP2(&pip2_overlay_picture);                 // DMA fetch = number of pixels per row = width*bytes per pixel
      
     // Step 4.5 = Process Window Changes (Update PiP position, Enable Transparency on Mouseclick, Close Window)
     
@@ -267,8 +285,8 @@ void main()
     }
 
     close = false;
-    *(volatile int16_t*)APOLLO_SAGA_PIP1_DMAROWS = 0;       // DMA fetch = number of pixels per row (0 = disable)
-    *(volatile int16_t*)APOLLO_SAGA_PIP2_DMAROWS = 0;       // DMA fetch = number of pixels per row (0 = disable)
+    ApolloHidePiP1();
+    ApolloHidePiP2();
 
     // Step 5 - PiP ChromaKey Mode - Use WorkBench Window as Chromakey to "peep though" and see the Background Bitmap
     
@@ -298,7 +316,7 @@ void main()
     *(volatile int16_t*)APOLLO_SAGA_PIP1_GFXMODE = APOLLO_SAGA_16_R5G6B5;                                                                    // Match Apollo SAGA with PiP Background Bitmap format
     *(volatile int16_t*)APOLLO_SAGA_PIP1_MODULO = 0;                                                                                         // No Modulo (PiP Bitmap width matches PiP Window width)                 
     *(volatile int16_t*)APOLLO_SAGA_PIP1_CLRKEY = 0x8F0F;                                                                                    // Enable Chromakey (0x8) + R (0xF) + G (0x0) + B (0xF) = PURPLE Color
-    *(volatile int16_t*)APOLLO_SAGA_PIP1_DMAROWS = 1280*2;                                                                                   // DMA fetch = number of pixels per row
+    ApolloShowPiP1(&pip_background_bitmap);                    // DMA row length = 1280 x 2 bytes: PIP on
       
     while (close == false)
     {                                                   
@@ -317,28 +335,33 @@ void main()
         }
     }
         
-    *(volatile int16_t*)APOLLO_SAGA_PIP1_DMAROWS = 0;       // DMA fetch = number of pixels per row (0 = disable)
+    ApolloHidePiP1();
 
  
-exit5:    
-    CloseWindow(pipwindow); 
-    FreeBitMap(pip_window_bitmap);
+exit:
+    ApolloHidePiP1();
+    ApolloHidePiP2();
+    *(volatile LONG*)APOLLO_SAGA_POINTER = saved_pointer;        // back to the saved display
+    *(volatile uint16_t*)APOLLO_SAGA_GFXMODE = saved_gfxmode;
+    *(volatile uint16_t*)APOLLO_SAGA_MODULO = saved_modulo;
 
-exit4:
-    FreeVec(pip1_overlay_picture.buffer);   
-    FreeVec(pip2_overlay_picture.buffer);                 
-    FreeVec(pip_window_picture.buffer);
+    if (pipwindow) CloseWindow(pipwindow);
+    if (pip_window_bitmap) FreeBitMap(pip_window_bitmap);
 
-exit3:    
-    FreeVec(pip_background_bitmap.buffer);
+    ApolloFreePicture(&pip1_overlay_picture);                    // ApolloFreePicture skips a picture that was never loaded
+    ApolloFreePicture(&pip2_overlay_picture);
+    ApolloFreePicture(&pip_window_picture);
+    ApolloFreePicture(&pip_background_bitmap);
 
-exit2:
-    if (soundtrack.fadeout) ApolloFadeOutSound(&soundtrack);
-    ApolloStopSound(&soundtrack);
-    FreeVec(soundtrack.buffer);
+    if (sound_playing)
+    {
+        if (soundtrack.fadeout) ApolloFadeOutSound(&soundtrack);
+        ApolloStopSound(&soundtrack);
+    }
+    ApolloFreeSound(&soundtrack);
 
-exit1: 
+    if (CyberGfxBase) CloseLibrary(CyberGfxBase);
     UnlockPubScreen(NULL, mainscreen);
     AD(ApolloDebugPutStr("SAGAPiP Example Program End\n");)
-    return;   
+    return 0;   
 }

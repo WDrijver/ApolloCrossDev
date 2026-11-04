@@ -733,12 +733,26 @@ uint8_t ApolloShowPicture(struct ApolloPicture *picture)
 
 void ApolloShowPiP1( struct ApolloPicture *picture)
 {
-	 *(volatile int16_t*)APOLLO_SAGA_PIP1_DMAROWS = picture->width * (picture->depth/8); 
+	if(picture->depth <= 8)																			// 8-bit: load the palette into the PiP1 colour port
+	{
+		for(uint32_t colorcounter=0; colorcounter<picture->palettesize; colorcounter++)
+		{
+			*(volatile uint32_t*)APOLLO_SAGA_PIP1CHK_COL = (colorcounter<<24) + (picture->palette[colorcounter] & 0xFFFFFF);	// palette is $IIRRGGBB (ApolloLoadPicture)
+		}
+	}
+	 *(volatile int16_t*)APOLLO_SAGA_PIP1_DMAROWS = picture->width * (picture->depth/8); 		// DMA row length last: PiP1 on
 }
 
 void ApolloShowPiP2( struct ApolloPicture *picture)
 {
-	 *(volatile int16_t*)APOLLO_SAGA_PIP2_DMAROWS = picture->width * (picture->depth/8); 
+	if(picture->depth <= 8)																			// 8-bit: load the palette into the PiP2 colour port
+	{
+		for(uint32_t colorcounter=0; colorcounter<picture->palettesize; colorcounter++)
+		{
+			*(volatile uint32_t*)APOLLO_SAGA_PIP2CHK_COL = (colorcounter<<24) + (picture->palette[colorcounter] & 0xFFFFFF);	// palette is $IIRRGGBB (ApolloLoadPicture)
+		}
+	}
+	 *(volatile int16_t*)APOLLO_SAGA_PIP2_DMAROWS = picture->width * (picture->depth/8); 		// DMA row length last: PiP2 on
 }
 
 void ApolloHidePiP1()
