@@ -1424,122 +1424,88 @@ void ApolloVolume(int channel, int volume_left, int volume_right)
 }
 
 
-void ApolloLoadPointer(struct ApolloPointer *sprite_pointer, struct ApolloPicture *sprite_bitmap)
+uint8_t ApolloLoadPointer(struct ApolloPointer *sprite_pointer, struct ApolloPicture *sprite_bitmap)
 {
-    uint8_t result = ApolloLoadPicture(sprite_bitmap);
-    if(result != 0x0)
-    {
-		ADX(sprintf(ApolloDebugMessage, "\nApolloPointer Example Program: ERROR - Cannot load Sprite Bitmap %s (Error Code: %d)\n", sprite_bitmap->filename, result);) 
+	// Loads a 32x32 BMP (8-bit with palette, 24-bit RGB or 32-bit ARGB) into sprite_pointer:
+	// per pixel one byte colour index and one byte transparency ($FF = opaque, $00 = 50 % semi-transparent),
+	// colour index 0 = transparent. The BMP is freed again; sprite_pointer keeps the converted copy.
+	uint8_t result;
+
+	sprite_pointer->bLoaded = false;
+	sprite_bitmap->endian = false;										// read the pixel bytes in BMP order (B, G, R, A) below
+	result = ApolloLoadPicture(sprite_bitmap);
+	if(result != APOLLO_PICTURE_OK)
+	{
+		ADX(sprintf(ApolloDebugMessage, "ApolloLoadPointer: ERROR - Cannot load %s (Error Code: %d)\n", sprite_bitmap->filename, result);)
 		ADX(ApolloDebugPutStr(ApolloDebugMessage);)
-		goto exit;
+		return result;
 	}
 
-    if (sprite_bitmap->width != 32 || sprite_bitmap->height != 32)
-    {
-		ADX(sprintf(ApolloDebugMessage, "\nApolloPointer Example Program: ERROR - Sprite Bitmap %s has invalid dimensions (Width: %d, Height: %d). Expected dimensions are 32x32 pixels.\n", sprite_bitmap->filename, sprite_bitmap->width, sprite_bitmap->height);) 
+	if (sprite_bitmap->width != 32)  result = APOLLO_PICTURE_W_ERROR;
+	else if (sprite_bitmap->height != 32) result = APOLLO_PICTURE_H_ERROR;
+	else if (sprite_bitmap->depth != 8 && sprite_bitmap->depth != 24 && sprite_bitmap->depth != 32) result = APOLLO_PICTURE_D_ERROR;
+	if(result != APOLLO_PICTURE_OK)
+	{
+		ADX(sprintf(ApolloDebugMessage, "ApolloLoadPointer: ERROR - %s is %ldx%ld, %d bits: expected 32x32 with 8, 24 or 32 bits\n",
+			sprite_bitmap->filename, (long)sprite_bitmap->width, (long)sprite_bitmap->height, sprite_bitmap->depth);)
 		ADX(ApolloDebugPutStr(ApolloDebugMessage);)
-		goto exit;
-    }
+		ApolloFreePicture(sprite_bitmap);
+		return result;
+	}
 
-    if (sprite_bitmap->depth != 8 && sprite_bitmap->depth != 24 && sprite_bitmap->depth != 32)
-    {
-		ADX(sprintf(ApolloDebugMessage, "\nApolloPointer Example Program: ERROR - Sprite Bitmap %s has invalid color depth (Depth: %d).\nExpected color depth is either 8 bits per pixel (CLUT8), 24 bits per pixel (RGB888), or 32 bits per pixel (RGBA8888).\n", sprite_bitmap->filename, sprite_bitmap->depth);) 
-		ADX(ApolloDebugPutStr(ApolloDebugMessage);)
-		goto exit;
-    }
+	uint8_t *source = sprite_bitmap->buffer + sprite_bitmap->position;
+	uint16_t bytes_per_pixel = sprite_bitmap->depth / 8;
 
-    // Set SAGA Sprite Bitmap Pointer and Sprite Size
-    uint8_t *SpritePointer_Source = (sprite_bitmap->buffer + sprite_bitmap->position);
-
-    if (sprite_bitmap->depth == 8)       // Source BMP = CLUT8
-    {
-		ADX(ApolloDebugPutStr("CLUT8 Detected\n");)
-			
-		UBYTE pixel;
-
-		for (int i=0; i<sprite_bitmap->palettesize; i++)
+	if (sprite_bitmap->depth == 8)										// CLUT8: the BMP palette becomes the sprite palette
+	{
+		for (int i=0; i<256; i++)
 		{
-			sprite_pointer->colors[i] = sprite_bitmap->palette[i]; // Copy CLUT colors to sprite colors, ignore alpha if present
+			sprite_pointer->colors[i] = (i < (int)sprite_bitmap->palettesize) ? (sprite_bitmap->palette[i] & 0x00FFFFFF) : 0;
 		}
+		for (int pixel=0; pixel<32*32; pixel++)
+		{
+			sprite_pointer->data[pixel * 2]     = source[pixel];			// colour index (0 = transparent)
+			sprite_pointer->data[pixel * 2 + 1] = 0xFF;					// opaque
+		}
+	} else {															// RGB888 / ARGB8888: gather the colours into a palette
+		uint16_t nextfreeindex = 1;										// index 0 is reserved for transparency
+		sprite_pointer->colors[0] = 0x000000;
+		for (int pixel=0; pixel<32*32; pixel++)
+		{
+			uint8_t *bgra = source + pixel * bytes_per_pixel;			// BMP byte order: blue, green, red (, alpha)
+			ULONG color = ((ULONG)bgra[2] << 16) | ((ULONG)bgra[1] << 8) | bgra[0];
+			UBYTE alpha = (bytes_per_pixel == 4) ? bgra[3] : 0xFF;
+			UWORD index;
 
-        for (int rows=0; rows<32; rows++)
-        {
-        	for (int pixels=0; pixels<32; pixels++)
-            {
-                pixel = *(UBYTE*)(SpritePointer_Source + (rows * 32) + pixels);
-
-				/*if((pixel != 0xFF00) && (pixel != 0x0000))
-                {
-                    pixel|=0xFF;
-                } else {
-                    pixel|=0x80;
-                }*/
-
-				sprite_pointer->data[(rows * 32 * 2) + (pixels * 2)] = (UBYTE)pixel;
-				sprite_pointer->data[(rows * 32 * 2) + (pixels * 2) + 1] = 0xFF;
-
-				ADX(sprintf(ApolloDebugMessage, "CLUT8 Pixel[%2d:%2d] = 0x%02X | color = 0x%06X\n", //| Sprite-Pixel-1 (Index) = 0x%02X | Sprite-Pixel-2 (Alpha) = 0x%02X\n",
-					rows, pixels, pixel, sprite_pointer->colors[pixel]);)
-				ADX(ApolloDebugPutStr(ApolloDebugMessage);)
-			}				
-        }
-
-
-
-    }
-
-    if (sprite_bitmap->depth == 32)      // Source BMP = RGBA8888
-    {
-        ADX(ApolloDebugPutStr("A8R8G8B8 Detected\n");)
-        
-        ULONG pixel, color, alpha;
-        UWORD currentindex, nextfreeindex;
-
-        sprite_pointer->colors[0] = 0x000000; // Color index 0 is reserved for transparency (fully transparent)
-
-        currentindex = 1;
-        nextfreeindex = 1;
-                
-        for (int rows=0; rows<32; rows++)
-        {
-            for (int pixels=0; pixels<32; pixels++)
-            {
-                pixel = *(ULONG*)((sprite_bitmap->buffer + sprite_bitmap->position) + (rows * 32 * 4) + (pixels * 4));
-                
-                color = pixel & 0x00FFFFFF;    // Get R8G8B8 part of the pixel
-                alpha = (pixel>>24) & 0xFF;    // Get A8 part of the pixel
-                    
-                if(alpha == 0x00)
-                {
-                    currentindex = 0; // Fully transparent  
-                } else {
-                    if(alpha != 0xFF) alpha = 0x00; // Semi-transparent
-
-                    for (currentindex=1; currentindex<nextfreeindex; currentindex++)
-                    {
-                        if (sprite_pointer->colors[currentindex] == color) break; // Color already exists in sprite_colors array, reuse index
-                    }
-                    if (currentindex == nextfreeindex) // New color, add to sprite_colors array
-                    {
-                        sprite_pointer->colors[nextfreeindex] = color;
-                        if (nextfreeindex < 255) nextfreeindex++;
-                    }
-                }
-
-                sprite_pointer->data[(rows * 32 * 2) + (pixels * 2)]     = (UBYTE)currentindex;   // Store color index in sprite data
-                sprite_pointer->data[(rows * 32 * 2) + (pixels * 2) + 1] = (UBYTE)alpha;   // Store alpha value in sprite data
-
-                ADX(sprintf(ApolloDebugMessage, "A8R8G8B8 Pixel[%2d:%2d] = 0x%08X | Sprite-Pixel-1 (Index) = 0x%02X | Sprite-Pixel-2 (Alpha) = 0x%02X | NextFreeIndex=%03d\n",
-					 rows, pixels, pixel, currentindex, (UBYTE)(alpha), nextfreeindex);)
-                ADX(ApolloDebugPutStr(ApolloDebugMessage);)
-            }
-        }
-
-        ADX(sprintf(ApolloDebugMessage, "Total Unique Colors Detected (including transparency): %d\n", nextfreeindex);)
-        ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+			if (alpha == 0x00)
+			{
+				index = 0;												// fully transparent
+			} else {
+				if (alpha != 0xFF) alpha = 0x00;						// any other alpha: semi-transparent
+				for (index=1; index<nextfreeindex; index++)
+				{
+					if (sprite_pointer->colors[index] == color) break;	// colour already in the palette
+				}
+				if (index == nextfreeindex)
+				{
+					if (nextfreeindex < 256)
+					{
+						sprite_pointer->colors[nextfreeindex++] = color;	// new colour
+					} else {
+						index = 255;									// palette full: use the last entry, don't overwrite it
+					}
+				}
+			}
+			sprite_pointer->data[pixel * 2]     = (UBYTE)index;
+			sprite_pointer->data[pixel * 2 + 1] = alpha;
+		}
+		for (int i=nextfreeindex; i<256; i++) sprite_pointer->colors[i] = 0;
+		ADX(ApolloDebugPutDec("ApolloLoadPointer: colours used (including transparency)", nextfreeindex);)
 	}
-	exit:
-	return;
+
+	ApolloFreePicture(sprite_bitmap);									// sprite_pointer has the converted copy
+	sprite_pointer->bLoaded = true;
+	return APOLLO_PICTURE_OK;
 }
 
 
@@ -1547,11 +1513,13 @@ void ApolloShowPointer(struct ApolloPointer *sprite_pointer)
 {
 	ULONG SpritePointer_Target = SAGA_VIDEO_SPRITEDATA;
 
+	if (!sprite_pointer->bLoaded) return;								// nothing loaded: keep the current pointer
+
 	for (int i=0; i<256; i++)
 	{    
 		*(volatile UWORD*)SAGA_VIDEO_SPRITECLUT_IDX = i;
 		*(volatile ULONG*)SAGA_VIDEO_SPRITECLUT_RGB = sprite_pointer->colors[i];
 	}
-	ApolloCopyLongs((UBYTE*) &sprite_pointer->data, (UBYTE*)SpritePointer_Target, 64*32);
+	ApolloCopyLongs((UBYTE*) &sprite_pointer->data, (UBYTE*)SpritePointer_Target, 32*32*2);	// 32x32 pixels, 2 bytes each
 }
 
