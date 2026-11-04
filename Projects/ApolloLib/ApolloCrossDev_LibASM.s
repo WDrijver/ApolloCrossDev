@@ -364,24 +364,21 @@ _ApolloCPUTick:
 	CNOP 0,4
 
 _ApolloCPUDelay:
-	move.l #92000,d1
-	mulu.l d1,d0				* Multiply d0 (wait time in ms) with Cycles per ms to get desired cycle waits as result in d0
-	dc.w $4e7a,$1809			* Get current CPU cycle counter in d1
-	add.l d0,d1					* Add current CPU cycle counter to desired cycle waits to get target cycle
-	cmp.l #4294967295,d1		* Check for 32-bit overflow of CPU cycle
-	bcc.s .WaitLoop2			* If no 32-bit overflow we skip to Waitloop2
-	sub.l #4294967295,d1		* Correct CPU cycle for 32-bit overflow
-	
-.WaitLoop1:
-	dc.w $4e7a,$0809			* Get current CPU cycle counter in d0
-	cmp.l d0,d1 				* Compare current CPU Cycle with Target Cycle
-	bcs.s .WaitLoop1			* If current CPU cycle is greater or equal we loop
-
-.WaitLoop2:
-	dc.w $4e7a,$0809			* Get current CPU cycle counter in d0
-	cmp.l d1,d0 				* Compare Target Cycle with current CPU cycle
-	bcs.s .WaitLoop2			* If target cycle is greater or equal we loop
-
+	move.l d2,-(sp)				* Save d2
+	move.w $dff3fc,d1			* VAMPIRE VERSION: low byte = CPU clock multiplier
+	and.l #$ff,d1
+	bne.s .HaveMultiplier
+	moveq #14,d1				* No multiplier reported: assume x14 (99.31 MHz)
+.HaveMultiplier:
+	mulu.l #7094,d1				* Cycles per ms = multiplier x 7.09379 MHz / 1000
+	mulu.l d1,d0				* d0 = cycles to wait (ms x cycles per ms)
+	dc.w $4e7a,$2809			* movec CCC,d2: start cycle
+.WaitLoop:
+	dc.w $4e7a,$1809			* movec CCC,d1: current cycle
+	sub.l d2,d1					* Cycles elapsed (correct across a 32-bit wrap)
+	cmp.l d0,d1
+	bcs.s .WaitLoop				* Loop while elapsed < cycles to wait
+	move.l (sp)+,d2				* Restore d2
 	rts
 
 
@@ -408,8 +405,9 @@ _ApolloEndianSwapWordBuffer:
 
 .Go8ByteLoop:
 	dbra.l d0,.Loop8Byte								* countdown loop for 64-bit chunks
-	moveq #3,d0											* d0 = set d0 = set mask bits to %11
-	and.l d2,d0											* d0 = mask width for remainder WORD counter
+	moveq #7,d0											* d0 = bytes left after the 8-byte chunks
+	and.l d2,d0
+	lsr.l #1,d0											* d0 = remainder WORD counter
 	bra.s .Go2ByteLoop
 
 .Loop2Byte:
@@ -441,18 +439,19 @@ _ApolloEndianSwapLongBuffer:
 
 .Loop8Byte:
 	load (a0),d1										* load 2 x LONG from a0
-	vperm #$23016745,d1,d1,d1							* swap WORD pairs
+	vperm #$32107654,d1,d1,d1							* reverse the bytes of each LONG
 	store d1,(a0)+										* store 2 x LONG back in a0
 
 .Go8ByteLoop:
 	dbra.l d0,.Loop8Byte								* countdown loop for 64-bit chunks
-	moveq #5,d0											* d0 = set mask bits to %111
-	and.l d2,d0											* d0 = mask width for remainder LONG counter
+	moveq #7,d0											* d0 = bytes left after the 8-byte chunks
+	and.l d2,d0
+	lsr.l #2,d0											* d0 = remainder LONG counter
 	bra.s .Go4ByteLoop
 
 .Loop4Byte:
 	move.l (a0),d1										* load LONG from a0
-	perm #@2301,d1,d1									* swap BYTE pair
+	perm #@3210,d1,d1									* reverse the bytes of the LONG
 	move.l d1,(a0)+										* store LONG back in a0
 
 .Go4ByteLoop:
@@ -842,9 +841,12 @@ _ApolloTakeOver:
 	lea INTName(pc),a1 				* a1 = intuition.library name
 	moveq #0,d0						* d0 = intuition library version (0 = whatever)							
   	jsr _LVOOpenLibrary(a6)        	* open intuition library
+	move.l d0,ApolloIntBase			* remember it for ApolloRelease
+	beq.s .NoIntuition				* intuition.library not opened: leave the Workbench alone
 
 	movea.l d0,a6
   	jsr _LVOCloseWorkBench(a6)     	* close workbench
+.NoIntuition:
 
 	movea.l $4.w,a6					* Load Exec base address in a6
 
@@ -853,12 +855,44 @@ _ApolloTakeOver:
 	move.l d0,a1					* Store Task ID in a1
     moveq #20,d0		 			* Store Task Prio in d0
     jsr _LVOSetTaskPri(a6)
+	move.l d0,ApolloOldPri			* remember the old priority for ApolloRelease
 
 	movem.l (sp)+,a6				* Save all registers to Stack
 
   	rts
 
 INTName dc.b    'intuition.library',0
+	CNOP 0,4
+ApolloIntBase	dc.l 0				* intuition.library base opened by ApolloTakeOver
+ApolloOldPri	dc.l 0				* task priority before ApolloTakeOver
+
+*************************************************************
+* Apollo Release: undoes ApolloTakeOver						*
+*************************************************************
+
+	XDEF _ApolloRelease
+	XREF _LVOCloseLibrary
+	CNOP 0,4
+
+_ApolloRelease:
+	movem.l a6,-(sp)				* Save a6
+	movea.l $4.w,a6					* Exec base
+	suba.l a1,a1					* a1 = 0: current task
+	jsr _LVOFindTask(a6)
+	movea.l d0,a1
+	move.l ApolloOldPri(pc),d0		* old priority
+	jsr _LVOSetTaskPri(a6)
+	move.l ApolloIntBase(pc),d0
+	beq.s .NoIntuition				* ApolloTakeOver did not open intuition.library
+	movea.l d0,a6
+	jsr _LVOOpenWorkBench(a6)		* reopen the Workbench
+	movea.l a6,a1
+	movea.l $4.w,a6
+	jsr _LVOCloseLibrary(a6)		* close the intuition.library ApolloTakeOver opened
+	clr.l ApolloIntBase
+.NoIntuition:
+	movem.l (sp)+,a6				* Restore a6
+	rts
 
 
 *************************************************************
@@ -882,6 +916,21 @@ _ApolloForbid:
 	movem.l (sp)+,a6				* Save all registers to Stack
 
   	rts
+
+*************************************************************
+* Apollo Permit: undoes ApolloForbid						*
+*************************************************************
+
+	XDEF _ApolloPermit
+	XREF _LVOPermit
+	CNOP 0,4
+
+_ApolloPermit:
+	movem.l a6,-(sp)
+	movea.l $4.w,a6
+	jsr _LVOPermit(a6)				* Permit()
+	movem.l (sp)+,a6
+	rts
 
 
 *************************************************************
@@ -907,6 +956,21 @@ _ApolloDisable:
 
     rts
 
+*************************************************************
+* Apollo Enable: undoes ApolloDisable						*
+*************************************************************
+
+	XDEF _ApolloEnable
+	XREF _LVOEnable
+	CNOP 0,4
+
+_ApolloEnable:
+	movem.l a6,-(sp)
+	movea.l $4.w,a6
+	jsr _LVOEnable(a6)				* Enable()
+	movem.l (sp)+,a6
+	rts
+
 
 
 ********************************************
@@ -926,6 +990,20 @@ _ApolloTimer:
     lea ApolloTimerServer(pc),a1    * a1 = ApolloTimerServer
     jsr _LVOAddIntServer(a6)        * call AddIntServer(d0, a1)
     movem.l (sp)+,a6   	            * Restore all registers from Stack
+    rts
+
+* ApolloTimerStop: removes the server again. Call it before the program exits:
+* the server node lives in this program's memory.
+    XDEF _ApolloTimerStop
+    XREF _LVORemIntServer
+    CNOP 0,4
+_ApolloTimerStop:
+	movem.l a6,-(sp)
+    movea.l $4.w,a6                 * a6 = Exec Base
+    moveq.l #5,d0                   * d0 = VBL Interrupt Number
+    lea ApolloTimerServer(pc),a1    * a1 = ApolloTimerServer
+    jsr _LVORemIntServer(a6)        * call RemIntServer(d0, a1)
+    movem.l (sp)+,a6
     rts
 
 ApolloTimerServer:                  * Struct Interrupt {Struct Node _Node,

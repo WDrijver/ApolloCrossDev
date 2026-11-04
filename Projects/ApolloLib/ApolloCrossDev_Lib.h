@@ -286,8 +286,10 @@ uint8_t ApolloAllocPicture( struct ApolloPicture *picture);
 void ApolloFreePicture( struct ApolloPicture *picture);
 uint8_t ApolloLoadPicture(struct ApolloPicture *picture);
 uint8_t ApolloShowPicture(struct ApolloPicture *picture);
-void ApolloShowPiP( struct ApolloPicture *picture);
-void ApolloHidePiP();
+void ApolloShowPiP1( struct ApolloPicture *picture);
+void ApolloShowPiP2( struct ApolloPicture *picture);
+void ApolloHidePiP1();
+void ApolloHidePiP2();
 void ApolloShowPattern(uint8_t *buffer, uint16_t width, uint16_t height, uint8_t depth);
 //void ApolloBackupWBScreen(struct ApolloPicture *picture);
 
@@ -349,6 +351,11 @@ extern void ApolloTakeOver( void );
 extern void ApolloForbid( void );
 extern void ApolloDisable( void );
 extern void ApolloTimer( void );
+extern void ApolloTimerStop( void );		// Removes the ApolloTimer interrupt server: call before the program exits
+extern ULONG GlobalTimer;					// VBlanks counted by ApolloTimer
+extern void ApolloRelease( void );			// Undoes ApolloTakeOver: task priority, Workbench, intuition.library
+extern void ApolloPermit( void );			// Undoes ApolloForbid
+extern void ApolloEnable( void );			// Undoes ApolloDisable
 extern void ApolloFillLoop( _A0(UWORD* d), _D3(UWORD w), _D4(UWORD h), _D5(ULONG dpitch), _D7(UWORD fc) );
 extern void ApolloBlitBlueAlphaUILoop( _A0(UWORD* src), _A1(UWORD* dst), _A2(UWORD* alpha), _D3(UWORD width), _D4(UWORD height), _D5(ULONG spitch), _D6(ULONG dpitch), _D7(ULONG apitch));
 extern void ApolloBlitRedAlphaBGLoop( _A0(UWORD* src), _A1(UWORD* dst), _A2(UWORD* alpha), _D3(UWORD width), _D4(UWORD height), _D5(ULONG spitch), _D6(ULONG dpitch), _D7(ULONG apitch));

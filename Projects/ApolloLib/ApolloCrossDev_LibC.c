@@ -35,6 +35,7 @@ uint8_t ApolloLoadFile(struct ApolloFile *file)
 	file_read = fread(file->buffer, 1, file->size, file_handle);	// Read file into aligned buffer	
     if(file_read != file->size)
     {
+		fclose(file_handle);
 	   	ADX(ApolloDebugPutStr( "ERROR: Cannot load file\n");)
 	    return APOLLO_SOUND_LOADERROR;
     } else {
@@ -138,7 +139,7 @@ uint8_t ApolloLoadSound( struct ApolloSound *sound)
 			fseek(file_handle, 0, SEEK_SET);				
 			fread(&aiffheader, sizeof(struct AIFFHeader), 1, file_handle); 				// Read first Chunk Header
 			offset += 12;																// Increase offset with 8 = ID [LONG] + File Size [LONG] + FORM Type [LONG]											
-			if( aiffheader.file_id != 0x464F524D) return APOLLO_SOUND_NOHEADER;			// 'FORM'
+			if( aiffheader.file_id != 0x464F524D) { fclose(file_handle); return APOLLO_SOUND_NOHEADER; }			// 'FORM'
 			while(scanning)																
 			{
 				fseek(file_handle, offset, SEEK_SET);
@@ -147,6 +148,15 @@ uint8_t ApolloLoadSound( struct ApolloSound *sound)
 				switch(aiffheader.file_id)
 				{
 					case 0x434F4D4D: 													// 'COMM'
+						{
+							uint16_t num_channels = 0, sample_size = 0;
+							fseek(file_handle, offset, SEEK_SET);
+							fread(&num_channels, 2, 1, file_handle);						// NumChannels [WORD]
+							fseek(file_handle, offset + 6, SEEK_SET);
+							fread(&sample_size, 2, 1, file_handle);							// SampleSize [WORD], after NumSampleFrames [LONG]
+							sound->stereo = (num_channels == 2);
+							sound->bitspersample = sample_size;
+						}
 						offset += 8;													// Increase offset with 8 = NumChannels [WORD] + NumSampleFrames [LONG] + SampleSize [WORD]
 						fseek(file_handle, offset, SEEK_SET); 
 						fread(&samplerate_exponent, 2, 1, file_handle);					// Read SampleRate Exponent
@@ -168,7 +178,7 @@ uint8_t ApolloLoadSound( struct ApolloSound *sound)
 
 					default:
 						offset += aiffheader.chunk_size;								// Skip chunk
-						if(offset >= file_size) return APOLLO_SOUND_ENDOFFILE;			// Reached end of file without finding SSND chunk
+						if(offset >= file_size) { fclose(file_handle); return APOLLO_SOUND_ENDOFFILE; }			// Reached end of file without finding SSND chunk
 						break;
 				}
 			}
@@ -178,11 +188,11 @@ uint8_t ApolloLoadSound( struct ApolloSound *sound)
 			fseek(file_handle, 0, SEEK_SET);				
 			fread(&wavheader, sizeof(struct WAVHeader), 1, file_handle); 				// Read first Chunk Header
 			offset += sizeof(struct WAVHeader);											// Increase offset with 44 Byte Header size
-			if( wavheader.file_id != 0x52494646) return APOLLO_SOUND_NOHEADER;			// 'RIFF'
+			if( wavheader.file_id != 0x52494646) { fclose(file_handle); return APOLLO_SOUND_NOHEADER; }			// 'RIFF'
 			sound->size = ApolloSwapLong(wavheader.file_size) - 36;						// Set size to filesize minus 44 Byte WAV Header - 8 Byte (file_id[4] + filesize[4])
-			if( wavheader.wave_id != 0x57415645) return APOLLO_SOUND_NOHEADER;			// 'WAVE'
-			if( wavheader.fmt_id != 0x666d7420) return APOLLO_SOUND_NOHEADER;			// 'fmt '
-			if( ApolloSwapWord(wavheader.audio_format) != 1) return APOLLO_SOUND_COMPRERR;				// PCM only supported
+			if( wavheader.wave_id != 0x57415645) { fclose(file_handle); return APOLLO_SOUND_NOHEADER; }			// 'WAVE'
+			if( wavheader.fmt_id != 0x666d7420) { fclose(file_handle); return APOLLO_SOUND_NOHEADER; }			// 'fmt '
+			if( ApolloSwapWord(wavheader.audio_format) != 1) { fclose(file_handle); return APOLLO_SOUND_COMPRERR; }				// PCM only supported
 			if( ApolloSwapWord(wavheader.num_channels) == 2) sound->stereo = true; else sound->stereo = false;
 			sound->period = (APOLLO_PAL_CLOCK / ApolloSwapLong(wavheader.sample_rate));	// Calculate Period from SampleRate
 			sound->datarate = ApolloSwapLong(wavheader.byte_rate);
@@ -200,7 +210,8 @@ uint8_t ApolloLoadSound( struct ApolloSound *sound)
     if (!sound->buffer)
     {
     	ADX(ApolloDebugPutStr( "ApolloLoadSound: Buffer memory allocation ERROR\n");)
-		return APOLLO_SOUND_MEMERROR;
+    	fclose(file_handle);
+    	return APOLLO_SOUND_MEMERROR;
     } else {
 		ADX(ApolloDebugPutStr( "ApolloLoadSound: Buffer memory allocated\n");)
     }
@@ -214,6 +225,7 @@ uint8_t ApolloLoadSound( struct ApolloSound *sound)
     {
 	   	ADX(ApolloDebugPutStr( "ERROR: Cannot load file\n");)
 		FreeVec(sound->buffer);					
+	    fclose(file_handle);
 	    return APOLLO_SOUND_LOADERROR;
     } else {
 	   	ADX(ApolloDebugPutStr( "SUCCESS: File loaded\n");)
@@ -266,14 +278,20 @@ uint8_t ApolloPlaySound( struct ApolloSound *sound)
 	AD(ApolloDebugPutStr(ApolloDebugMessage);)
 
 	*((volatile uint32_t*)(0xDFF400 + (sound->channel * 0x10))) = (uint32_t)(sound->buffer+sound->position);  	// Set Channel Pointer
-	*((volatile uint32_t*)(0xDFF404 + (sound->channel * 0x10))) = (uint32_t)(sound->size/8);					// Set Channel Music length (in pairs of stereo sample = 2 * 2 * 16-bit = 64-bit chunksize = filesize in bytes / 8)
+	// Arne counts LEN in sample pairs: 8 bytes for 16-bit stereo, 4 for 16-bit mono, 2 for 8-bit mono.
+	// A sound without format information (bitspersample 0, e.g. RAW) plays as 16-bit stereo, as before.
+	uint16_t ctrl_format = 0x0005;													// %101 = 16-bit stereo
+	uint32_t pair_bytes = 8;
+	if (sound->bitspersample == 16 && !sound->stereo) { ctrl_format = 0x0001; pair_bytes = 4; }	// 16-bit mono
+	if (sound->bitspersample == 8 && !sound->stereo)  { ctrl_format = 0x0000; pair_bytes = 2; }	// 8-bit mono
+	*((volatile uint32_t*)(0xDFF404 + (sound->channel * 0x10))) = (uint32_t)(sound->size/pair_bytes);					// Set Channel Music length (in pairs of stereo sample = 2 * 2 * 16-bit = 64-bit chunksize = filesize in bytes / 8)
 	*((volatile uint16_t*)(0xDFF408 + (sound->channel * 0x10))) = 0;                							// Set Channel Volume to Zero 
 
 	if (sound->loop)
 	{
-		*((volatile uint16_t*)(0xDFF40A + (sound->channel * 0x10))) = (uint16_t)0x0005;            				// %0101 = $05 - Sample 16bit (bit0 = 1) / OneShot Disabled (bit1 = 0) / Stereo Enabled (bit2 = 1)
+		*((volatile uint16_t*)(0xDFF40A + (sound->channel * 0x10))) = (uint16_t)ctrl_format;            				// %0101 = $05 - Sample 16bit (bit0 = 1) / OneShot Disabled (bit1 = 0) / Stereo Enabled (bit2 = 1)
 	} else {
-		*((volatile uint16_t*)(0xDFF40A + (sound->channel * 0x10))) = (uint16_t)0x0007;            				// %0111 = $07 - Sample 16bit (bit0 = 1) / OneShot Enabled (bit1 = 1) / Stereo Enabled (bit2 = 1)
+		*((volatile uint16_t*)(0xDFF40A + (sound->channel * 0x10))) = (uint16_t)(ctrl_format | 0x0002);		// + OneShot (bit1); was %0111 = $07 - Sample 16bit (bit0 = 1) / OneShot Enabled (bit1 = 1) / Stereo Enabled (bit2 = 1)
 	}
 	*((volatile uint16_t*)(0xDFF40C + (sound->channel * 0x10))) = (uint16_t)sound->period;						// PERIOD = APOLLO_PAL_CLOCK / sample rate (3546895 / 44100 = 80)
 	if (sound->channel < 4)
@@ -428,7 +446,7 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 			fseek(file_handle, 0, SEEK_SET);
 			fread(&ddsheader, sizeof(struct DDSHeader), 1, file_handle);
 			ADX(ApolloDebugPutHex("ApolloLoad: DDS Header", ddsheader.dwMagic);)
-			if( ddsheader.dwMagic != 0x44445320) return APOLLO_PICTURE_NOHEADER;
+			if( ddsheader.dwMagic != 0x44445320) { fclose(file_handle); return APOLLO_PICTURE_NOHEADER; }
 
 			picture->width 		= ApolloSwapLong(ddsheader.dwWidth);
 			picture->height 	= ApolloSwapLong(ddsheader.dwHeight);
@@ -449,12 +467,13 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 			fread(&bmpfileheader, sizeof(struct BMPFileHeader), 1, file_handle);
 			fread(&bmpinfoheader, sizeof(struct BMPDIBHeader_BITMAPINFOHEADER), 1, file_handle);
 
-			if( bmpfileheader.type != 0x424D) return APOLLO_PICTURE_NOHEADER;						// Check for 'BM' (0x424D) Marker
-			if( (ApolloSwapWord(bmpinfoheader.planes)!=1) ) return APOLLO_PICTURE_PLANEERR;		   	// Check for 1 Color Plane
+			if( bmpfileheader.type != 0x424D) { fclose(file_handle); return APOLLO_PICTURE_NOHEADER; }						// Check for 'BM' (0x424D) Marker
+			if( (ApolloSwapWord(bmpinfoheader.planes)!=1) ) { fclose(file_handle); return APOLLO_PICTURE_PLANEERR; }		   	// Check for 1 Color Plane
 			if( (ApolloSwapLong(bmpinfoheader.compression)!=0) && (ApolloSwapLong(bmpinfoheader.compression)!=3))
 			{
 				ADX(sprintf(ApolloDebugMessage, "ApolloLoad: BMP Compression Mode %d not supported\n", ApolloSwapLong(bmpinfoheader.compression));)
 				ADX(ApolloDebugPutStr(ApolloDebugMessage);)
+				fclose(file_handle);
 				return APOLLO_PICTURE_COMPRERR;	// Only Uncompressed BMP Supported
 			}
 
@@ -488,7 +507,7 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
 
 			if (picture->depth <= 8)
 			{
-				fseek(file_handle, 54, SEEK_SET);
+				fseek(file_handle, 14 + ApolloSwapLong(bmpinfoheader.headersize), SEEK_SET);	// palette follows the 14-byte file header and the DIB header
 				for(uint16_t colorcounter=0; colorcounter<picture->palettesize; colorcounter++)						// Set Apollo SAGA Chunky Color Registers
 				{
 					fread(&color, 1, 4, file_handle);
@@ -513,7 +532,8 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
     if (!picture->buffer)
     {
     	ADX(ApolloDebugPutStr( "ApolloLoad: Buffer memory allocation ERROR\n");)
-		return APOLLO_PICTURE_MEMERROR;
+    	fclose(file_handle);
+    	return APOLLO_PICTURE_MEMERROR;
     } else {
 		ADX(ApolloDebugPutStr( "ApolloLoad: Buffer memory allocated\n");)
     }
@@ -527,6 +547,7 @@ uint8_t ApolloLoadPicture(struct ApolloPicture *picture)
     {
 	   	ADX(ApolloDebugPutStr( "ERROR: Cannot load file\n");)
 		FreeVec(picture->buffer);					
+	    fclose(file_handle);
 	    return APOLLO_PICTURE_OPENERR;
     } else {
 	   	ADX(ApolloDebugPutStr( "SUCCESS: File loaded\n");)
@@ -651,6 +672,7 @@ uint8_t ApolloShowPicture(struct ApolloPicture *picture)
 				case 256: gfx_mode |= APOLLO_SAGA_320_256; break;
 				default: return APOLLO_PICTURE_H_ERROR;
 			}
+			break;
 		case 480: gfx_mode |= APOLLO_SAGA_480_270; break;
 		case 640:
 			switch(picture->height)
@@ -695,7 +717,7 @@ uint8_t ApolloShowPicture(struct ApolloPicture *picture)
 		uint32_t colorcounter;
 		for(colorcounter=0; colorcounter<picture->palettesize; colorcounter++)						// Set Apollo SAGA Chunky Color Registers
 		{
-			*(volatile uint32_t*)APOLLO_SAGA_CHUNKY_COL = (colorcounter<<24) + (((picture->palette[colorcounter] >> 8) & 0xFF)<<16) + (((picture->palette[colorcounter] >> 16) & 0xFF)<<8) + ((picture->palette[colorcounter] >> 24) & 0xFF);
+			*(volatile uint32_t*)APOLLO_SAGA_CHUNKY_COL = (colorcounter<<24) + (picture->palette[colorcounter] & 0xFFFFFF);	// palette is $IIRRGGBB already (ApolloLoadPicture)
 		}
 	}
 
@@ -733,26 +755,16 @@ void ApolloShowPattern(uint8_t *buffer, uint16_t width, uint16_t height, uint8_t
 {
     uint8_t d=depth/8;
 	for(uint16_t h=0; h<height; h++)
-    {
+	{
         for(uint16_t w=0; w<width; w++)
-        {
-            switch(d)
+		{
+			uint8_t *pixel = buffer + (h*width*d) + (w*d);
+			for(uint8_t byte=0; byte<d; byte++)								// write every byte of the pixel, most significant first
 			{
-				case 1:
-					buffer[(h*width*d)+(w*d)] = w%0XFF;
-					break;
-				case 2:
-					buffer[(h*width*d)+(w*d)] = w%0XFFFF;
-					break;
-				case 3:
-					buffer[(h*width*d)+(w*d)] = w%0XFFFFFF;
-					break;
-				case 4:
-					buffer[(h*width*d)+(w*d)] = w%0XFFFFFFFF;
-					break;
+				pixel[byte] = (uint8_t)(w >> (8*(d-1-byte)));
 			}
-        }
-    }
+		}
+	}
 }
 
 /*void ApolloBackupWBScreen(struct ApolloPicture *picture)
@@ -838,7 +850,7 @@ void ApolloMouse(ApolloMouseState *MouseState)
 	if ((MouseButtonLeft_Value & 0x40) == 0) MouseState->Button_Left = true;
 	MouseButtonRight_Value= *((volatile uint16_t*)APOLLO_MOUSE_BUTTON23);
 	if ((MouseButtonRight_Value & 0x400) == 0) MouseState->Button_Right = true;
-	MouseState->Button_Middle = *((volatile uint16_t*)APOLLO_MOUSE_WHEEL);
+	if ((MouseButtonRight_Value & 0x100) == 0) MouseState->Button_Middle = true;		// POTINP bit 8 = middle button (0 = pressed)
 
 	// Read Mouse Movement	
 	MouseState->MouseX_Value 		= *((signed char *)APOLLO_MOUSE_GET_X);
@@ -1177,8 +1189,8 @@ void ApolloPlayFile(const char *filename, uint8_t *buffer, uint16_t offset, int 
 	ApolloDebugPutStr(ApolloDebugMessage);
 	#endif
 
-	*((volatile uint32_t*)(0xDFF400 + (channel * 0x10))) = (uint32_t)buffer+offset;        	   	// Set Channel Pointer
-	*((volatile uint32_t*)(0xDFF404 + (channel * 0x10))) = (uint32_t)(((file_size-offset)/8)-32);	// Set Channel Music Lenght (in pairs of stereo sample = 2 * 2 * 16-bit = 64-bit chunksize = filesize in bytes / 8)
+	*((volatile uint32_t*)(0xDFF400 + (channel * 0x10))) = (uint32_t)buffer;        	   		// Set Channel Pointer (the file was read from 'offset' into buffer[0])
+	*((volatile uint32_t*)(0xDFF404 + (channel * 0x10))) = (uint32_t)((file_size/8)-32);	// Set Channel Music Lenght (in pairs of stereo sample = 2 * 2 * 16-bit = 64-bit chunksize = filesize in bytes / 8)
 	
 	int volume = (volume_left << 8) + (volume_right);
 
