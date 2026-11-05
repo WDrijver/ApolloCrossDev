@@ -36,6 +36,7 @@ ApolloCrossDev is based on the excellent Amiga-GCC repositories by Stefan -Bebbo
 5. In the terminal windows type ./GCC-6.50-Dev-Linux.sh or ./GCC-6.50-Dev-MacOS.sh to install the latest ApolloCrossDev Toolchain (*)
 6. After the installation is finished type sudo nano ~/.bashrc
 7. At the end of the file add: export AMIGAHOST="IP-ADDRESS" and save (for example: export AMIGAHOST ="192.168.2.100")
+8. Also add: export APOLLOCROSSDEV="<path to your ApolloCrossDev folder>" (for example: export APOLLOCROSSDEV="$HOME/ApolloCrossDev"), so projects outside the Projects folder find the toolchain (on macOS use ~/.zshrc)
 
 (*) GCC-6.50-Base = Original Baseline (Nov 2024) | GCC-6.50-Stable = Fallback if you have any issues with GCC-6.50-Dev
 
@@ -63,7 +64,9 @@ ApolloCrossDev is based on the excellent Amiga-GCC repositories by Stefan -Bebbo
 4. Change the Project/<projectname> line and make other customizations to Makefile if needed
 5. Create your C and/or Assembler code using .c for C, .cpp for C++ and .s for ASM
 6. Right-Click <projectname> Folder and select "Open in integrated Terminal"
-7. Type "make" to Compile
+7. Type "make" to Compile, Link and Upload, or "make compile" to Compile and Link without Upload
+
+A project can also live in its own folder or git repository outside ApolloCrossDev: copy the Makefile template there and set APOLLOCROSSDEV (Installation step 8).
 
 TIP:  The Makefile template contains additional information on Compiler Options
       please take you time to read this information carefully if your new to GCC/Amiga
