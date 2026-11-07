@@ -74,7 +74,9 @@ TIP:  The Makefile template contains additional information on Compiler Options
 --------------------------------------------------------------------------------------------------------------------
 
 ## Other Resources:
-1. Docs folder containing a collection of Amiga and Apollo Reference Manuals (PDF)
+1. Docs folder containing a collection of Amiga and Apollo Reference Manuals (PDF), including the
+   AmigaDOS Reference Manual for AmigaOS 3.2 (Thomas Richter, 2024, freely distributable unmodified)
+   and the exFAT File System Specification (Microsoft, CC BY 4.0) in Docs/exFAT
 2. Apollo 68080 AMMX/SAGA Basic Coding Documentation  : http://apollo-core.com/index.htm?page=coding
 3. ApolloOS - Apollo V4 Open Source OS Distro Image   : http://www.apollo-computer.com/downloads.php
 
