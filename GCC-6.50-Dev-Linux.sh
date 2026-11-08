@@ -114,13 +114,22 @@ make libdebug PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Build Assembler (vasm)
 cd $ARCHIVES/vasm
-tar -xzf vasm.tar.tar
+tar -xzf vasm.tar
 cd vasm
 make CPU=m68k SYNTAX=mot >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
 cp -f vasmm68k_mot $PREFIX/bin/vasmm68k_mot >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
 cp -f vobjdump $PREFIX/bin/vobjdump >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
 cd $ARCHIVES/vasm
 rm -rf vasm
+
+# Build Linker (vlink)
+cd $ARCHIVES/vlink
+tar -xzf vlink.tar
+cd vlink
+make CPU=m68k >>$LOGFILES/vlink.log 2>>$LOGFILES/vlink_err.log
+cp -f vlink $PREFIX/bin/vlink >>$LOGFILES/vlink.log 2>>$LOGFILES/vlink_err.log
+cd $ARCHIVES/vlink
+rm -rf vlink
 
 # Part 5: MUI
 echo -e "\e[1m\e[37m5. Adding MUI5\e[0m\e[36m"
