@@ -1,0 +1,39 @@
+This chapter documents the backend for the SWEET16 Pseudo CPU architecture.
+
+@section Legal
+    This module is written in 2026 by Frank Wille
+    and is covered by the vasm copyright without modifications.
+
+@section General
+
+This backend accepts SWEET16 instructions as defined by Steve Wozniak
+and used in the Apple II computer ROM. An interpreter for this pseudo
+CPU, with 16 16-bit registers, can also be ported to other 6502-based
+systems.
+
+The target address type is 16 bit.
+
+Instructions consist of one, two (branches) or three bytes (@code{SET}
+instruction) and require no alignment. Data requires no alignment either.
+
+@section Known Problems
+
+    Some known problems of this module at the moment:
+
+@itemize @minus
+@item None.
+@end itemize
+
+@section Error Messages
+
+This module has the following error messages:
+
+@itemize @minus
+
+@item 2001: trailing garbage in operand
+@item 2002: branch destination out of range
+@item 2003: data size %d not supported
+@item 2004: data expression doesn't fit into %d bits
+@item 2005: %d cannot be a register
+
+@end itemize

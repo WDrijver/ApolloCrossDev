@@ -1,0 +1,43 @@
+This chapter describes the ARM (or Acorn) Object Format output module
+which can be selected with the @option{-Faof} option.
+
+@section Legal
+
+    This module is written in 2025 by Frank Wille and
+    is covered by the vasm copyright without modifications.
+
+@section General
+
+This module outputs the AOF object file format in version 310, as described
+by the ARM DUI0041C Copyright 1997, 1998 by ARM Limited. It is used by
+some older ARM architectures, like Acorn RISC computers or the 3DO.
+It supports 26- and 32-bit ARM architectures up to AA4, including Thumb mode.
+
+@section Restrictions
+
+@itemize @minus
+@item 26 or 32 bits.
+@item Always generates Type-2 relocations.
+@end itemize
+
+@section Known Problems
+
+    Some known problems of this module at the moment:
+
+@itemize @minus
+@item Some code area attributes are never set, because vasm is lacking
+  the information: reentrant, software stack checking, ARM/Thumb
+  interworking.
+@item No debugging table support.
+@item No entry location.
+@item No strong symbols.
+@end itemize
+
+@section Error Messages
+
+This module has the following error messages:
+
+@itemize @minus
+@item 3005: reloc type %s, size %d, mask 0x%lx (symbol %s + 0x%lx) not supported
+@item 3024: section <%s>: maximum size of 0x%llx bytes exceeded (0x%llx)
+@end itemize
