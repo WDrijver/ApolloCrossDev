@@ -1,6 +1,7 @@
-# ApolloCrossDev Primary Install Script v1.0
+#!/bin/bash
+# ApolloCrossDev Primary Install Script v1.2
 
-VERSION=1.0
+VERSION=1.2
 CPU=-j16
 
 WORKSPACE="`pwd`"

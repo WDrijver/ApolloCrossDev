@@ -1,0 +1,26 @@
+--- a/cpus/m68k/cpu.c	2026-10-26 22:08:14.447817765 +0100
++++ b/cpus/m68k/cpu.c	2026-10-26 22:08:14.461817899 +0100
+@@ -61,6 +61,12 @@
+ static unsigned char opt_brajmp;      /* branch to different sect. into jump */
+ static unsigned char opt_pc = 1;      /* <label> -> (<label>,PC) */
+ static unsigned char opt_pc080;       /* dest.label -> (<label>,PC) (Apollo) */
++/* Apollo: a label in any operand after the first is a destination that only
++   becomes (d16,PC) with opt_pc080 (OPT OA+). APOLLO_PCDEST() alone misses
++   operand types such as DN (move, addq, subq, bchg...), MA, MI, BS and CT,
++   so -m68080 turned "move.x <ea>,label" into a PC-relative destination by
++   default, which the 68080 computes wrongly after a full-format source. */
++#define APOLLO_PCDST(i,t) (APOLLO_PCDEST(i,t) || ((i)!=0 && (cpu_type&apollo)))
+ static unsigned char opt_bra = 1;     /* B<cc>.L -> B<cc>.W -> B<cc>.B */
+ static unsigned char opt_allbra;      /* also optimizes sized branches */
+ static unsigned char opt_jbra;        /* JMP/JSR <ext> -> BRA.L/BSR.L (020+) */
+@@ -2475,8 +2481,8 @@
+           cpu_error(49,"label->(label,An)");
+       }
+       else if ((modes & (1<<AM_PC16Disp)) && secrel && pcdisp16 &&
+-               ((opt_pc && !APOLLO_PCDEST(i,optype)) ||
+-                (opt_pc080 && APOLLO_PCDEST(i,optype)))) {
++               ((opt_pc && !APOLLO_PCDST(i,optype)) ||
++                (opt_pc080 && APOLLO_PCDST(i,optype)))) {
+         /* label.l --> d16(PC) */
+         op->reg = REG_PC16Disp;
+         if (final && warn_opts>1)

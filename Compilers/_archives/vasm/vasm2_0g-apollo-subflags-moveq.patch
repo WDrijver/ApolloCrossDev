@@ -1,0 +1,63 @@
+--- a/cpus/m68k/cpu.c	2026-11-03 22:04:30.733809598 +0100
++++ b/cpus/m68k/cpu.c	2026-11-03 22:04:30.735809626 +0100
+@@ -128,7 +128,7 @@
+ /* important mnemonic table indexes */
+ static int OC_JMP,OC_JSR,OC_MOVEQ,OC_MOV3Q,OC_LEA,OC_PEA,OC_SUBA,OC_CLR;
+ static int OC_ST,OC_ADDQ,OC_SUBQ,OC_ADDA,OC_ADD,OC_BRA,OC_BSR,OC_TST;
+-static int OC_NOT,OC_NOOP,OC_FNOP,OC_MOVEA,OC_EXT,OC_MVZ,OC_MOVE;
++static int OC_NOT,OC_NOOP,OC_FNOP,OC_MOVEA,OC_EXT,OC_MVZ,OC_MOVE,OC_MOVEAC;
+ static int OC_ASRI,OC_LSRI,OC_ASLI,OC_LSLI,OC_NEG;
+ static int OC_FMOVEMTOLIST,OC_FMOVEMTOSPEC,OC_FMOVEMFROMSPEC;
+ static int OC_FDIV,OC_FSDIV,OC_FDDIV,OC_FSGLDIV;
+@@ -178,6 +178,7 @@
+   &OC_LSRI,             "lsr",    QI,0,
+   &OC_MOV3Q,            "mov3q",  0,0,
+   &OC_MOVE,             "move",   DA,AD,
++  &OC_MOVEAC,           "move",   DA,DN,
+   &OC_MOVEA,            "movea",  0,0,
+   &OC_MOVEQ,            "moveq",  0,0,
+   &OC_MVZ,              "mvz",    0,0,
+@@ -3200,7 +3201,17 @@
+           tolower((unsigned char)ip->qualifiers[0][0]) : '\0';
+   }
+ 
+-  if ((ip->code==OC_MOVE || oc==0x0040) &&
++  if (ip->code==OC_MOVEAC && opt_moveq && abs && ext=='l' &&
++      ip->op[0]->mode==MODE_Extended && ip->op[0]->reg==REG_Immediate &&
++      ip->op[1]->mode==MODE_Dn && val>=-0x80 && val<=0x7f) {
++    /* Apollo matches its own MOVE entry, so the OC_MOVE test below never sees
++       it. Only the plain MOVEQ form: same flags, X kept, one instruction. */
++    ip->code = OC_MOVEQ;
++    ip->qualifiers[0] = l_str;
++    if (final && warn_opts>1)
++      cpu_error(51,"move.l #x,Dn -> moveq #x,Dn");
++  }
++  else if ((ip->code==OC_MOVE || oc==0x0040) &&
+       ip->op[0]->mode==MODE_Extended && ip->op[0]->reg==REG_Immediate) {
+     int movqabsl = opt_moveq && abs && ext=='l' && ip->op[1]->mode==MODE_Dn;
+ 
+@@ -3624,19 +3635,14 @@
+       }
+       else if ((cpu_type&apollo) && opt_gen && ext=='l' &&
+                ip->op[1]->mode!=MODE_An &&
+-               ((!(oc & 0x4200) && val>=-0x7fff && val<=0x8000) ||
+-                ((oc & 0x4200) && val>=-0x8000 && val<=0x7fff))) {
+-        /* ADD/ADDI/SUB/SUBI.L #x,<ea> --> ADDIW.L #x,<ea> (x is 16 bits) */
++               (oc & 0x4200) && val>=-0x8000 && val<=0x7fff) {
++        /* ADD/ADDI.L #x,<ea> --> ADDIW.L #x,<ea> (x is 16 bits).
++           Not SUB/SUBI: ADDIW.L #-x inverts C and X for any non-zero x. */
+         ip->code =  (ip->op[1]->mode==MODE_SpecReg) ? OC_ADDIWVX : OC_ADDIW;
+-        if (!(oc & 0x4200))
+-          val = -val;  /* negate for SUB/SUBI -> ADDIW */
+         ip->op[0]->extval[0] = val;
+-        if (!(oc & 0x4200) && final)
+-          new_op_val(ip->op[0],val);
+-        else
+-          ip->op[0]->flags |= FL_DoNotEval;
++        ip->op[0]->flags |= FL_DoNotEval;
+         if (final && warn_opts>1)
+-          cpu_error(51,"add/sub.l #x -> addiw.l #x / addiw.l #-x");
++          cpu_error(51,"add.l #x -> addiw.l #x");
+       }
+     }
+   }

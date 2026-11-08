@@ -1,10 +1,8 @@
 # ApolloCrossDev Makefile Template v1.2
-# 05-11-2026
+# 08-11-2026
 # Willem Drijver
 #
-# make          compile, link, upload to the Apollo V4 (AMIGAHOST), clean up
-# make debug    as make, plus bgdbserver and a <project>_Debug script
-# make compile  compile and link only, no upload
+# make          compile and link, clean up
 #
 # The project folder can be anywhere: set APOLLOCROSSDEV to the
 # ApolloCrossDev folder (export APOLLOCROSSDEV=~/ApolloCrossDev in ~/.bashrc
@@ -13,15 +11,11 @@
 # Define Shell Environment
 PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
-APOLLO_V4_HOST = "${AMIGAHOST}:Ram Disk/"
 
 # Define ApolloCrossDev Folder and Compiler
 ACD_ROOT ?= $(or $(APOLLOCROSSDEV),$(PWD)/../..)
 PREFIX 	= $(ACD_ROOT)/Compilers/GCC-6.50-Dev
 TARGET 	= m68k-amigaos
-ACP 	= $(ACD_ROOT)/Projects/ApolloExplorer/acp/acp
-GDB		= $(ACD_ROOT)/Projects/bgdbserver/bgdbserver
-ICONS	= $(ACD_ROOT)/Projects/_icons
 
 #Define Project Name (replace <project-name>)
 PROJECT_NAME	= <project-name>
@@ -98,11 +92,7 @@ O_FILES = $(APP_O_FILES) $(LIB_O_FILES)
 EXE		= $(PROJECT_DIR)/$(PROJECT_NAME)
 
 # Make Project (Init -> Build -> Clean -> Exit)
-all: init cleanbefore build upload_all cleanafter exit
-
-debug: init cleanbefore build upload_debug cleanafter exit
-
-compile: init cleanbefore build cleanafter exit
+all: init cleanbefore build cleanafter exit
 
 init:
 	@clear 2>/dev/null || true
@@ -143,25 +133,8 @@ $(LIB_OBJECTDIR)/%.o : $(APOLLOLIB)/%.s
 	@mkdir -p $(LIB_OBJECTDIR)
 	@$(S_COMPILER) $(S_FLAGS) -o $@ $< >>/dev/null
 
-upload_all:
-	@echo "\e[37mStep #3 - \e[31mApollo\e[30mExplorer \e[37mUpload\e[30m"
-	@$(ACP) $(EXE) $(APOLLO_V4_HOST)
-	@cp $(ICONS)/ApolloIcon.info $(PROJECT_DIR)/$(PROJECT_NAME).info
-	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME).info $(APOLLO_V4_HOST)
-
-upload_debug:
-	@echo "\e[37mStep #3 - \e[31mApollo\e[30mExplorer \e[37mUpload\e[30m"
-	@$(ACP) $(EXE) $(APOLLO_V4_HOST)
-	@$(ACP) $(GDB) $(APOLLO_V4_HOST)
-	@cp $(ICONS)/ApolloIcon.info $(PROJECT_DIR)/$(PROJECT_NAME).info
-	@cp $(ICONS)/ApolloIcon_Debug.info $(PROJECT_DIR)/$(PROJECT_NAME)_Debug.info
-	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME).info $(APOLLO_V4_HOST)
-	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME)_Debug.info $(APOLLO_V4_HOST)	
-	@echo "bgdbserver $(PROJECT_NAME)" > $(EXE)_Debug
-	@$(ACP) $(EXE)_Debug $(APOLLO_V4_HOST)
-
 cleanafter:
-	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/*.info $(EXE)_Debug
+	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/*.info
 	@rm -rf $(LIB_OBJECTDIR)
 
 exit:

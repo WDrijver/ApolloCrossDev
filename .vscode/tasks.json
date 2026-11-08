@@ -1,8 +1,5 @@
 {
     "version": "2.0.0",
-    "options": {
-    "env": { "APOLLO_V4_HOST": "${env:AMIGAHOST}:Ram Disk/" }
-    },
     "tasks": [
         {
             "label": "Build ApolloCoreDisplay",
@@ -52,7 +49,7 @@
         {
             "label": "Build Hello-Amiga",
             "type": "shell",
-            "command": "make"
+            "command": "make",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -67,7 +64,7 @@
         {
             "label": "Build Hello-C",
             "type": "shell",
-            "command": "make"
+            "command": "make",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -82,7 +79,7 @@
         {
             "label": "Build Hello-Intuition",
             "type": "shell",
-            "command": "make"
+            "command": "make",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -97,7 +94,7 @@
         {
             "label": "Build Hello-MUI",
             "type": "shell",
-            "command": "make"
+            "command": "make",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -112,7 +109,7 @@
         {
             "label": "Build MUI-Examples",
             "type": "shell",
-            "command": "make"
+            "command": "make",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -127,7 +124,7 @@
         {
             "label": "Build Mul-by-Ten",
             "type": "shell",
-            "command": "make"
+            "command": "make",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -142,7 +139,7 @@
         {
             "label": "Build OpenScreen",
             "type": "shell",
-            "command": "make"
+            "command": "make",
             "group": {
                 "kind": "build",
                 "isDefault": false
@@ -157,7 +154,7 @@
         {
             "label": "Build SAGAModes",
             "type": "shell",
-            "command": "make"
+            "command": "make",
             "group": {
                 "kind": "build",
                 "isDefault": false

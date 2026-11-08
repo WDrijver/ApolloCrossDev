@@ -1,6 +1,7 @@
-# ApolloCrossDev Primary Install Script v1.1
+#!/bin/bash
+# ApolloCrossDev Primary Install Script v1.2
 
-VERSION=1.1
+VERSION=1.2
 CPU=-j16
 
 WORKSPACE="`pwd`"
@@ -20,7 +21,7 @@ SOURCES=$PREFIX/_sources
 
 export PATH=$PREFIX/bin:$PATH
 
-# ApolloCrossDev Secondary Install Script v1.1
+# ApolloCrossDev Secondary Install Script v1.2
 
 # INIT Terminal
 clear
@@ -35,7 +36,6 @@ sudo echo -e "\e[1m\e[37m1. Clean the House\e[0m\e[36m"
 rm -f -r $PREFIX
 mkdir -p $PREFIX
 mkdir -p $LOGFILES
-rm -f -r $PROJECTS/bgdbserver
 rm -f -r $SOURCES
 mkdir -p $SOURCES
 cd $SOURCES
@@ -44,7 +44,7 @@ cd $SOURCES
 echo -e "\e[1m\e[37m2. Update Linux Packages\e[0m\e[36m"
 sudo apt -y update >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 sudo apt -y install make wget git gcc g++ lhasa libgmp-dev libmpfr-dev libmpc-dev flex bison gettext texinfo ncurses-dev autoconf rsync libreadline-dev >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
-sudo apt -y install build-essential devscripts debhelper qtbase5-dev qtbase5-dev-tools qt5-qmake libqt5x11extras5-dev qttools5-dev-tools >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
+sudo apt -y install build-essential devscripts debhelper >>$LOGFILES/part2.log 2>>$LOGFILES/part2_err.log
 
 # PART 3: Clone Amiga-GCC
 echo -e "\e[1m\e[37m3. Clone Amiga-GCC (Stefan -Bebbo- Franke)\e[0m\e[36m"
@@ -114,8 +114,16 @@ make libdebug PREFIX=$PREFIX >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
 # Build Assembler (vasm)
 cd $ARCHIVES/vasm
+# start clean: stale objects would be newer than the extracted sources, so make would keep them
+rm -rf vasm
+# vasm.tar = unmodified vasm 2.0g daily 2026-09-03 (licence: redistribution without modifications)
 tar -xzf vasm.tar
 cd vasm
+# Apollo patches by Renaud Schweingruber (TuKo1982), see README-vasm-2.0g-apollo.md
+# -m68080: label destinations only become (d16,PC) with OPT OA+
+patch -p1 < $ARCHIVES/vasm/vasm2_0g-apollo-pcdest.patch >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
+# -m68080: sub.l #w stays sub (addiw.l #-w inverts C and X); move.l #-128..127,Dn becomes moveq
+patch -p1 < $ARCHIVES/vasm/vasm2_0g-apollo-subflags-moveq.patch >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
 make CPU=m68k SYNTAX=mot >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
 cp -f vasmm68k_mot $PREFIX/bin/vasmm68k_mot >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
 cp -f vobjdump $PREFIX/bin/vobjdump >>$LOGFILES/vasm.log 2>>$LOGFILES/vasm_err.log
@@ -152,57 +160,16 @@ echo -e -n "\e[0m\e[36mSDL | "
 cp -r -f $PREFIX/include/SDL $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f $PREFIX/lib/libSDL* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-echo -e -n "\e[0m\e[36mSDL_mixer | "
-cd $ARCHIVES/SDL_mixer
-mkdir -p $SOURCES/SDL_mixer
-cp -r -f $ARCHIVES/SDL_mixer/* $SOURCES/SDL_mixer
-cd $SOURCES/SDL_mixer
-PATH=$PREFIX/bin:$PATH \
-CC=$PREFIX/bin/m68k-amigaos-gcc \
-AR=$PREFIX/bin/m68k-amigaos-ar \
-RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
-./configure --host=m68k-amigaos --prefix=$PREFIX/$TARGET >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-make CFLAGS="-noixemul -g -O2" LDFLAGS="-noixemul -lSDL" >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r -f build/.libs/libSDL_mixer.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r -f *.h $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+# Porting libs built from source (same CPU/FPU/libc as the Makefile template)
+LIB_CFLAGS="-O2 -m68080 -m68881 -noixemul -fomit-frame-pointer"
+LIB_ENV="PATH=$PREFIX/bin:$PATH CC=$PREFIX/bin/$TARGET-gcc AR=$PREFIX/bin/$TARGET-ar RANLIB=$PREFIX/bin/$TARGET-ranlib STRIP=$PREFIX/bin/$TARGET-strip"
+LIB_CONF="--host=$TARGET --prefix=$PREFIX/$TARGET --disable-shared --enable-static"
+LIB_DEPS="CPPFLAGS=-I$PREFIX/$TARGET/include LDFLAGS=-L$PREFIX/$TARGET/lib"
 
-echo -e -n "\e[0m\e[36mSDL_net | "
-mkdir -p $SOURCES/SDL_net
-cp -r -f $ARCHIVES/SDL_net/* $SOURCES/SDL_net
-cd $SOURCES/SDL_net
-CC=$PREFIX/bin/m68k-amigaos-gcc \
-AR=$PREFIX/bin/m68k-amigaos-ar \
-RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
-make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r -f libSDL_net.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r *.h $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-
-echo -e -n "\e[0m\e[36mSDL_ttf | "
-cd $ARCHIVES/SDL_ttf
-cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-
-echo -e -n "\e[0m\e[36mSDL_images | "
-cd $ARCHIVES/SDL_images
-cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-
-echo -e -n "\e[0m\e[36mVorbis | "
-cd $ARCHIVES/vorbis
-cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-
-echo -e -n "\e[0m\e[36mFreeType2 | "
-cd $ARCHIVES/freetype2
-cp -r -f include/* $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r -f lib/* $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-
-echo -e -n "\e[0m\e[36mMPEGA (Dynamic) | "
-cd $ARCHIVES/MPEGA-source/include
-cp -r -f clib/* $PREFIX/$TARGET/include/clib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-cp -r -f libraries/* $PREFIX/$TARGET/include/libraries >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-$PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 38 -t $PREFIX/$TARGET/include/proto >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
-$PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 40 -t $PREFIX/$TARGET/include/inline >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+# lib_unpack <archive dir> <tarball>: extract into $SOURCES and cd into it
+lib_unpack() {
+  cd $SOURCES && tar -xzf $ARCHIVES/$1/$2 && cd $SOURCES/$(tar -tzf $ARCHIVES/$1/$2 | head -1 | cut -d/ -f1)
+}
 
 echo -e -n "\e[0m\e[36mZLib | "
 mkdir -p $SOURCES/zlib-source
@@ -216,13 +183,96 @@ cp -r -f libz.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err
 cp -r zlib.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r zconf.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
-echo -e -n "\e[0m\e[36mMinizip | "
+echo -e -n "\e[0m\e[36mMiniZip | "
 cd $SOURCES/zlib-source/contrib/minizip
 CC=$PREFIX/bin/m68k-amigaos-gcc \
 AR=$PREFIX/bin/m68k-amigaos-ar \
 RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
 make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 cp -r -f libminizip.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo -e -n "\e[0m\e[36mOgg | "
+lib_unpack vorbis libogg-1.3.6.tar.gz
+env $LIB_ENV CFLAGS="$LIB_CFLAGS" ./configure $LIB_CONF >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make -C src install >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make -C include install >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make install-pkgconfigDATA >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo -e -n "\e[0m\e[36mVorbis | "
+lib_unpack vorbis libvorbis-1.3.7.tar.gz
+env $LIB_ENV CFLAGS="$LIB_CFLAGS" $LIB_DEPS ./configure $LIB_CONF --with-ogg=$PREFIX/$TARGET --disable-oggtest --disable-docs --disable-examples >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make -C lib install >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make -C include install >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make install-pkgconfigDATA >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo -e -n "\e[0m\e[36mPNG | "
+lib_unpack SDL_images libpng-1.6.59.tar.gz
+env $LIB_ENV CFLAGS="$LIB_CFLAGS" $LIB_DEPS ./configure $LIB_CONF --disable-tools --disable-tests >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make install-libLTLIBRARIES install-pkgincludeHEADERS install-nodist_pkgincludeHEADERS install-pkgconfigDATA install-header-links install-library-links >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo -e -n "\e[0m\e[36mJPEG | "
+lib_unpack SDL_images jpegsrc.v9f.tar.gz
+env $LIB_ENV CFLAGS="$LIB_CFLAGS" ./configure $LIB_CONF >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make install-libLTLIBRARIES install-includeHEADERS >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -f jconfig.h $PREFIX/$TARGET/include >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo -e -n "\e[0m\e[36mFreeType2 | "
+lib_unpack freetype2 freetype-2.14.3.tar.gz
+env $LIB_ENV CFLAGS="$LIB_CFLAGS" $LIB_DEPS CC_BUILD=cc ./configure $LIB_CONF --enable-freetype-config --with-zlib=yes --with-png=no --with-bzip2=no --with-brotli=no --with-harfbuzz=no >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make install >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+# amiga-gcc's SDL 1.2 ships no sdl-config, which SDL_mixer's configure needs: add a minimal one
+cat > $PREFIX/bin/$TARGET-sdl-config <<SDLCONFIG
+#!/bin/sh
+# Minimal sdl-config for the amiga-gcc SDL 1.2 port (ApolloCrossDev)
+prefix=$PREFIX/$TARGET
+for a in "\$@"; do case "\$a" in
+  --version) echo 1.2.14 ;;
+  --prefix|--exec-prefix) echo "\$prefix" ;;
+  --cflags) echo "-I\$prefix/include/SDL -D_GNU_SOURCE=1" ;;
+  --libs|--static-libs) echo "-L\$prefix/lib -lSDL" ;;
+esac; done
+SDLCONFIG
+chmod +x $PREFIX/bin/$TARGET-sdl-config
+
+echo -e -n "\e[0m\e[36mSDL_mixer | "
+mkdir -p $SOURCES/SDL_mixer
+cp -r -f $ARCHIVES/SDL_mixer/* $SOURCES/SDL_mixer
+cd $SOURCES/SDL_mixer
+env $LIB_ENV CFLAGS="$LIB_CFLAGS" $LIB_DEPS SDL_CONFIG=$PREFIX/bin/$TARGET-sdl-config ./configure $LIB_CONF --disable-sdltest --disable-music-cmd --disable-music-ogg-shared --disable-music-mod --disable-music-midi-fluidsynth --disable-music-flac --disable-music-mp3 >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+# library only: the playwave/playmus demos are not needed
+make build/libSDL_mixer.la >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f build/.libs/libSDL_mixer.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f SDL_mixer.h $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo -e -n "\e[0m\e[36mSDL_net | "
+mkdir -p $SOURCES/SDL_net
+cp -r -f $ARCHIVES/SDL_net/* $SOURCES/SDL_net
+cd $SOURCES/SDL_net
+CC=$PREFIX/bin/m68k-amigaos-gcc \
+AR=$PREFIX/bin/m68k-amigaos-ar \
+RANLIB=$PREFIX/bin/m68k-amigaos-ranlib \
+make >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f libSDL_net.a $PREFIX/$TARGET/lib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r *.h $PREFIX/$TARGET/include/SDL >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo -e -n "\e[0m\e[36mSDL_ttf | "
+lib_unpack SDL_ttf SDL_ttf-2.0.11.tar.gz
+env $LIB_ENV CFLAGS="$LIB_CFLAGS" $LIB_DEPS SDL_CONFIG=$PREFIX/bin/$TARGET-sdl-config ./configure $LIB_CONF --disable-sdltest --without-x --with-freetype-prefix=$PREFIX/$TARGET >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make install-libLTLIBRARIES install-libSDL_ttfincludeHEADERS >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo -e -n "\e[0m\e[36mSDL_image | "
+lib_unpack SDL_images SDL_image-1.2.12.tar.gz
+env $LIB_ENV CFLAGS="$LIB_CFLAGS" $LIB_DEPS SDL_CONFIG=$PREFIX/bin/$TARGET-sdl-config LIBPNG_CFLAGS=-I$PREFIX/$TARGET/include/libpng16 LIBPNG_LIBS="-lpng16 -lz" LIBS="-lz -lm" ./configure $LIB_CONF --disable-sdltest --without-x --disable-png-shared --disable-jpg-shared --disable-tif --disable-webp >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+make install-libLTLIBRARIES install-libSDL_imageincludeHEADERS >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+
+echo -e -n "\e[0m\e[36mMPEGA (Dynamic) | "
+cd $ARCHIVES/MPEGA-source/include
+cp -r -f clib/* $PREFIX/$TARGET/include/clib >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+cp -r -f libraries/* $PREFIX/$TARGET/include/libraries >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+$PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 38 -t $PREFIX/$TARGET/include/proto >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
+$PREFIX/bin/fd2pragma -i fd/mpega.fd -c clib/mpega_protos.h -s 40 -t $PREFIX/$TARGET/include/inline >>$LOGFILES/part6.log 2>>$LOGFILES/part6_err.log
 
 echo -e -n "\e[0m\e[36mLua | "
 mkdir -p $SOURCES/lua
@@ -253,41 +303,8 @@ cd $ARCHIVES
 cp -r -f P96/* $PREFIX/$TARGET/include >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 cp -r -f cmake/* $PREFIX/lib >>$LOGFILES/part7.log 2>>$LOGFILES/part7_err.log
 
-# Part 8: ApolloExplorer
-echo -e "\e[1m\e[37m8. ApolloExplorer\e[0m\e[36m"
-cd $WORKSPACE/$PROJECTS/ApolloExplorer/acp
-
-cat /etc/os-release | grep -i "debian" >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
-if [ $? -ne 0 ]; then
-    echo -e "\033[1m\033[31mThis script is only tested on Debian-based Linux distributions (Debian, Ubuntu, etc)\033[0;30m"
-    printf 'Do you want to continue anyway? (y/n):'
-    read answer
-    if [ "$answer" != "${answer#[Nn]}" ] ;then 
-        exit 1
-    fi
-fi
-
-sudo apt install -qy build-essential >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
-sudo apt remove -qy qt5-base-dev qt5-tools-dev qt5-tools >>/dev/null 2>>/dev/null
-sudo apt install -qy qt6-*dev* >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
-
-qmake6 >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
-make -j16 >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
-grep -i "error" $LOGFILES/part8_err.log
-if [ $? -eq 0 ]; then
-    echo -e "\033[1m\033[31mError(s) found, check $LOGFILES/part8_err.log\033[0m"
-fi
-make clean >>$LOGFILES/part8.log 2>>$LOGFILES/part8_err.log
-
-# Part 9: BGDBServer
-echo -e "\e[1m\e[37m9. BGDG Server\e[0m\e[36m"
-cd $WORKSPACE/$PROJECTS
-git clone --progress https://github.com/WDrijver/bgdbserver >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
-cd $WORKSPACE/$PROJECTS/bgdbserver
-make >>$LOGFILES/part9.log 2>>$LOGFILES/part9_err.log
-
-# PART 10: Cleanup
-echo -e "\e[1m\e[37m10. Cleanup\e[0m\e[36m"
+# PART 8: Cleanup
+echo -e "\e[1m\e[37m8. Cleanup\e[0m\e[36m"
 rm -rf $SOURCES
 cd $PREFIX
 rm -rf info

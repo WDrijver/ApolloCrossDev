@@ -1,18 +1,14 @@
-# ApolloCrossDev Makefile Template v1.0
-# 28-11-2025
+# ApolloCrossDev Makefile Template v1.2
+# 08-11-2026
 # Willem Drijver
 
 # Define Shell Environment
 PWD = $(shell pwd)
 DIR = $(notdir $(shell pwd))
-APOLLO_V4_HOST = "${AMIGAHOST}:Ram Disk/"
 
 # Define ApolloCrossDev Compiler
 PREFIX 	= $(PWD)/../../Compilers/GCC-6.50-Dev
 TARGET 	= m68k-amigaos
-ACP 	= $(PWD)/../../Projects/ApolloExplorer/acp/acp
-GDB		= $(PWD)/../../Projects/bgdbserver/bgdbserver
-ICONS	= $(PWD)/../../Projects/_icons
 
 #Define Project Name (replace <project-name>)
 PROJECT_NAME	= DebugTest
@@ -80,12 +76,12 @@ O_FILES = $(patsubst $(C_SOURCEDIR)/%.c,$(C_OBJECTDIR)/%.o,$(C_FILES)) $(patsubs
 EXE		= $(PROJECT_DIR)/$(PROJECT_NAME)
 
 # Make Project (Init -> Build -> Clean -> Exit)
-all: init cleanbefore build upload cleanafter exit
+all: init cleanbefore build cleanafter exit
 
 init:
 	clear
 	@echo "\e[37m------------------------------------------------------------------\e[0m"
-	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-6.50 Compiler v1.0\e[0m"    
+	@echo "\e[1;31mApollo\e[1;30mCrossDev \e[37mGCC-6.50 Compiler v1.2\e[0m"    
 	@echo "\e[36mC-Sources : \e[37m$(C_FILES)\e[0m"
 	@echo "\e[36mS-Sources : \e[37m$(S_FILES)\e[0m"
 	@echo "\e[36mExecutable: \e[37m$(EXE)\e[0m"
@@ -109,19 +105,8 @@ $(C_OBJECTDIR)/%.o : $(C_SOURCEDIR)/%.c
 $(S_OBJECTDIR)/%.o : $(S_SOURCEDIR)/%.s
 	@$(S_COMPILER) $(S_FLAGS) -o $@ $< >>/dev/null 2>>$(PROJECT_DIR)/$(PROJECT_NAME)-log.txt
 
-upload:
-	@echo "\e[37mStep #3 - \e[31mApollo\e[30mExplorer \e[37mUpload\e[30m"
-	@$(ACP) $(EXE) $(APOLLO_V4_HOST)
-	@$(ACP) $(GDB) $(APOLLO_V4_HOST)
-	@cp $(ICONS)/ApolloIcon.info $(PROJECT_DIR)/$(PROJECT_NAME).info
-	@cp $(ICONS)/ApolloIcon_Debug.info $(PROJECT_DIR)/$(PROJECT_NAME)_Debug.info
-	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME).info $(APOLLO_V4_HOST)
-	@$(ACP) $(PROJECT_DIR)/$(PROJECT_NAME)_Debug.info $(APOLLO_V4_HOST)	
-	@echo "bgdbserver $(PROJECT_NAME)" > $(EXE)_Debug
-	@$(ACP) $(EXE)_Debug $(APOLLO_V4_HOST)
-
 cleanafter:
-	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/*.info $(EXE)_Debug
+	@rm -f $(C_OBJECTDIR)/*.o $(S_OBJECTDIR)/*.o $(PROJECT_DIR)/*.info
 
 exit:
 	@echo "\e[37m------------------------------------------------------------------\e[0m"

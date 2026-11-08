@@ -1,5 +1,0 @@
-  "trailing garbage in operand",WARNING,
-  "branch destination out of range",ERROR,
-  "data size %d not supported",ERROR,
-  "data expression doesn't fit into %d bits",ERROR,
-  "%d cannot be a register",ERROR,
