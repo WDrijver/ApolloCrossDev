@@ -116,7 +116,6 @@ uint8_t ApolloLoadSound( struct ApolloSound *sound)
 	uint32_t offset = 0; 
 	
 	struct AIFFHeader aiffheader;
-	struct WAVHeader wavheader;
 
 	ADX(sprintf(ApolloDebugMessage, "ApolloLoadSound: Opening File = %s", sound->filename);)
     ADX(ApolloDebugPutStr(ApolloDebugMessage);)
@@ -184,19 +183,51 @@ uint8_t ApolloLoadSound( struct ApolloSound *sound)
 			}
 			break;
 
-		case APOLLO_WAV_FORMAT:							
-			fseek(file_handle, 0, SEEK_SET);				
-			fread(&wavheader, sizeof(struct WAVHeader), 1, file_handle); 				// Read first Chunk Header
-			offset += sizeof(struct WAVHeader);											// Increase offset with 44 Byte Header size
-			if( wavheader.file_id != 0x52494646) { fclose(file_handle); return APOLLO_SOUND_NOHEADER; }			// 'RIFF'
-			sound->size = ApolloSwapLong(wavheader.file_size) - 36;						// Set size to filesize minus 44 Byte WAV Header - 8 Byte (file_id[4] + filesize[4])
-			if( wavheader.wave_id != 0x57415645) { fclose(file_handle); return APOLLO_SOUND_NOHEADER; }			// 'WAVE'
-			if( wavheader.fmt_id != 0x666d7420) { fclose(file_handle); return APOLLO_SOUND_NOHEADER; }			// 'fmt '
-			if( ApolloSwapWord(wavheader.audio_format) != 1) { fclose(file_handle); return APOLLO_SOUND_COMPRERR; }				// PCM only supported
-			if( ApolloSwapWord(wavheader.num_channels) == 2) sound->stereo = true; else sound->stereo = false;
-			sound->period = (APOLLO_PAL_CLOCK / ApolloSwapLong(wavheader.sample_rate));	// Calculate Period from SampleRate
-			sound->datarate = ApolloSwapLong(wavheader.byte_rate);
-			sound->bitspersample = ApolloSwapWord(wavheader.bits_per_sample);
+		case APOLLO_WAV_FORMAT:
+			{
+				// RIFF is little endian: chunk IDs compare as big-endian constants, sizes and fields need ApolloSwapLong/Word.
+				// Chunks are searched, not assumed at fixed offsets: 'fmt ' and 'data' can be preceded by LIST, fact, bext etc.
+				uint32_t riff[3];														// 'RIFF' [LONG] + RIFF Size [LONG] + 'WAVE' [LONG]
+				uint32_t chunk[2];														// Chunk ID [LONG] + Chunk Size [LONG]
+				uint32_t chunk_size;
+				bool have_fmt = false;
+				struct { uint16_t audio_format, num_channels; uint32_t sample_rate, byte_rate; uint16_t block_align, bits_per_sample; } fmt;
+
+				fseek(file_handle, 0, SEEK_SET);
+				if( fread(riff, 4, 3, file_handle) != 3 || riff[0] != 0x52494646 || riff[2] != 0x57415645) { fclose(file_handle); return APOLLO_SOUND_NOHEADER; }	// 'RIFF', 'WAVE'
+				offset = 12;
+				while(scanning)
+				{
+					fseek(file_handle, offset, SEEK_SET);
+					if( fread(chunk, 4, 2, file_handle) != 2) { fclose(file_handle); return APOLLO_SOUND_ENDOFFILE; }	// No 'data' chunk before the end of the file
+					chunk_size = ApolloSwapLong(chunk[1]);
+					offset += 8;
+					switch(chunk[0])
+					{
+						case 0x666d7420:												// 'fmt '
+							if( chunk_size < 16 || fread(&fmt, 16, 1, file_handle) != 1) { fclose(file_handle); return APOLLO_SOUND_NOHEADER; }
+							if( ApolloSwapWord(fmt.audio_format) != 1) { fclose(file_handle); return APOLLO_SOUND_COMPRERR; }			// PCM only supported
+							sound->stereo = (ApolloSwapWord(fmt.num_channels) == 2);
+							sound->period = (APOLLO_PAL_CLOCK / ApolloSwapLong(fmt.sample_rate));	// Calculate Period from SampleRate
+							sound->datarate = ApolloSwapLong(fmt.byte_rate);
+							sound->bitspersample = ApolloSwapWord(fmt.bits_per_sample);
+							have_fmt = true;
+							break;
+
+						case 0x64617461:												// 'data': the samples start at offset
+							if( !have_fmt) { fclose(file_handle); return APOLLO_SOUND_NOHEADER; }
+							sound->size = chunk_size;
+							if( offset + sound->size > file_size) sound->size = file_size - offset;	// Truncated file: play what is there
+							scanning = false;
+							break;
+					}
+					if( scanning)
+					{
+						offset += chunk_size + (chunk_size & 1);						// Skip chunk (chunks are padded to an even size)
+						if( offset >= file_size) { fclose(file_handle); return APOLLO_SOUND_ENDOFFILE; }
+					}
+				}
+			}
 			break;
 
 		default:
@@ -230,6 +261,9 @@ uint8_t ApolloLoadSound( struct ApolloSound *sound)
     } else {
 	   	ADX(ApolloDebugPutStr( "SUCCESS: File loaded\n");)
     }
+
+	if( sound->format == APOLLO_WAV_FORMAT && sound->bitspersample == 16)
+		ApolloEndianSwapWordBuffer(buffer_aligned, sound->size);			// WAV samples are little endian, Arne plays big endian
 
     ADX(ApolloDebugPutStr("ApolloLoadSound: Closing file -> ");)
 
