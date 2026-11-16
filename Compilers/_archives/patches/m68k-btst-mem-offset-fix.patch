@@ -1,0 +1,90 @@
+m68k backend: btst for a one-bit field in memory tested the wrong byte.
+
+*tst_bftst_mem, *tst_bftst_mem1 and *tst_bftst_mem2 (SImode, HImode and
+QImode memory) emit btst for a one-bit field with a constant position. They
+used bit number 7 - POS on the operand's first byte. POS counts from the most
+significant bit of the whole operand (0..31 for SImode), so for any bit in the
+low 24 bits of a long the number went below 0 ("btst #-23,(a3)" for bit 1),
+and btst on memory only uses the low three bits of the number: the bit of
+the FIRST byte was tested instead of the right one. Code like
+
+    unsigned info[256];  ...  if (info[i] & 2) ...
+    if (*req & MEMF_CLEAR) ...
+
+took the wrong branch at -O1 and up (68020+, bitfield patterns). Found in
+ApolloOS R10, 2026-11-16: Regina's upper-case table stayed empty, exec's
+stdAllocReverse never cleared MEMF_CLEAR memory, reqtools tested a wrong
+flag. Not the bbb pass (-fbbb=- does not change it).
+
+The fix tests bit 7 - POS % 8 of byte POS / 8, as the btst pattern for an
+offsettable SImode operand above already does. The operand's constraints
+(o, Q, U) never have an auto-increment address, so adjust_address is valid.
+ApolloOS R10 (7662 C files) compiled with and without the fix: the
+assembly differs only in the four miscompiled btst instructions, which
+become "btst #1,(3,a5)", "btst #0,(25,sp)" etc. Upstream GCC has a QImode
+operand here; the wider modes are this fork's.
+
+diff --git a/gcc/config/m68k/m68k.md b/gcc/config/m68k/m68k.md
+index f2f31d6..5970de8 100644
+--- a/gcc/config/m68k/m68k.md
++++ b/gcc/config/m68k/m68k.md
+@@ -6163,9 +6163,17 @@
+   if (operands[1] == const1_rtx
+       && GET_CODE (operands[2]) == CONST_INT)
+     {
+-      int width = GET_CODE (operands[0]) == REG ? 31 : 7;
++      /* A one-bit field in memory: btst on the byte that holds the bit.
++	 The field position counts from the most significant bit of the
++	 operand, so the bit is in byte POS / 8 and has number
++	 7 - POS % 8 there.  Using 7 - POS on the first byte, as before,
++	 gave bit numbers below 0 for POS > 7 (e.g. "btst #-23,(a0)"), and
++	 btst on memory only uses the low three bits of the number: it
++	 tested a bit of the wrong byte.  */
++      operands[0] = adjust_address (operands[0], QImode,
++				    INTVAL (operands[2]) / 8);
+       return output_btst (operands,
+-			  GEN_INT (width - INTVAL (operands[2])),
++			  GEN_INT (7 - INTVAL (operands[2]) % 8),
+ 			  operands[0], insn, 1000);
+       /* Pass 1000 as SIGNPOS argument so that btst will
+          not think we are testing the sign bit for an `and'
+@@ -6187,9 +6195,17 @@
+   if (operands[1] == const1_rtx
+       && GET_CODE (operands[2]) == CONST_INT)
+     {
+-      int width = GET_CODE (operands[0]) == REG ? 31 : 7;
++      /* A one-bit field in memory: btst on the byte that holds the bit.
++	 The field position counts from the most significant bit of the
++	 operand, so the bit is in byte POS / 8 and has number
++	 7 - POS % 8 there.  Using 7 - POS on the first byte, as before,
++	 gave bit numbers below 0 for POS > 7 (e.g. "btst #-23,(a0)"), and
++	 btst on memory only uses the low three bits of the number: it
++	 tested a bit of the wrong byte.  */
++      operands[0] = adjust_address (operands[0], QImode,
++				    INTVAL (operands[2]) / 8);
+       return output_btst (operands,
+-			  GEN_INT (width - INTVAL (operands[2])),
++			  GEN_INT (7 - INTVAL (operands[2]) % 8),
+ 			  operands[0], insn, 1000);
+       /* Pass 1000 as SIGNPOS argument so that btst will
+          not think we are testing the sign bit for an `and'
+@@ -6211,9 +6227,17 @@
+   if (operands[1] == const1_rtx
+       && GET_CODE (operands[2]) == CONST_INT)
+     {
+-      int width = GET_CODE (operands[0]) == REG ? 31 : 7;
++      /* A one-bit field in memory: btst on the byte that holds the bit.
++	 The field position counts from the most significant bit of the
++	 operand, so the bit is in byte POS / 8 and has number
++	 7 - POS % 8 there.  Using 7 - POS on the first byte, as before,
++	 gave bit numbers below 0 for POS > 7 (e.g. "btst #-23,(a0)"), and
++	 btst on memory only uses the low three bits of the number: it
++	 tested a bit of the wrong byte.  */
++      operands[0] = adjust_address (operands[0], QImode,
++				    INTVAL (operands[2]) / 8);
+       return output_btst (operands,
+-			  GEN_INT (width - INTVAL (operands[2])),
++			  GEN_INT (7 - INTVAL (operands[2]) % 8),
+ 			  operands[0], insn, 1000);
+       /* Pass 1000 as SIGNPOS argument so that btst will
+          not think we are testing the sign bit for an `and'
