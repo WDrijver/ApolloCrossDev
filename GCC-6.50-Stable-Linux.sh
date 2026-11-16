@@ -75,6 +75,12 @@ git apply $ARCHIVES/patches/opt-pipeline-cc0-fix.patch >>$LOGFILES/part4.log 2>>
 git apply $ARCHIVES/patches/opt-shift-lsr-signext-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 git apply $ARCHIVES/patches/postinc-size-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# m68k btst fix: a one-bit test on a value in memory tested the wrong byte
+# (bit number below 0, e.g. "btst #-23,(a0)"). See the patch's header.
+echo -e "\e[0m\e[36mApplying the m68k btst memory offset fix"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/m68k-btst-mem-offset-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
 echo -e "\e[0m\e[36mOverview of the Applied Patches: "
 git diff --stat 
 

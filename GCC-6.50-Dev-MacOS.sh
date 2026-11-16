@@ -101,6 +101,12 @@ echo -e "\033[0m\033[36m   * Applying the m68k sincos constraint fix"
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/m68k-sincos-constraint-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# m68k btst fix: a one-bit test on a value in memory tested the wrong byte
+# (bit number below 0, e.g. "btst #-23,(a0)"). See the patch's header.
+echo -e "\033[0m\033[36m   * Applying the m68k btst memory offset fix"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/m68k-btst-mem-offset-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
 echo -e "\033[0m\033[36m   * Overview of the Applied Patches:\033[0m"
 git diff --stat 
 
