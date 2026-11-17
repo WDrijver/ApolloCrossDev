@@ -1,0 +1,89 @@
+reload: memory indirect operand ([N,sp]) used the stack offset at function entry.
+
+With -fdouble-indirect (on by default) the m68k port allows memory indirect
+addresses on 68020+; -m68080 uses them most, -m68060 sometimes. When a pointer gets no register, reload may use the
+pointer's stack slot as an indirect address: (mem (reg P)) becomes
+(mem (mem (plus sp N))). find_reloads_address computes the slot with the
+current elimination offsets (make_memloc) but stores it in the insn only in
+the replacing pass (replace_reloads). In the first pass it records no reload,
+so calculate_needs_all_insns marks the insn as needing no reloads, no
+elimination and no operand change, and reload_as_needed skips it. At the end
+of reload the pseudo is then replaced by its stack slot at the INITIAL
+offset. Between a call's argument pushes and their pop that is the wrong slot:
+
+    jsr (a0)
+    add.l d2,([56,sp])      <- 20 bytes pushed: must be ([76,sp])
+    lea (20,sp),sp
+
+Upstream targets without indirect addressing (ind_levels == 0) never take
+this path; they push a reload there. ApolloCrossDev issue #27 (reduced from
+libjpeg 9 jdsample.c sep_upsample: jpeg_read_scanlines never advanced and
+MultiView crashed on JPEGs in ApolloOS R10).
+
+The fix: when find_reloads_address skips the substitution in the first pass
+while the offsets are not at their initial values, find_reloads returns
+nonzero (operands changed), so reload_as_needed runs find_reloads on the insn
+again and the replacing pass stores the slot with the right offset.
+
+Checked 2026-11-17 with cc1 built from gcc-stable plus all Dev patches:
+534 C files (libjpeg 9f, libpng, libogg, libvorbis, FreeType 2.14.3,
+SDL_image, SDL_ttf, SDL_mixer, SDL_net, timidity, MPEGA, zlib, Lua, the
+ApolloCrossDev Projects) at -m68080 -m68881 with -O2/-O3/-Os
+-fomit-frame-pointer and -O2: the assembly differs only in 6 operands in
+4 compilations, each one corrected by the bytes pushed at that point
+(jdsample.c -Os ([60,sp]) -> ([80,sp]), jcprepct.c -O2 ([76,sp]) ->
+([96,sp]), timidity resample.c -O2/-O3 ([88,sp]) -> ([92,sp])).
+-m68060 -O2 -fomit-frame-pointer: resample.c and jcprepct.c differ, in 5 operands,
+corrected the same way (resample.c ([84,sp]) -> ([88,sp]), jcprepct.c
+([76,sp]) -> ([96,sp])). -m68080 -fno-double-indirect: no difference.
+
+diff --git a/gcc/reload.c b/gcc/reload.c
+index 98cd157c9..8dc41a80a 100644
+--- a/gcc/reload.c
++++ b/gcc/reload.c
+@@ -148,6 +148,16 @@ int reload_n_operands;
+ /* Nonzero means record the places to replace.  */
+ static int replace_reloads;
+ 
++/* Nonzero if find_reloads_address, in a pass that does not replace
++   (replace_reloads == 0), left a pseudo in an address that is valid as an
++   indirect address only through its equivalent memory location, at an
++   insn where the elimination offsets differ from the initial ones.  No
++   reload is recorded for it, so find_reloads must return nonzero: else
++   reload_as_needed skips the insn and the pseudo is later replaced by its
++   stack slot at the initial offset (wrong after pushes, e.g. ([56,sp])
++   instead of ([76,sp]) between a call's argument pushes and their pop).  */
++static int ind_equiv_needs_replace;
++
+ /* Each replacement is recorded with a structure like this.  */
+ struct replacement
+ {
+@@ -2666,6 +2676,7 @@ find_reloads (rtx_insn *insn, int replace, int ind_levels, int live_known,
+   n_replacements = 0;
+   n_earlyclobbers = 0;
+   replace_reloads = replace;
++  ind_equiv_needs_replace = 0;
+   hard_regs_live_known = live_known;
+   static_reload_reg_p = reload_reg_p;
+ 
+@@ -4600,7 +4611,7 @@ find_reloads (rtx_insn *insn, int replace, int ind_levels, int live_known,
+ 	  }
+       }
+ 
+-  return retval;
++  return retval | ind_equiv_needs_replace;
+ }
+ 
+ /* Return true if alternative number ALTNUM in constraint-string
+@@ -4944,6 +4955,11 @@ find_reloads_address (machine_mode mode, rtx *memrefloc, rtx ad,
+ 		      /* This doesn't really count as replacing the address
+ 			 as a whole, since it is still a memory access.  */
+ 		    }
++		  else if (! replace_reloads
++			   && num_not_at_initial_offset
++			   && ! rtx_equal_p (tem, reg_equiv_mem (regno)))
++		    /* Make the replacing pass visit this insn.  */
++		    ind_equiv_needs_replace = 1;
+ 		  return 0;
+ 		}
+ 	      ad = tem;

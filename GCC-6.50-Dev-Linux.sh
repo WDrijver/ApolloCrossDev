@@ -103,6 +103,12 @@ echo -e "\e[0m\e[36mApplying the m68k btst memory offset fix"
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/m68k-btst-mem-offset-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# reload fix: a memory indirect operand on a stack slot (e.g. "add.l d2,([56,sp])") used the
+# offset at function entry, also while a call's arguments were pushed (issue #27). See the patch's header.
+echo -e "\e[0m\e[36mApplying the reload memory indirect stack offset fix"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/reload-ind-equiv-offset-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
 echo -e "\e[0m\e[36mOverview of the Applied Patches: \e[0m"
 git diff --stat 
 
