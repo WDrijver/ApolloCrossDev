@@ -1,0 +1,166 @@
+bbb: forget cached memory values on every store that may overlap them.
+
+track_var::invalidate_mem kept a register's cached MEM when the store had
+another mode or attributes, or lay within 3 bytes (inverted offset test).
+A DImode store over an SImode spill slot kept the stale value and
+opt_elim_dead_assign deleted the reload (wrong 64-bit products, -O2 -m68080).
+
+diff --git a/gcc/bbb-opts.c b/gcc/bbb-opts.c
+index b59fb86..2b8a5a8 100644
+--- a/gcc/bbb-opts.c
++++ b/gcc/bbb-opts.c
+@@ -67,6 +67,7 @@
+ #include "cfgrtl.h"
+ #include "emit-rtl.h"
+ #include "tree.h"
++#include "alias.h"
+ #include "tree-pass.h"
+ #include "conditions.h"
+ #include "langhooks.h"
+@@ -237,54 +238,59 @@ public:
+       }
+     return -1;
+   }
+-  void
+-  invalidate_mem (rtx mem, unsigned index)
++  static bool
++  split_mem_address (rtx addr, rtx * base, HOST_WIDE_INT * offset)
+   {
+-    rtx z = 0;
+-    if (extend (&z, GET_MODE(mem), mem))
++    if (REG_P(addr))
+       {
+-	rtx reg = 0;
+-	int iv = 0;
+-	if (MEM_IN_STRUCT_P(mem))
+-	  {
+-	    rtx x = XEXP(mem, 0);
+-	    if (GET_CODE(x) == PLUS || GET_CODE(x) == MINUS)
+-	      {
+-		rtx creg = XEXP(x, 0);
+-		rtx cint = XEXP(x, 1);
+-		if (REG_P(creg) && CONST_INT_P(cint))
+-		  {
+-		    reg = creg;
+-		    iv = (int) INTVAL(cint);
+-		  }
+-	      }
+-	  }
+-
+-	if (iv) for (unsigned i = 0; i < FIRST_PSEUDO_REGISTER; ++i)
+-	  {
+-	    if (rtx_equal_p (z, value[i]))
+-	      {
+-		clear(SImode, i, index);
+-		continue;
+-	      }
+-	    // check for subreg/strict_low: overlap +/-3 -> clear the cache
+-	    rtx mem = value[i];
+-	    if (reg && mem && MEM_P(mem) && MEM_IN_STRUCT_P(mem))
+-	      {
+-		rtx pl = XEXP(mem, 0);
+-		if (GET_CODE (pl) == PLUS || GET_CODE (pl) == MINUS)
+-		  {
+-		    rtx r = XEXP(pl, 0);
+-		    rtx v = XEXP(pl, 1);
+-		    if (rtx_equal_p (r, reg) && CONST_INT_P(v)
+-			&& (INTVAL(v) + 3 <= iv || INTVAL(v) - 3 >= iv))
+-		      {
+-			clear(SImode, i, index);
+-		      }
+-		  }
+-	      }
+-	  }
++	*base = addr;
++	*offset = 0;
++	return true;
+       }
++    if ((GET_CODE(addr) == PLUS || GET_CODE(addr) == MINUS) && REG_P(XEXP(addr, 0))
++	&& CONST_INT_P(XEXP(addr, 1)))
++      {
++	*base = XEXP(addr, 0);
++	*offset = GET_CODE(addr) == PLUS ? INTVAL(XEXP(addr, 1)) : -INTVAL(XEXP(addr, 1));
++	return true;
++      }
++    return false;
++  }
++
++  /* True if a store to STORE cannot change the cached memory CACHED.  */
++  static bool
++  store_misses (rtx store, rtx cached)
++  {
++    if (MEM_READONLY_P(cached))
++      return true;
++
++    rtx saddr = XEXP(store, 0);
++    rtx cbase, sbase;
++    HOST_WIDE_INT coffset, soffset;
++    bool csplit = split_mem_address (XEXP(cached, 0), &cbase, &coffset);
++
++    /* A push or pop only touches memory at sp.  */
++    if (GET_RTX_CLASS (GET_CODE (saddr)) == RTX_AUTOINC)
++      return REGNO(XEXP(saddr, 0)) == STACK_POINTER_REGNUM
++	&& csplit && REGNO(cbase) != STACK_POINTER_REGNUM;
++
++    if (csplit && split_mem_address (saddr, &sbase, &soffset) && REGNO(sbase) == REGNO(cbase))
++      return false;
++
++    if (!alias_sets_conflict_p (MEM_ALIAS_SET(store), MEM_ALIAS_SET(cached)))
++      return true;
++    return nonoverlapping_memrefs_p (store, cached, false);
++  }
++
++  /* Forget every register holding a memory value the store to MEM may change.  */
++  void
++  invalidate_mem (rtx mem, unsigned index)
++  {
++    if (!MEM_P(mem))
++      return;
++    for (unsigned i = 0; i < FIRST_PSEUDO_REGISTER; ++i)
++      if (value[i] && MEM_P(value[i]) && !store_misses (mem, value[i]))
++	clear (SImode, i, index);
+   }
+ 
+   rtx
+@@ -1925,6 +1931,20 @@ static unsigned usable_regs;
+ 
+ static void
+ update_insn_infos (std::set<unsigned> & todo = *scan_starts);
++struct invalidate_data
++{
++  track_var * track;
++  unsigned index;
++};
++
++static void
++invalidate_stored_mem (rtx dest, const_rtx, void * data)
++{
++  invalidate_data * d = (invalidate_data *) data;
++  if (MEM_P(dest))
++    d->track->invalidate_mem (dest, d->index);
++}
++
+ static unsigned
+ track_regs ();
+ 
+@@ -4644,8 +4664,18 @@ track_regs ()
+ 	      break;
+ 	    }
+ 
+-	  if (!set || !ii.get_def ())
+-	    continue;
++	  if (!set)
++	    {
++	      invalidate_data data = { track, index };
++	      note_stores (PATTERN (ii.get_insn ()), invalidate_stored_mem, &data);
++	      continue;
++	    }
++
++	  if (!ii.get_def ())
++	    {
++	      track->invalidate_mem (SET_DEST(set), index);
++	      continue;
++	    }
+ 
+ 	  if (dregno < 0)
+ 	    {
