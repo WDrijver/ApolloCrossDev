@@ -87,6 +87,11 @@ echo -e "\e[0m\e[36mApplying the reload memory indirect stack offset fix"
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/reload-ind-equiv-offset-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# bbb fix: stores forget cached memory values they may overwrite.
+echo -e "\e[0m\e[36mApplying the bbb invalidate_mem fix"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/bbb-invalidate-mem-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
 echo -e "\e[0m\e[36mOverview of the Applied Patches: "
 git diff --stat 
 
