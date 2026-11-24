@@ -1,0 +1,86 @@
+bbb: an auto-increment fixup could produce an insn that fails its constraints.
+
+opt_autoinc turns "move.l (a3),a2" into "move.l (a3)+,a2" and lowers the
+offsets of the later uses of a3 (auto_inc_fixup). The fixup re-emits each of
+those insns, so they are recognized anew, and recog takes the first pattern
+whose predicates match. That need not be the pattern the insn had:
+
+    lea ([11054,a3],1),a0      ; *lea: (set a0 (plus (mem (plus a3 11054)) 1))
+
+is re-emitted with offset 11050 and recognized as *addsi3_internal, whose
+constraints do not allow a memory source with an address register as
+destination. Nothing checked the constraints, so the compiler crashed in final:
+
+    error: insn does not satisfy its constraints:
+    (insn 84 ... (set (reg:SI 8 a0)
+            (plus:SI (mem/v:SI (plus:SI (reg/v/f:SI 11 a3) (const_int 11054))) (const_int 1))))
+       {*addsi3_internal}
+    internal compiler error: in final_scan_insn, at final.c:2943
+
+Reduced from v4net.device (ApolloTeam-dev/V4Net, netdev.c, drv_dma_alloc):
+a "volatile ULONG" increment at a large struct offset between Forbid() and
+Permit(), -O2 with -m68020 or -m68080. -fbbb=- compiled it. Issue #33.
+
+The fix tries each fixup on a copy of the insn first (auto_inc_fixup_valid:
+patch the offsets as auto_inc_fixup does, then insn_invalid_p) and gives up the
+auto increment if the result is not a valid insn, the same way try_auto_inc
+already gives up on insns it cannot fix up. That spot is then compiled as with
+-fbbb=-.
+
+--- a/gcc/bbb-opts.c
++++ b/gcc/bbb-opts.c
+@@ -1296,6 +1296,9 @@
+ 
+   void
+   auto_inc_fixup (int regno, int size, int addend);
++
++  bool
++  auto_inc_fixup_valid (int regno, int size, int addend);
+ 
+   void
+   patch_mem_offsets(rtx x, int size);
+@@ -1505,6 +1508,33 @@
+ 
+   SET_INSN_DELETED(insn);
+   insn = emit_insn_after (pattern, insn);
++}
++
++/* True if auto_inc_fixup (REGNO, SIZE, ADDEND) yields a valid insn. The fixup re-emits the
++   insn, so it is recognized anew: recog takes the first pattern whose predicates match, which
++   need not be the one the insn had. E.g. "lea ([n,a3],1),a0" was *lea, but the re-emitted
++   (set a0 (plus (mem (plus a3 n)) 1)) becomes *addsi3_internal, whose constraints refuse it
++   (ICE "insn does not satisfy its constraints" in final). Try the fixup on a copy.  */
++bool
++insn_info::auto_inc_fixup_valid (int regno, int size, int addend)
++{
++  // add to register: only the constant shrinks, or the add is deleted
++  if (get_src_op () == PLUS && !is_src_mem() && !is_dst_mem())
++    return true;
++
++  rtx_insn * test = make_insn_raw (copy_rtx (PATTERN (insn)));
++  rtx set = single_set (test);
++  if (!set)
++    return false;
++  if (is_compare ())
++    set = SET_SRC(set);
++
++  if (get_src_mem_regno () == regno)
++    patch_mem_offsets (SET_SRC(set), get_src_mem_addr() - size * addend);
++  if (get_dst_mem_regno () == regno)
++    patch_mem_offsets (SET_DEST(set), get_dst_mem_addr() - size * addend);
++
++  return !insn_invalid_p (test, 0);
+ }
+ 
+ track_var *
+@@ -5426,6 +5456,10 @@
+ 	  if (!fix)
+ 	    return 0;
+ 
++	  // the re-emitted insn must still be valid (see auto_inc_fixup_valid)
++	  if (!jj.auto_inc_fixup_valid (regno, size, addend))
++	    return 0;
++
+ 	  fixups.insert (pos);
+ 
+ 	  // done if this is an add
