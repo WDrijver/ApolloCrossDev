@@ -113,6 +113,12 @@ echo -e "\033[0m\033[36m   * Applying the reload memory indirect stack offset fi
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/reload-ind-equiv-offset-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# bbb fix: an insn already converted to a post increment was fixed up a second time by a later
+# search in the same pass (wrong offsets, a needed lea deleted). See the patch's header.
+echo -e "\033[0m\033[36m   * Applying the bbb auto-increment converted insn fix"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/bbb-autoinc-converted-insn-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
 echo -e "\033[0m\033[36m   * Overview of the Applied Patches:\033[0m"
 git diff --stat 
 

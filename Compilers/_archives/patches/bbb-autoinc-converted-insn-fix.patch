@@ -1,0 +1,64 @@
+bbb: the auto-increment pass fixed up an insn it had just converted.
+
+opt_autoinc turns "move (a0),x; move (4,a0),y; move (8,a0),z" into post
+increments, one insn at a time, searching forwards (or backwards for an
+insn at (-size,a0)) for every other insn that uses the register, and
+lowering their offsets / the closing "add #n,a0" by the size. After an
+insn is converted, make_post_inc leaves its insn_info as it was: the old
+offset (src_mem_addr == -4) stays, and the register is not marked as
+defined. A later search in the SAME pass that walks over that insn sees a
+plain "(-4,a0)" access, accepts it as a fixup, and lowers the add a second
+time for an increment that is already done by the post increment. The
+offsets of the insns in between are shifted too far, and a "lea (4,a0),a0"
+that must stay is deleted. The insn_info is refreshed only in the next pass,
+so only the combination "several accesses before an add, a second group of
+accesses after it, converted in one pass" fails; a single group is fine.
+
+Reduced from a loop over packed 12-byte vertices (found in a 68080 renderer):
+
+    typedef float vec3_t[3];
+    void uv(const vec3_t *pos, float (*out)[2], int n,
+            const float *vx, const float *vy,
+            float ox, float oy, float sx, float sy, float k)
+    {
+        int i;
+        for (i = 0; i < n; i++) {
+            const float *v = pos[i];
+            out[i][0] = (v[0]*vx[0] + v[1]*vx[1] + v[2]*vx[2] + ox - sx) * k;
+            out[i][1] = (v[0]*vy[0] + v[1]*vy[1] + v[2]*vy[2] + oy - sy) * k;
+        }
+    }
+
+    m68k-amigaos-gcc -m68080 -m68881 -ffast-math -fomit-frame-pointer \
+        -Ofast -fexcess-precision=fast -fno-unsafe-math-optimizations -S
+
+Wrong code: a0 points at the vertex; the first group became
+"fsmove.s (a0)+,fp0; fsmove.s (a0),fp3; fsmove.s (a0),fp2" (v[2] read at
+(a0) instead of (4,a0)), the second "fsmove.s (-8,a0),fp0; (-4,a0),fp3;
+(a0)+,fp2", so a0 advanced 8 bytes per iteration instead of 12 and v[2]
+was never read. With -fbbb=- the loop is correct. Also wrong for double
+and for vec3/vec4/vec5 element types with two dot products.
+
+The fix makes try_auto_inc stop at an insn that already auto-modifies the
+register (get_src_autoinc / get_dst_autoinc on that register), the same way
+it already stops at anything it cannot fix up. The reproducer now gives
+three post increments and then (-12,a0), (-8,a0), (-4,a0), one insn less
+than with -fbbb=-. Code that was correct before is unchanged.
+
+diff --git a/gcc/bbb-opts.c b/gcc/bbb-opts.c
+--- a/gcc/bbb-opts.c
++++ b/gcc/bbb-opts.c
+@@ -5336,6 +5336,13 @@ try_auto_inc (unsigned index, insn_info & ii, rtx reg, int size, int addend)
+ 	  if (!jj.is_myuse (regno))
+ 	    continue;
+ 
++	  // an insn that already auto-modifies this register, e.g. one converted a moment ago by
++	  // this very pass: its insn_info still holds the old offset and no def of the register, so
++	  // it would look like a plain (n,reg) access and be "fixed up" a second time.
++	  if ((jj.get_src_autoinc () && jj.get_src_mem_regno () == regno)
++	      || (jj.get_dst_autoinc () && jj.get_dst_mem_regno () == regno))
++	    return 0;
++
+ 	  // can't fixup such kind of insn (yet)
+ 	  if (single_set (jj.get_insn ()) == 0)
+ 	    return 0;
