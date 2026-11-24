@@ -120,6 +120,12 @@ echo -e "\e[0m\e[36mApplying the bbb invalidate_mem fix"
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/bbb-invalidate-mem-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# bbb fix: an auto-increment fixup re-emitted an insn that no longer met its constraints
+# (ICE "insn does not satisfy its constraints", issue #33). See the patch's header.
+echo -e "\e[0m\e[36mApplying the bbb auto-increment fixup constraints fix"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/bbb-autoinc-fixup-constraints-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
 echo -e "\e[0m\e[36mOverview of the Applied Patches: \e[0m"
 git diff --stat 
 
