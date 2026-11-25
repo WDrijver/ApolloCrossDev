@@ -22,7 +22,7 @@ C_COMPILER	= $(PREFIX)/bin/m68k-amigaos-gcc
 C_LIB		= -noixemul
 # C_LIB 	= -mcrt=clib2
 C_INCL_CLB	= $(PREFIX)/$(TARGET)/libnix/include
-# C_INCL_CLB  = $(PREFIX)/$(TARGET)/clib2/include
+# C_INCL_CLB  = $(PREFIX)/$(TARGET)/clib2/include	# NOT installed by ApolloCrossDev
 
 # Define Additional Libraries - ApolloLib, SDL, MUI and Mathematics, switch comments to enable/disable 
 APOLLOLIB = $(PWD)/../../Projects/ApolloLib
@@ -33,13 +33,13 @@ C_LIBS_ALL 	= $(C_LIBS_SDL) $(C_LIBS_MUI) $(C_LIBS_MATH)
 
 # Define SDK/NDK Headers, switch comments to enable/disable
 C_INCL_SYS	= $(PREFIX)/$(TARGET)/sys-include
-# C_INCL_NDK  = $(PREFIX)/$(TARGET)/ndk13-include
-# C_INCL_NDK  = $(PREFIX)/$(TARGET)/ndk39-include
-C_INCL_NDK  = $(PREFIX)/$(TARGET)/ndk32-include/Include_H
+# C_INCL_NDK  = $(PREFIX)/$(TARGET)/ndk13-include	# NDK 1.3, installed
+# C_INCL_NDK  = $(PREFIX)/$(TARGET)/ndk39-include	# NOT installed by ApolloCrossDev (the scripts use NDK 3.2)
+C_INCL_NDK  = $(PREFIX)/$(TARGET)/ndk-include	# NDK 3.2, installed by the GCC-6.50 scripts
 # C_INCL_GL	= $(PREFIX)/$(TARGET)/include/GL
 # C_INCL_SDL	= $(PREFIX)/$(TARGET)/include/SDL
-# C_INCL_MUI	= $(PREFIX)/$(TARGET)/include/MUI
-C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL) -I$(C_INCL_SYS) -I$(C_INCL_NDK) -I$(APOLLOLIB)
+# C_INCL_MUI	= $(PREFIX)/$(TARGET)/include/mui
+C_INCL_ALL 	= -I. -I$(C_INCL_CLB) -I$(C_INCL_SYS) -I$(C_INCL_NDK) -I$(APOLLOLIB)
 
 # Define C Options
 C_OPTIONS 	= -O2 -m68080 -m68881 -ffast-math -fomit-frame-pointer -DREGPARM
@@ -54,7 +54,7 @@ S_COMPILER = $(PREFIX)/bin/vasmm68k_mot
 
 # Define ASM Includes
 S_INCLUDE 	= $(PREFIX)/$(TARGET)/DevPac/Include
-S_LIBS		= $(PREFIX)/$(TARGET)/DevPac/Libs	
+S_LIBS		= $(PREFIX)/$(TARGET)/DevPac/Lib	
 
 # Define ASM Options
 S_DEBUG		= -linedebug -kick1hunks
