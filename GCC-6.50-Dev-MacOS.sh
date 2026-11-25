@@ -130,6 +130,12 @@ echo -e "\033[0m\033[36m   * Applying the bbb auto-increment fixup constraints f
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/bbb-autoinc-fixup-constraints-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# bbb fix: propagate_moves put a copy behind the jump that ends a basic block
+# (ICE in schedule_region, sched-rgn.c:3213). See the patch's header.
+echo -e "\033[0m\033[36m   * Applying the bbb propagate_moves basic block boundary fix"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/bbb-propagate-moves-bb-boundary-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
 echo -e "\033[0m\033[36m   * Overview of the Applied Patches:\033[0m"
 git diff --stat 
 
