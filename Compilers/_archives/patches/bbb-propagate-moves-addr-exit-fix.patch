@@ -1,0 +1,68 @@
+bbb: propagate_moves gave a loop exit the wrong value of the moved register.
+
+opt_propagate_moves takes a loop with a register copy pair
+
+    .L1:  move.l src,dst  ...  (exit: jcc .Lout)  ...  move.l dst,src  jcc .L1
+
+and moves the first copy in front of the loop and the second behind it.
+Inside the loop src is then no longer updated, so on every exit between the
+two copies src must be set from dst again: src = dst + fixup, where fixup
+undoes the auto increments of dst before the exit. Two bugs (issue #36):
+
+1. For an auto increment in the source of an insn, the size was taken from
+   the mode of the destination. After bbb pass 0 the byte load is
+   "(set (strict_low_part (reg:QI d1)) (mem:QI (post_inc a0)))", and a
+   strict_low_part is VOIDmode, so the increment counted as 0. Now the size
+   of the memory read is used.
+
+2. For two address registers and fixup 0 nothing was emitted at the exit,
+   so src kept its value from before the loop. Now src = dst is emitted.
+
+Reproducer (-O2 -m68020; the default -fbbb is needed, pass 0 included):
+
+    long f(const unsigned char *s, unsigned char *d, unsigned char c,
+           unsigned char m, const unsigned char *lim, int n, unsigned char *x0,
+           unsigned char *x1, unsigned char *x2, unsigned char *x3)
+    {
+      const unsigned char *p = s; long acc = 0; int k = 0;
+      while (k < n)
+      {
+        const unsigned char *q = p;
+        if ((*q & m) != 0) goto out;
+        acc += *q++;
+        p = q; k++;
+      }
+    out:
+      return (long)(p - s) * 3 + acc;
+    }
+
+Wrong code: the loop reads with "move.b (a0)+,d1" and leaves on "jne .L9";
+.L9 computed p - s from a1, which still held s, so every early exit after
+the first iteration returned acc instead of 3 * (p - s) + acc. Now .L9 uses
+a0 - 1 (the p of the iteration that left the loop), the same as -fbbb=-.
+
+--- a/gcc/bbb-opts.c
++++ b/gcc/bbb-opts.c
+@@ -3297,7 +3297,7 @@
+ 						fixup += 0; // direct use
+ 					      else if (GET_CODE(x) == PRE_INC ||
+ 					      GET_CODE(x) == POST_INC)
+-						fixup -= GET_MODE_SIZE(GET_MODE(dst));
++						fixup -= GET_MODE_SIZE(GET_MODE(src)); // size read: a strict_low_part dest is VOIDmode (issue #36)
+ 					      else if (GET_CODE(dst) == PRE_DEC ||
+ 					      GET_CODE(dst) == POST_DEC)
+ 						fixup += GET_MODE_SIZE(GET_MODE(dst));
+@@ -3390,6 +3390,13 @@
+ 					      dstj, gen_rtx_PLUS (Pmode, dsti, gen_rtx_CONST_INT (Pmode, fixups[k])));
+ 					  emit_insn_before (neu, before);
+ 					}
++				      else if (REGNO(dsti) != REGNO(dstj))
++					{
++					  /* Two address registers and no offset: the exit still needs
++					   * src = dst, since src is no longer updated inside the loop
++					   * (issue #36). */
++					  emit_insn_before (gen_rtx_SET(dstj, dsti), before);
++					}
+ 				    }
+ 				}
+ 			      ++change_count;
