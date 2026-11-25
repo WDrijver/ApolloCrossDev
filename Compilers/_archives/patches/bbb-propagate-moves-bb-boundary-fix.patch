@@ -1,0 +1,95 @@
+bbb: propagate_moves put a copy behind the jump that ends a basic block.
+
+opt_propagate_moves moves a "move src,x ... move x,src" pair out of a loop:
+the first copy goes behind the insn in front of the loop label (BEFORE), the
+second in front of the insn following the loop jump (AFTER). Both are only
+looked up in the filtered insn list, so BEFORE can be the conditional jump
+that falls into the loop and AFTER can be a label. The copy then lands behind
+the jump that ends a basic block:
+
+    beq .L221          ; insn 147, end of the block
+    move.l d0,a4       ; the moved copy, still in that block
+  .L154:               ; loop label
+
+The code is still right when nothing reorders it, but sched2 cannot schedule
+an insn behind the block's jump and the compiler crashed:
+
+    internal compiler error: in schedule_region, at sched-rgn.c:3213
+
+Found with Lua 5.4.6 lobject.c (luaO_str2num with l_str2d/l_str2int inlined)
+at -O3 -m68080 and -Ofast -m68080 -m68881; -fbbb=- and -fbbb without p
+compiled it. Reduced:
+
+    #include <stdlib.h>
+    #include <string.h>
+    extern const unsigned char ctype_[257];
+    typedef struct { double n; unsigned char tt; } TValue;
+    static const char *str2dloc (const char *s, double *result, int mode)
+    {
+        char *endptr;
+        *result = (mode == 'x') ? strtod(s, &endptr) : strtod(s, &endptr);
+        if (endptr == s) return NULL;
+        while (ctype_[(unsigned char)*endptr + 1] & 8) endptr++;
+        return *endptr == '\0' ? endptr : NULL;
+    }
+    static const char *str2d (const char *s, double *result)
+    {
+        const char *endptr;
+        const char *pmode = strpbrk(s, ".xXnN");
+        int mode = pmode ? ((unsigned char)*pmode | ('A' ^ 'a')) : 0;
+        if (mode == 'n') return NULL;
+        endptr = str2dloc(s, result, mode);
+        if (endptr == NULL) {
+            char buff[201];
+            strcpy(buff, s);
+            endptr = str2dloc(buff, result, mode);
+            if (endptr != NULL) endptr = s + (endptr - buff);
+        }
+        return endptr;
+    }
+    static const char *str2int (const char *s, long long *result)
+    {
+        if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X'))
+            for (s += 2; ctype_[(unsigned char)*s + 1] & 16; s++) ;
+        while (ctype_[(unsigned char)*s + 1] & 8) s++;
+        if (*s != '\0') return NULL;
+        *result = 0;
+        return s;
+    }
+    size_t str2num (const char *s, TValue *o)
+    {
+        long long i; double n; const char *e;
+        if ((e = str2int(s, &i)) != NULL) o->tt = 3;
+        else if ((e = str2d(s, &n)) != NULL) { o->n = n; o->tt = 19; }
+        else return 0;
+        return (e - s) + 1;
+    }
+
+    m68k-amigaos-gcc -noixemul -O3 -m68080 -S
+
+The fix gives up the transformation when BEFORE is not a plain insn (or a
+call), or when AFTER is a label behind a conditional loop jump. Those loops
+then keep their moves, as with -fbbb=-.
+
+--- a/gcc/bbb-opts.c
++++ b/gcc/bbb-opts.c
+@@ -3316,6 +3316,19 @@
+ 			      rtx_insn * after = (*infos)[index + 1].get_insn ();
+ //			      rtx bset = single_set (before);
+ 
++			      /* The copy in front of the loop goes behind BEFORE, the one behind the loop in
++			       * front of AFTER, both into BEFORE's/AFTER's basic block. That is only right if
++			       * BEFORE is a plain insn falling into the label, and if AFTER is not a label
++			       * following the conditional loop jump: otherwise the copy lands behind the
++			       * jump that ends a basic block (e.g. "beq .L1; move.l d0,a4; .L2:"), and
++			       * sched2 fails with "in schedule_region, at sched-rgn.c:3213". */
++			      if (!(NONJUMP_INSN_P(before) || CALL_P(before))
++				  || (index + 1 < infos->size () && LABEL_P(after) && any_condjump_p (insn)))
++				{
++				  ++j;
++				  continue;
++				}
++
+ 			      log ("(p) propagate_moves condition met, moving regs %s, %s\n",
+ 			      reg_names[REGNO(srci)],
+ 				   reg_names[REGNO(dsti)]);
