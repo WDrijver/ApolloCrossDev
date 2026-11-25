@@ -136,6 +136,12 @@ echo -e "\033[0m\033[36m   * Applying the bbb propagate_moves basic block bounda
 cd $SOURCES/amiga-gcc/projects/gcc
 git apply $ARCHIVES/patches/bbb-propagate-moves-bb-boundary-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
 
+# bbb fix: propagate_moves gave a loop exit the wrong value of the moved register
+# (issue #36). See the patch's header.
+echo -e "\033[0m\033[36m   * Applying the bbb propagate_moves loop exit fix"
+cd $SOURCES/amiga-gcc/projects/gcc
+git apply $ARCHIVES/patches/bbb-propagate-moves-addr-exit-fix.patch >>$LOGFILES/part4.log 2>>$LOGFILES/part4_err.log
+
 echo -e "\033[0m\033[36m   * Overview of the Applied Patches:\033[0m"
 git diff --stat 
 
